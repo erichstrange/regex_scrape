@@ -1,0 +1,15 @@
+2025/02/26-10:36:52.017 a507 Reusing MANIFEST /Users/erich/PycharmProjects/regex_scrape/my_chrome_profile/Default/shared_proto_db/MANIFEST-000001
+2025/02/26-10:36:52.017 a507 Recovering log #15
+2025/02/26-10:36:52.019 a507 Reusing old log /Users/erich/PycharmProjects/regex_scrape/my_chrome_profile/Default/shared_proto_db/000015.log 
+2025/02/26-11:51:29.181 b403 Level-0 table #19: started
+2025/02/26-11:51:29.186 b403 Level-0 table #19: 120427 bytes OK
+2025/02/26-11:51:29.188 b403 Delete type=0 #15
+2025/02/26-11:51:29.191 b403 Compacting 4@0 + 1@1 files
+2025/02/26-11:51:29.195 b403 Generated table #20@0: 1089 keys, 67965 bytes
+2025/02/26-11:51:29.195 b403 Compacted 4@0 + 1@1 files => 67965 bytes
+2025/02/26-11:51:29.196 b403 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/02/26-11:51:29.197 b403 Delete type=2 #14
+2025/02/26-11:51:29.197 b403 Delete type=2 #16
+2025/02/26-11:51:29.197 b403 Delete type=2 #11
+2025/02/26-11:51:29.197 b403 Delete type=2 #8
+2025/02/26-11:51:29.197 b403 Delete type=2 #19
