@@ -1,7 +1,5 @@
-SELECT file_name,
-       submitted_time,
-       status
-FROM   ftp_batch_file
-WHERE  file_name LIKE 'pvc_%'
-ORDER  BY submitted_time DESC
-LIMIT 25;
+Goal	Query (copy/paste)	Notes
+1 - “Did the file hit the gateway?”
+(high-level batch status)	sql -- List the 25 most-recent FTP batches (any file) SELECT b.id AS batch_id, bf.file_name, b.status, b.submit_time FROM trackk_ftp.ftp_batch b JOIN trackk_ftp.ftp_batch_file bf ON b.id = bf.batch_id WHERE bf.file_name LIKE 'pvc_%' -- ← narrow to your file(s) ORDER BY b.submit_time DESC LIMIT 25;	Schema is trackk_ftp.
+status values you’ll see: SUBMITTED, PARSED, FAILED, etc.
+2 - “Show every file for a specific batch ID”	sql SELECT bf.file_name, bf.row_count, bf.error_count, bf.error_message FROM trackk_ftp.ftp_batch_file bf WHERE bf.batch_id = 123456; -- plug in the batch_id you saw above
