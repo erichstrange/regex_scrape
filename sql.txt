@@ -1,6 +1,23 @@
-SELECT *
-FROM ti_error
-WHERE trace_id = 'T-02f75703-5cf4-487b-9851-361636102925'
-   OR batch_id = 'T-02f75703-5cf4-487b-9851-361636102925'
-ORDER BY row_num
+-- 0️⃣  switch datasource -->  ds_irdw
+SET search_path TO irdw_prod;      -- one-time per session
+
+-- 1️⃣  confirm TI saw the file
+SELECT trace_id,
+       filename,
+       submit_timestamp,
+       status,
+       total_row_count,
+       error_row_count
+FROM   ti_file
+WHERE  filename ILIKE 'pvc_%'      -- or 'kevin%' / 'sophie%'
+ORDER  BY submit_timestamp DESC
+LIMIT  10;
+
+-- 2️⃣  drill into rejects (replace <trace_id>)
+SELECT row_number,
+       error_code,
+       error_message
+FROM   ti_error
+WHERE  trace_id = '<trace_id>'
+ORDER  BY row_number
 LIMIT 200;
