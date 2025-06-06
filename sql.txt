@@ -1,5 +1,19 @@
-Goal	Query (copy/paste)	Notes
-1 - “Did the file hit the gateway?”
-(high-level batch status)	sql -- List the 25 most-recent FTP batches (any file) SELECT b.id AS batch_id, bf.file_name, b.status, b.submit_time FROM trackk_ftp.ftp_batch b JOIN trackk_ftp.ftp_batch_file bf ON b.id = bf.batch_id WHERE bf.file_name LIKE 'pvc_%' -- ← narrow to your file(s) ORDER BY b.submit_time DESC LIMIT 25;	Schema is trackk_ftp.
-status values you’ll see: SUBMITTED, PARSED, FAILED, etc.
-2 - “Show every file for a specific batch ID”	sql SELECT bf.file_name, bf.row_count, bf.error_count, bf.error_message FROM trackk_ftp.ftp_batch_file bf WHERE bf.batch_id = 123456; -- plug in the batch_id you saw above
+-- 1️⃣  Did TI even ingest the file?
+SELECT trace_id,
+       filename,
+       submit_timestamp,
+       status,
+       total_row_count,
+       error_row_count
+FROM   irdw_prod.ti_file
+WHERE  filename LIKE 'pvc_%'           -- or 'kevin%' / 'sophie%'
+ORDER  BY submit_timestamp DESC
+LIMIT  10;
+
+-- 2️⃣  If error_row_count > 0, what broke?
+--    (replace <trace_id>)
+SELECT row_number,
+       error_code,
+       error_message
+FROM   irdw_prod.ti_error
+WHERE  trace_id = '<trace_id>';
