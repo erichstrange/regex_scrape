@@ -1,10 +1,6 @@
-SELECT
-    id AS group_id,
-    group_name,
-    doe AS date_created,
-    dlu AS date_last_updated,
-    uoe AS created_by_user_id,
-    ulu AS last_updated_by_user_id
-FROM iram_publishergroup
-WHERE id = 95351
-AND ircm_campaign_id = 4222;
+SELECT *
+FROM click_fact
+WHERE click_id = '<click_id>'
+AND advertiser_id = <advertiserId>
+AND event_datetime BETWEEN '<start_date>' AND '<end_date>'
+ORDER BY event_datetime DESC
