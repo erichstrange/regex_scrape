@@ -1,6 +1,40 @@
-SELECT *
-FROM click_fact
-WHERE click_id = '<click_id>'
-AND advertiser_id = <advertiserId>
-AND event_datetime BETWEEN '<start_date>' AND '<end_date>'
-ORDER BY event_datetime DESC
+Step 1: Confirm Reversed Actions Query
+Use the irac_disposition_log in ds_iraction_sharded to pull recently reversed actions for Brooks Running (5333971):
+
+Vetted Query Example (Reversal log):
+
+sql
+Copy
+SELECT action_id, disposition_code, disposition_reason, created_datetime
+FROM irac_disposition_log
+WHERE iram_advertiser_id = 5333971
+  AND created_datetime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+ORDER BY created_datetime DESC
+LIMIT 500;
+This gives recent reversed actions with Action IDs and reversal reasons clearly documented.
+
+✅ Step 2: Match to IP Addresses
+Take Action IDs from above and match to IP addresses using irac_action2:
+
+sql
+Copy
+SELECT id AS action_id, oid, ref_ip_address, event_date, partner_id
+FROM irac_action2
+WHERE iram_advertiser_id = 5333971
+  AND id IN (/* paste reversed action IDs here */);
+You'll directly see repeated IPs clearly surfaced by correlating reversed Action IDs.
+
+✅ Step 3: Identify High-Count IPs
+Once you have the IPs from reversed actions, group to confirm duplicates:
+
+sql
+Copy
+SELECT ref_ip_address, COUNT(*) AS action_count
+FROM irac_action2
+WHERE iram_advertiser_id = 5333971
+  AND event_date BETWEEN DATE_SUB(NOW(), INTERVAL 30 DAY) AND NOW()
+  AND ref_ip_address IN (/* IPs found from reversed actions query */)
+GROUP BY ref_ip_address
+HAVING COUNT(*) > 20
+ORDER BY action_count DESC;
+You’ll instantly identify IPs associated with 20+ reversed actions, clearly pinpointing offenders
