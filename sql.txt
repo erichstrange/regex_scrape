@@ -1,17 +1,72 @@
--- Data source: rti.rti_success_login_history
+Confirm there are no recent successful logins
+sql
+Copy
+-- Data source: rti_success_login_history   (RTI_dataSource)
 SELECT event_date,
        login_username,
        ip
 FROM rti.rti_success_login_history
-WHERE account_id = 5811184
-ORDER BY event_date DESC
-LIMIT 10;
+WHERE account_id       = 5811184
+  AND event_date       > NOW() - INTERVAL 30 DAY
+ORDER BY event_date DESC;
+If this returns zero rows for the last few days, we know the user has never typed the correct credentials since the issue began.
 
--- Data source: rti.rti_failed_login_history   (same schema)
+2 . Verify user & account status
+sql
+Copy
+-- Data source: core_estaleauser  (Aurora writer)
+SELECT id,
+       username,
+       state,
+       lastlogin_date,
+       password_reset_datetime
+FROM core_estaleauser
+WHERE email = 'dj4.twlv@gmail.com';
+
+-- Data source: iram_usership
+SELECT state
+FROM iram_usership
+WHERE account_user_id = (‑‑ use id from first query ‑‑)
+  AND irAccount_id    = 5811184;
+We expect state = ACTIVE in both tables. Anything else would explain the lock‑out.
+
+3 . Check for 2‑Factor / Auth verification errors
+(Only needed if the account has 2FA enabled.)
+
+sql
+Copy
+-- Data source: iram_authentication_verification_tracking
+SELECT doe,
+       success,
+       failure_reason,
+       contact_channel
+FROM iram_authentication_verification_tracking
+WHERE core_estaleauser_id = (‑‑ same id as above ‑‑)
+  AND doe > NOW() - INTERVAL 30 DAY
+ORDER BY doe DESC;
+If we see recent failure_reason values (e.g. INVALID_PASSCODE) that means they get past username+password but fail 2FA.
+
+4 . Re‑run the failed‑login query after user tries again
+Ask the CSM to have Debaron attempt one more login with the exact string “Dj4_12” (copy/paste if possible).
+Immediately re‑query:
+
+sql
+Copy
 SELECT event_date,
        login_username,
-       fail_reason
+       failed_reason
 FROM rti.rti_failed_login_history
-WHERE account_id = 5811184
-  AND event_date > NOW() - INTERVAL 3 DAY
+WHERE login_username IN ('Dj4_12','DJ4:12')
+  AND event_date > NOW() - INTERVAL 1 HOUR
 ORDER BY event_date DESC;
+If the new row still shows NOT_FOUND we know the user is still entering the wrong username. If it flips to INVALID_PASSWORD we’ll ask for a password reset while on a live call/chat.
+
+5 . Double‑check password‑reset e‑mail delivery
+You already confirmed SendGrid shows delivered + opened, but if you need the raw log:
+
+sql
+Copy
+Settings → Email Activity → search dj4.twlv@gmail.com
+Status should show Delivered / Opened, no “Blocked” or “Bounced”.
+(SendGrid UI is faster than querying our DB.)
+
