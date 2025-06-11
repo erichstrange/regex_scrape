@@ -1,15 +1,17 @@
-/* ds_iraction_sharded */
-SELECT
-       d.action_id,
-       d.message                AS reversal_reason,   -- use d.code if that’s clearer
-       d.doe                    AS reversed_at_utc,
-       a.<IP_COLUMN>            AS ip,                -- replace with ref_ip_address OR device_ip
-       a.publisher_id,
-       a.action_date
-FROM   irac_disposition_log AS d
-JOIN   irac_action2          AS a
-         ON a.id = d.action_id
-WHERE  a.iram_advertiser_id  = 5333971          -- Brooks Running
-  AND  d.doe >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-ORDER  BY d.doe DESC
-LIMIT 500;
+-- Data source: rti.rti_success_login_history
+SELECT event_date,
+       login_username,
+       ip
+FROM rti.rti_success_login_history
+WHERE account_id = 5811184
+ORDER BY event_date DESC
+LIMIT 10;
+
+-- Data source: rti.rti_failed_login_history   (same schema)
+SELECT event_date,
+       login_username,
+       fail_reason
+FROM rti.rti_failed_login_history
+WHERE account_id = 5811184
+  AND event_date > NOW() - INTERVAL 3 DAY
+ORDER BY event_date DESC;
