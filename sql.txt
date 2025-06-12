@@ -1,6 +1,23 @@
-| Purpose                                            | Query                                                                                                                                                                                                              | Correct Data Source |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
-| Recent failed attempts (24 h window)               | `sql SELECT event_date, login_username, failed_reason FROM rti_failed_login_history WHERE login_username IN ('DJ4:12','Dj4_12') AND event_date > NOW() - INTERVAL 1 DAY ORDER BY event_date DESC;`                 | **RTI\_dataSource** |
-| Recent successful logins                           | `sql SELECT event_date, login_username, ip FROM rti_success_login_history WHERE login_username = 'Dj4_12' AND event_date > NOW() - INTERVAL 30 DAY;`                                                               | **RTI\_dataSource** |
-| Full user record (correct join)                    | `sql SELECT ce.id, ce.username, ce.email, ius.irAccount_id, ius.state AS user_state FROM core_estaleauser    ce LEFT JOIN iram_usership ius ON ius.account_user_id = ce.id WHERE ce.email = 'dj4.twlv@gmail.com';` | **r\_ds\_iram**     |
-| 2‑Factor verification attempts (only if 2FA is on) | `sql SELECT doe, success, failure_reason, contact_channel FROM iram_authentication_verification_tracking WHERE core_estaleauser_id = 6349493 AND doe > NOW() - INTERVAL 30 DAY ORDER BY doe DESC;`                 | **r\_ds\_iram**     |
+SELECT
+  action_id,
+  action_date,
+  action_type,
+  action_status,
+  advertiser_id,
+  campaign_id,
+  publisher_id,
+  action_tracker_id,
+  payout_trace,
+  ref_profile_id,
+  ref_domain,
+  adv_saleamt,
+  pub_saleamt,
+  adv_currency
+FROM irac_action2
+WHERE campaign_id       = 16269
+  AND publisher_id      = 2689904
+  AND action_id IN (
+      'A-16269.6371.607768',
+      'A-16269.6371.590148',
+      'A-16269.6371.581992'
+  );
