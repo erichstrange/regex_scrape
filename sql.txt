@@ -21,3 +21,35 @@ WHERE campaign_id       = 16269
       'A-16269.6371.590148',
       'A-16269.6371.581992'
   );
+
+
+SELECT
+  cf.campaign_id,
+  cf.publisher_id,
+  SUM(CASE WHEN cf.classification = 'D' THEN 1 END) duplicate_clicks,
+  SUM(CASE WHEN cf.classification = 'E' THEN 1 END) excluded_clicks,
+  SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0)) datacenter_clicks,
+  SUM(CASE WHEN cf.classification = 'B' THEN 1 END) bot_clicks,
+  COUNT(*)                                              total_clicks,
+  ROUND( SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0)) / COUNT(*) * 100 ,2) datacenter_pct,
+  ROUND( SUM(CASE WHEN cf.classification = 'D' THEN 1 END) / COUNT(*) * 100 ,2) duplicate_pct,
+  ROUND( SUM(CASE WHEN cf.classification = 'B' THEN 1 END) / COUNT(*) * 100 ,2) bot_pct
+FROM click_fact cf
+WHERE cf.campaign_id   = 16269
+  AND cf.publisher_id  = 2689904
+  AND cf.event_datetime BETWEEN '2025-06-01' AND '2025-06-11'
+  AND cf.classification IN ('D','E','U','B')
+GROUP BY 1,2;
+
+
+SELECT shared_id,
+       COUNT(*)        AS actions,
+       SUM(pub_saleamt) AS revenue
+FROM   action_fact
+WHERE  advertiser_id = 3450804
+  AND  campaign_id   = 16269
+  AND  publisher_id  = 2689904
+  AND  action_datetime BETWEEN '2025-06-01' AND '2025-06-11'
+GROUP  BY shared_id
+ORDER  BY revenue DESC
+LIMIT 25;
