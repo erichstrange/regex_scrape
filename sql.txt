@@ -1,10 +1,14 @@
-/* Omnisend vanity-link inventory  – copy/paste as-is */
-SELECT
-  CAST(short_url        AS CHAR) AS vanity_slug,   -- your.omnisend.com/…
-  landing_page_url                 destination_url,
-  archived,
-  ulu,                                -- last-updated-by
-  dlu                                 -- last-update timestamp
-FROM ircm_short_url
-WHERE iram_account_id = 4517674                     -- Omnisend Adv ID
-  AND short_url     LIKE '%omnisend.com%';          -- optional filter
+Check	Query (datasource shown)
+1. Full referrer chain – prove each conversion started with a DigChic click	sql -- Click Path w/ media info (radius_path_event_fact) – r_ds_singlestore SELECT event_id, event_type, event_datetime, md.media_name, md.media_channel_name, referring_url, click_order_first_to_last, referral_is_winner, referral_is_introducer, referral_is_influencer, referral_is_closer FROM radius_path_event_fact rpef JOIN media_dim md ON md.id = rpef.event_media_dim_id WHERE rpef.campaign_id = 16269 AND rpef.conversion_event_id = 'A-16269.4179007.YOUR_ACTIONSEQ' ORDER BY click_order_first_to_last; vetted_queries_enriched
+2. Raw referrer rows – same order, lower-level table	sql -- ir_referrer (actionlogging_sharded) SELECT * FROM ir_referrer WHERE action_id = 'A-16269.4179007.YOUR_ACTIONSEQ' ORDER BY id; vetted_queries_enriched
+3. “No-referrer” safety sweep	sql -- ir_noreferrer_event (actionlogging_sharded) SELECT * FROM ir_noreferrer_event WHERE oid = 'YOUR_OID' AND campaign_id = 16269; vetted_queries_enriched
+4. Device / UA on the conversion event	sql -- Conversion-side device snippet (irdw_imp / singlestore) SELECT oid, action_id, platform AS device, device_family AS device_type, os_name AS OS, ua_name AS User_Agent FROM action_fact fact JOIN client_dim cld ON cld.id = client_dim_id WHERE fact.action_datetime BETWEEN '2025-06-11' AND '2025-06-12' AND advertiser_id = 3450804 AND campaign_id = 16269 AND oid IN ('LIST_YOUR_OIDS'); vetted_queries_enriched
+5. Device / UA on the referring click (same OIDs)	sql -- Referrer-side device (irdw_imp / singlestore) SELECT oid, action_id, platform AS device, device_family AS device_type, os_name AS OS, ua_name AS User_Agent FROM action_fact fact JOIN client_dim cld ON cld.id = ref_client_dim_id WHERE fact.action_datetime BETWEEN '2025-06-11' AND '2025-06-12' AND advertiser_id = 3450804 AND campaign_id = 16269 AND oid IN ('LIST_YOUR_OIDS'); vetted_queries_enriched
+6. Action header & payout trace	sql -- irac_action2 (iraction_sharded) SELECT action_id, action_date, action_type, campaign_id, publisher_id, payout_trace, ref_profile_id, ref_domain, adv_saleamt, pub_saleamt FROM irac_action2 WHERE campaign_id = 16269 AND action_id = 'A-16269.4179007.YOUR_ACTIONSEQ'; vetted_queries_enriched
+7. Duplicate/DC/bot clicks %	sql -- click_fact quality snapshot (singlestore) SELECT SUM(CASE WHEN classification='D' THEN 1 END) dup_clicks, SUM(JSON_EXTRACT_BIGINT(json,'orgdc')) dc_clicks, SUM(CASE WHEN classification='B' THEN 1 END) bot_clicks, COUNT(*) total_clicks FROM click_fact WHERE campaign_id = 16269 AND publisher_id = 4179007 AND event_datetime BETWEEN '2025-06-11' AND '2025-06-12';
+8. Reversals / returns spike	sql -- Quick reversal look-up (r_ds_iraction_sharded) SELECT * FROM irac_action2 WHERE campaign_id = 16269 AND adj_reason IS NOT NULL AND action_datetime BETWEEN '2025-06-01' AND '2025-06-12' AND publisher_id = 4179007;
+9. Click-to-conversion lag (outlier finder)	sql -- Lag from first click to conversion (r_ds_singlestore) SELECT conversion_event_id, TIMESTAMPDIFF(SECOND, MIN(click_dt), MAX(conv_dt)) AS secs_since_first_click FROM ( SELECT rpef.conversion_event_id, MIN(CASE WHEN event_type = 'Click' THEN event_datetime END) AS click_dt, MAX(CASE WHEN event_type IN ('Sale','Lead','Action') THEN event_datetime END) AS conv_dt FROM radius_path_event_fact rpef WHERE rpef.campaign_id = 16269 AND rpef.publisher_id = 4179007 AND conversion_event_datetime BETWEEN '2025-06-11' AND '2025-06-12' GROUP BY rpef.conversion_event_id ) t ORDER BY secs_since_first_click DESC LIMIT 50;
+
+Run these nine checks and, if all stay green (no missing referrer, dup/DC clicks < 3 %, payout trace correct, no surprise reversals, lag times sane), you’re safe to reply that DigChic’s spike still looks legitimate.
+
+Ping me if any query comes back odd and we’ll dig further.
