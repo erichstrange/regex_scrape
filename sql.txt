@@ -1,13 +1,11 @@
--- Cleared actions for Spocket (ADV 4006729)
--- Data source: r_ds_singlestore
-SELECT
-  action_id,
-  advertiser_id,
-  campaign_id,
-  action_date,
-  actual_clearing_date,
-  action_status,
-  amount_adv_currency
-FROM action_fact
-WHERE advertiser_id = 4006729
-  AND actual_clearing_date BETWEEN '2024-11-01' AND '2024-12-31';
+-- r_ds_tracking
+SELECT slug,
+       vanity_link_id,
+       advertiser_id,
+       partner_id,
+       destination_url,
+       is_deleted,
+       last_updated_datetime
+  FROM vanity_link
+ WHERE vanity_domain = 'your.omnisend.com'
+   AND slug IN ('KatieA','KatieArnold','JKoBaw','Z6JqD1','e1JaMj');
