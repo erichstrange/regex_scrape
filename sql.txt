@@ -1,11 +1,10 @@
--- r_ds_tracking
-SELECT slug,
-       vanity_link_id,
-       advertiser_id,
-       partner_id,
-       destination_url,
-       is_deleted,
-       last_updated_datetime
-  FROM vanity_link
- WHERE vanity_domain = 'your.omnisend.com'
-   AND slug IN ('KatieA','KatieArnold','JKoBaw','Z6JqD1','e1JaMj');
+/* Omnisend vanity-link inventory  – copy/paste as-is */
+SELECT
+  CAST(short_url        AS CHAR) AS vanity_slug,   -- your.omnisend.com/…
+  landing_page_url                 destination_url,
+  archived,
+  ulu,                                -- last-updated-by
+  dlu                                 -- last-update timestamp
+FROM ircm_short_url
+WHERE iram_account_id = 4517674                     -- Omnisend Adv ID
+  AND short_url     LIKE '%omnisend.com%';          -- optional filter
