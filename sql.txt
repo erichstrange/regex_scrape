@@ -1,23 +1,11 @@
-Steps for You (Impact TS Engineer):
-1. Replicate the provided curl requests exactly:
-Run these API requests directly (using Postman):
-
-NorthOne
-
-nginx
-Copy
-Edit
-GET https://api.impact.com/Advertisers/IR6FGxQfXhDC2624965bqc6siy2zPAjdg1/Actions?PageSize=20000&CampaignId=12863&LockingDateStart=2022-06-13T09:40:43Z&LockingDateEnd=2022-07-18T09:40:43Z&IrVersion=11&Page=1
-Eddie Bauer LLC
-
-nginx
-Copy
-Edit
-GET https://api.impact.com/Advertisers/IRSHUvjj8czz406125XmT7qsh348rhi8f1/Actions?PageSize=2000&CampaignId=5671&LockingDateStart=2022-10-01T07:00:00Z&LockingDateEnd=2022-10-01T07:00:01Z&IrVersion=11&Page=1
-Thirty Madison
-
-nginx
-Copy
-Edit
-GET https://api.impact.com/Advertisers/IRTPesEzQuix1445863FetGjBxKBvnJ3K1/Actions?PageSize=5000&CampaignId=10106&LockingDateStart=2022-05-01T04:00:00Z&LockingDateEnd=2022-05-01T04:00:01Z&IrVersion=11&Page=1
-Check if you personally get the 504 response.
+SELECT
+    tt.template_term_id,
+    tt.name AS template_term_name,
+    ttem.event_type_id,
+    ttem.crediting_rule,
+    tt.status,
+    tt.effective_date
+FROM template_term_event_map ttem
+JOIN template_term tt ON ttem.template_term_id = tt.template_term_id
+WHERE ttem.account_id = 3256060
+AND ttem.event_type_id = 29434;
