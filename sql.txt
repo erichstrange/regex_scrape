@@ -1,10 +1,31 @@
-SELECT IA.id,
-       IA.doe,
-       P.platform_approval_state
-FROM   iram_account          IA
-LEFT   JOIN ircm.ircm_pendingcontract PC ON PC.iram_publisher_id = IA.id
-LEFT   JOIN ircm.ircm_signedcontract  SC ON SC.iram_publisher_id  = IA.id
-JOIN   iram.iram_publisher    P  ON   P.id = IA.id
-WHERE  IA.id = 6300735
-  AND  PC.iram_publisher_id IS NULL
-  AND  SC.iram_publisher_id IS NULL;
+/* DRAFT – peer-review before you run */
+SELECT
+  event_datetime,
+  program_id,
+  event_type_code,
+  text2,
+  numeric1,
+  payload_json
+FROM   hubspot_plugin_event_fact          -- table is in r_ds_ods
+WHERE  program_id = 6123248
+  AND  event_datetime >= date_trunc('day', current_date) - INTERVAL '1 day'
+ORDER  BY event_datetime DESC
+LIMIT 200;
+
+
+
+/* DRAFT – NEEDS PEER REVIEW
+   Purpose: Confirm whether Attend / Booked rows are stored
+   and whether Text2 / Numeric1 are populated */
+
+SELECT
+  event_datetime,
+  event_type_code,
+  text2,
+  numeric1,
+  payload_json
+FROM   r_ds_ods.hubspot_plugin_event_fact   -- table name varies by warehouse
+WHERE  program_id = 6123248
+  AND  event_datetime >= date_trunc('day', current_date) - INTERVAL '1 day'
+ORDER BY event_datetime DESC
+LIMIT 200;
