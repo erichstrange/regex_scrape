@@ -1,31 +1,17 @@
-/* DRAFT – peer-review before you run */
+| **Actions credited to the advertiser** – what the UI’s *Advanced Action Listing* ultimately shows.  Good for spotting which event types made it through and whether metadata mapped into `str1/str2` or `numeric1`. | `r_ds_iraction_sharded` |```sql
+/* Credited actions in Impact reports */
 SELECT
-  event_datetime,
-  program_id,
-  event_type_code,
-  text2,
-  numeric1,
-  payload_json
-FROM   hubspot_plugin_event_fact          -- table is in r_ds_ods
-WHERE  program_id = 6123248
-  AND  event_datetime >= date_trunc('day', current_date) - INTERVAL '1 day'
-ORDER  BY event_datetime DESC
-LIMIT 200;
-
-
-
-/* DRAFT – NEEDS PEER REVIEW
-   Purpose: Confirm whether Attend / Booked rows are stored
-   and whether Text2 / Numeric1 are populated */
-
-SELECT
-  event_datetime,
-  event_type_code,
-  text2,
-  numeric1,
-  payload_json
-FROM   r_ds_ods.hubspot_plugin_event_fact   -- table name varies by warehouse
-WHERE  program_id = 6123248
-  AND  event_datetime >= date_trunc('day', current_date) - INTERVAL '1 day'
-ORDER BY event_datetime DESC
-LIMIT 200;
+  action_datetime,
+  action_type,               -- LEAD, ATTEND, BOOKED
+  str1                AS parent_student_flag,
+  numeric1            AS lead_score,
+  metadata,
+  action_id,
+  oid
+FROM irac_action2
+WHERE campaign_id = 6123248
+  AND action_type IN ('LEAD','ATTEND','BOOKED')
+  AND action_datetime >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
+ORDER BY action_datetime DESC
+LIMIT 500;
+```|
