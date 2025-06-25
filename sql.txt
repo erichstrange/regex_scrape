@@ -3,21 +3,8 @@ SELECT IA.id,
        P.platform_approval_state
 FROM   iram_account          IA
 LEFT   JOIN ircm.ircm_pendingcontract PC ON PC.iram_publisher_id = IA.id
-LEFT   JOIN ircm.ircm_signedcontract  SC ON SC.iram_publisher_id = IA.id
-JOIN   iram.iram_publisher    P  ON P.id = IA.id
-WHERE  IA.id = 6300735                         -- partner_id
+LEFT   JOIN ircm.ircm_signedcontract  SC ON SC.iram_publisher_id  = IA.id
+JOIN   iram.iram_publisher    P  ON   P.id = IA.id
+WHERE  IA.id = 6300735
   AND  PC.iram_publisher_id IS NULL
   AND  SC.iram_publisher_id IS NULL;
-
-
-
-
-
-
-
--- Still on r_ds_iram
-SELECT *
-FROM   iram_application
-WHERE  iram_publisher_id = 6300735
-  AND  iram_advertiser_id = 6079287   -- Happy Head adv
-ORDER  BY platform_application_date DESC;
