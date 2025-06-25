@@ -1,41 +1,23 @@
-Warehouse query to run first
-sql
-Copy
-Edit
-/* Pending contracts for a specific publisher */
-SELECT  pen.id                               AS pending_id,
-        pen.ircm_campaign_id                 AS program_id,
-        ic.name                              AS program_name,
-        pen.result_state,
-        pen.date_created,
-        pen.doe
-FROM    ircm.ircm_pendingcontract   pen
-JOIN    ircm.ircm_campaign          ic
-          ON ic.id = pen.ircm_campaign_id
-WHERE   pen.iram_publisher_id = 6300735      -- Justin Hogan
-ORDER BY pen.doe DESC;
-This is the exact vetted template; only the publisherId token was replaced with 6300735.
+SELECT IA.id,
+       IA.doe,
+       P.platform_approval_state
+FROM   iram_account          IA
+LEFT   JOIN ircm.ircm_pendingcontract PC ON PC.iram_publisher_id = IA.id
+LEFT   JOIN ircm.ircm_signedcontract  SC ON SC.iram_publisher_id = IA.id
+JOIN   iram.iram_publisher    P  ON P.id = IA.id
+WHERE  IA.id = 6300735                         -- partner_id
+  AND  PC.iram_publisher_id IS NULL
+  AND  SC.iram_publisher_id IS NULL;
 
-What to look for
 
-Result	Interpretation	Next step
-≥ 1 row(s)	We found a live PENDING row. Check program_id.
-• If it’s 32154 or 33578 → DB and UI are out of sync ⇒ escalate to Reporting (RPT).
-• If it points to a retired / hidden program → orphaned → open Jira for AP (contracts) to patch.	
-0 rows	No pending-contract record exists → the dashboard card is being fed only by the application table. Pull the raw application next (query #2 below).	
 
-2 – If no row is found: verify the raw application
-sql
-Copy
-Edit
-/* DRAFT – not yet vetted */
-SELECT id,
-       platform_application_date,
-       application_status,
-       iram_advertiser_id,
-       iram_program_id
-FROM   iram.iram_application
-WHERE  iram_publisher_id  = 6300735
-  AND  iram_advertiser_id = 6079287
-ORDER BY platform_application_date DESC;
-If this returns one record with application_status='IN_REVIEW' but the program is null or references an inactive program, that confirms the “ghost-program” theory.
+
+
+
+
+-- Still on r_ds_iram
+SELECT *
+FROM   iram_application
+WHERE  iram_publisher_id = 6300735
+  AND  iram_advertiser_id = 6079287   -- Happy Head adv
+ORDER  BY platform_application_date DESC;
