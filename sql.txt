@@ -1,44 +1,35 @@
-Run the diagnostic queries
-Data-source: r_ds_irad | Max rows: leave as default (1 000)
 
-3.1 List the 7 “Sell more with Shopify” ads as the brand sees them
-sql
-Copy
-Edit
-/* Active ads that carry the label on the advertiser side */
-SELECT a.id              AS ad_id,
+/* 1. Active ads that carry the label */
+SELECT a.id            AS ad_id,
        a.name,
        a.state,
-       al.label_name,
-       a.last_updated    AS last_upd
-FROM   irad_ad a
-JOIN   irad_adlabel_map alm  ON alm.irad_ad_id = a.id
-JOIN   irad_adlabel     al   ON al.id = alm.irad_adlabel_id
-WHERE  a.state = 'ACTIVE'
-  AND  al.label_name = 'Sell more with Shopify'
+       l.label_name,
+       a.last_updated
+FROM   ad                 a
+JOIN   adlabel_map        m  ON m.ad_id   = a.id
+JOIN   adlabel            l  ON l.id      = m.adlabel_id
+WHERE  a.account_id       = 2797309
+  AND  a.state            = 'ACTIVE'
+  AND  l.label_name       = 'Sell more with Shopify'
 ORDER  BY ad_id;
-Expected result: 7 rows (IDs will match the ones Nicholas mentioned).
-
-3.2 Verify which partners should be able to see that label
 sql
 Copy
 Edit
-/* Partners indexed to the label */
-SELECT DISTINCT pli.iram_publisher_id   AS partner_id
-FROM   irad_partner_label_index pli
-JOIN   irad_adlabel al ON al.id = pli.irad_adlabel_id
-WHERE  al.label_name = 'Sell more with Shopify';
-Expected result: exactly the three partner IDs Nicholas supplied.
-If any partner is missing, the label indexer hasn’t run for them.
-
-3.3 (Optional) Force-check one partner’s visibility mapping
-Replace <PARTNER_ID>:
-
+/* 2. Which partners the label is indexed to */
+SELECT partner_id,
+       COUNT(*) AS ads_in_index
+FROM   partner_label_index
+WHERE  account_id = 2797309
+  AND  label_name = 'Sell more with Shopify'
+GROUP  BY partner_id
+ORDER  BY ads_in_index DESC;
 sql
 Copy
 Edit
+/* 3. Visibility for one specific partner */
+-- Replace 10724 with the partner ID you’re testing
 SELECT *
-FROM   irad_partner_label_index pli
-JOIN   irad_adlabel al  ON al.id = pli.irad_adlabel_id
-WHERE  pli.iram_publisher_id = <PARTNER_ID>
-  AND  al.label_name = 'Sell more with Shopify';
+FROM   partner_label_index
+WHERE  account_id        = 2797309
+  AND  label_name        = 'Sell more with Shopify'
+  AND  partner_id        = 10724;
