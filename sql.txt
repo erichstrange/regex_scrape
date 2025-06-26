@@ -1,17 +1,44 @@
-| **Actions credited to the advertiser** – what the UI’s *Advanced Action Listing* ultimately shows.  Good for spotting which event types made it through and whether metadata mapped into `str1/str2` or `numeric1`. | `r_ds_iraction_sharded` |```sql
-/* Credited actions in Impact reports */
-SELECT
-  action_datetime,
-  action_type,               -- LEAD, ATTEND, BOOKED
-  str1                AS parent_student_flag,
-  numeric1            AS lead_score,
-  metadata,
-  action_id,
-  oid
-FROM irac_action2
-WHERE campaign_id = 6123248
-  AND action_type IN ('LEAD','ATTEND','BOOKED')
-  AND action_datetime >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
-ORDER BY action_datetime DESC
-LIMIT 500;
-```|
+Run the diagnostic queries
+Data-source: r_ds_irad | Max rows: leave as default (1 000)
+
+3.1 List the 7 “Sell more with Shopify” ads as the brand sees them
+sql
+Copy
+Edit
+/* Active ads that carry the label on the advertiser side */
+SELECT a.id              AS ad_id,
+       a.name,
+       a.state,
+       al.label_name,
+       a.last_updated    AS last_upd
+FROM   irad_ad a
+JOIN   irad_adlabel_map alm  ON alm.irad_ad_id = a.id
+JOIN   irad_adlabel     al   ON al.id = alm.irad_adlabel_id
+WHERE  a.state = 'ACTIVE'
+  AND  al.label_name = 'Sell more with Shopify'
+ORDER  BY ad_id;
+Expected result: 7 rows (IDs will match the ones Nicholas mentioned).
+
+3.2 Verify which partners should be able to see that label
+sql
+Copy
+Edit
+/* Partners indexed to the label */
+SELECT DISTINCT pli.iram_publisher_id   AS partner_id
+FROM   irad_partner_label_index pli
+JOIN   irad_adlabel al ON al.id = pli.irad_adlabel_id
+WHERE  al.label_name = 'Sell more with Shopify';
+Expected result: exactly the three partner IDs Nicholas supplied.
+If any partner is missing, the label indexer hasn’t run for them.
+
+3.3 (Optional) Force-check one partner’s visibility mapping
+Replace <PARTNER_ID>:
+
+sql
+Copy
+Edit
+SELECT *
+FROM   irad_partner_label_index pli
+JOIN   irad_adlabel al  ON al.id = pli.irad_adlabel_id
+WHERE  pli.iram_publisher_id = <PARTNER_ID>
+  AND  al.label_name = 'Sell more with Shopify';
