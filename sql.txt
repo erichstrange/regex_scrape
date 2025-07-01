@@ -1,4 +1,10 @@
-| Purpose                                        | Exact SQL                                                                                                                                                                                                                                                                                                                                                                                          | Data-source    |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| **1. Credit-card funding attempts / failures** | `sql -- Card Transaction – shows every credit-card charge attempt tied to the finance account SELECT * FROM iracct.finance_creditcard_transaction   cc INNER JOIN finance_account               fa ON cc.finance_account_id = fa.id WHERE  fa.account_id = 6036637   -- IT Luggage US   AND   cc.doe >= '2025-04-01 00:00:00'           -- narrow to period of interest ORDER BY cc.doe DESC; `    | `r_ds_iracct`  |
-| **2. Auto-funding deposits actually applied**  | `sql -- Deposits by Account ID – verifies what was credited to the wallet SELECT  finance_directdeposit.* FROM    finance_directdeposit JOIN    finance_account              ON finance_directdeposit.finance_account_id = finance_account.id WHERE   finance_account.account_id = 6036637   AND     finance_directdeposit.doe >= '2024-01-01 00:00:00' ORDER BY finance_directdeposit.doe DESC; ` | `r_ds_iracct`  |
+/* Credit-card auto-funding entries for IT Luggage US (Account ID 6036637) */
+SELECT
+    cc.*,                       -- all card-transaction fields
+    fa.account_id
+FROM iracct.finance_creditcard_transaction   cc
+JOIN finance_account                         fa
+      ON cc.finance_account_id = fa.id
+WHERE fa.account_id = 6036637                -- << your advertiser ID
+  AND cc.doe >= '2024-01-01 00:00:00'        -- optional: limit to recent activity
+ORDER BY cc.doe DESC;
