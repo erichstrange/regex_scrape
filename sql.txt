@@ -1,8 +1,9 @@
--- Direct-deposit history by account ID
-SELECT  dd.*
-FROM    finance_directdeposit              dd
-JOIN    finance_account                    fa
-          ON dd.finance_account_id = fa.id
-WHERE   fa.account_id = 6036637
-  AND   dd.doe >= '2024-01-01'
-ORDER BY dd.doe DESC;
+-- Card funding events for Advertiser 6036637
+SELECT  cc.*                                   -- all credit-card-transaction columns
+       ,fa.account_id
+FROM    finance_creditcard_transaction   cc    -- ⚠️ no “iracct.” prefix
+JOIN    finance_account                 fa
+       ON cc.finance_account_id = fa.id
+WHERE   fa.account_id = 6036637                -- your Advertiser ID
+  AND   cc.doe >= '2024-01-01 00:00:00'        -- optional: limit to recent activity
+ORDER BY cc.doe DESC;
