@@ -1,10 +1,8 @@
-/* Credit-card auto-funding entries for IT Luggage US (Account ID 6036637) */
-SELECT
-    cc.*,                       -- all card-transaction fields
-    fa.account_id
-FROM iracct.finance_creditcard_transaction   cc
-JOIN finance_account                         fa
-      ON cc.finance_account_id = fa.id
-WHERE fa.account_id = 6036637                -- << your advertiser ID
-  AND cc.doe >= '2024-01-01 00:00:00'        -- optional: limit to recent activity
-ORDER BY cc.doe DESC;
+-- Direct-deposit history by account ID
+SELECT  dd.*
+FROM    finance_directdeposit              dd
+JOIN    finance_account                    fa
+          ON dd.finance_account_id = fa.id
+WHERE   fa.account_id = 6036637
+  AND   dd.doe >= '2024-01-01'
+ORDER BY dd.doe DESC;
