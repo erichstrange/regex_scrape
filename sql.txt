@@ -1,13 +1,9 @@
-/* Raw MS rows, then aggregate */
-WITH src AS (
-    SELECT id, iram_mediasource_channel_id
-    FROM   iram_media_source
-    WHERE  iram_advertiser_id = 41997          -- GlassesUSA
-)
-SELECT  c.name            AS channel_name,
-        COUNT(*)          AS media_source_count
-FROM    src  s
-JOIN    iram_mediasource_channel c
+/* GlassesUSA (adv_id 41997) – Media-Source counts by Channel */
+SELECT  c.name        AS channel_name,
+        COUNT(*)      AS media_source_count
+FROM    iram_media_source            s
+JOIN    iram_mediasource_channel     c
           ON c.id = s.iram_mediasource_channel_id
+WHERE   s.iram_advertiser_id = 41997          -- GlassesUSA
 GROUP BY c.name
-ORDER  BY media_source_count DESC;
+ORDER BY media_source_count DESC;
