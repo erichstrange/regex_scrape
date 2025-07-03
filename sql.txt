@@ -1,7 +1,20 @@
-https://api.impact.com/Advertisers/IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1/Actions\
-?CampaignId=10402\
-&LockingDateStart=2023-06-15T00:00:00Z\
-&LockingDateEnd=2023-06-16T00:00:00Z\
-&PageSize=5000\
-&Page=1\
-&IrVersion=11
+❶ Single‑day, locking‑endpoint test
+(If this 24‑h slice 504s, the cache key is corrupted or the gateway timeout is too aggressive.)
+
+bash
+Copy
+curl --location \
+ --user 'IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1:<API_PASSWORD>' \
+ 'https://api.impact.com/Advertisers/IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1/Actions?CampaignId=10402&LockingDateStart=2022-08-10T00:00:00Z&LockingDateEnd=2022-08-11T00:00:00Z&PageSize=20000&Page=1&IrVersion=11' \
+ --header 'Accept: application/json'
+❷ Same single‑day slice, no locking filters
+(Streams directly from the DB. Should always return 200 OK and confirms the data exists.)
+
+bash
+Copy
+curl --location \
+ --user 'IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1:<API_PASSWORD>' \
+ 'https://api.impact.com/Advertisers/IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1/Actions?CampaignId=10402&ActionStatus=ALL&ActionDateStart=2022-08-10T00:00:00Z&ActionDateEnd=2022-08-11T00:00:00Z&PageSize=20000&Page=1&IrVersion=11' \
+ --header 'Accept: application/json'
+(ActionDate* filters the same 24 h but bypasses the lock‑cache.)
+
