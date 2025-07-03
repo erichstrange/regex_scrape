@@ -1,16 +1,52 @@
--- Datasource: iram
+1 ️⃣  DRAFT – List every June order that stored $0 revenue
+sql
+Copy
+/* DRAFT – please peer‑review before adding to the vetted library
+   Purpose: surface all actions that landed with zero revenue so the advertiser
+            can bulk‑correct them via Modify‑Actions CSV                 */
+
 SELECT
-    p.id                       AS "Publisher Group ID",
-    p.group_name,
-    p.ircm_campaign_id,
-    p.doe,
-    p.dlu,
-    p.uoe,
-    p.ulu,
-    pg.iram_publishergroup_id,
-    pg.iram_publisher_id
-FROM iram_publishergroup            AS p
-LEFT JOIN iram_publishergroup_publisher AS pg
-       ON p.id = pg.iram_publishergroup_id
-WHERE p.ircm_campaign_id = <CAMPAIGN_ID>      -- Lowe’s program ID (e.g., 12374)
-  AND pg.iram_publisher_id = <PARTNER_ID>;    -- Partner ID you’re troubleshooting
+    oid,                               -- Order ID
+    action_id,
+    action_date,
+    publisher_id,
+    raw_saleamt,       -- value the advertiser sent (should be 0.00 here)
+    adv_saleamt,
+    cart_saleamt
+FROM irac_action2           -- DataSource: r_ds_iraction_sharded
+WHERE advertiser_id = 6144899
+  AND campaign_id   = 33555
+  AND action_date  BETWEEN '2025-06-01' AND '2025-06-30'
+  AND adv_saleamt   = 0                    -- = “revenue = 0”
+ORDER BY action_date;
+What it answers: gives the full list of “bad” OIDs (e.g., 84308) so the brand knows exactly which orders need a back‑fill.
+
+2 ️⃣  Pull a “good” sample for side‑by‑side payload comparison
+sql
+Copy
+/* Quick non‑zero sample – use to grab one Loggly line that DOES contain amt */
+
+SELECT
+    oid,
+    action_date,
+    adv_saleamt
+FROM irac_action2           -- r_ds_iraction_sharded
+WHERE advertiser_id = 6144899
+  AND campaign_id   = 33555
+  AND action_date  BETWEEN '2025-06-01' AND '2025-06-30'
+  AND adv_saleamt  > 0
+ORDER BY action_date DESC
+LIMIT 20;                     -- adjust if you need more rows
+What it answers: confirms that, for the same time‑frame, some actions recorded a real amount (e.g., OID 84499 with $1,648.00).
+Grab one of the returned OIDs, open its Loggly entry, and you’ll see amt=<value> present—perfect to show the advertiser the missing field difference.
+
+3 ️⃣  Double‑check for late modifications / reversals
+sql
+Copy
+/* Verifies nothing in Impact over‑wrote the amount after initial ingest */
+
+SELECT *
+FROM irac_action_mod         -- r_ds_iraction_sharded
+WHERE advertiser_id = 6144899
+  AND oid IN (84308, 84499)  -- add or replace with any suspect OIDs
+ORDER BY mod_date;
