@@ -1,9 +1,16 @@
-/* GlassesUSA (adv_id 41997) – Media-Source counts by Channel */
-SELECT  c.name        AS channel_name,
-        COUNT(*)      AS media_source_count
-FROM    iram_media_source            s
-JOIN    iram_mediasource_channel     c
-          ON c.id = s.iram_mediasource_channel_id
-WHERE   s.iram_advertiser_id = 41997          -- GlassesUSA
-GROUP BY c.name
-ORDER BY media_source_count DESC;
+-- Datasource: iram
+SELECT
+    p.id                       AS "Publisher Group ID",
+    p.group_name,
+    p.ircm_campaign_id,
+    p.doe,
+    p.dlu,
+    p.uoe,
+    p.ulu,
+    pg.iram_publishergroup_id,
+    pg.iram_publisher_id
+FROM iram_publishergroup            AS p
+LEFT JOIN iram_publishergroup_publisher AS pg
+       ON p.id = pg.iram_publishergroup_id
+WHERE p.ircm_campaign_id = <CAMPAIGN_ID>      -- Lowe’s program ID (e.g., 12374)
+  AND pg.iram_publisher_id = <PARTNER_ID>;    -- Partner ID you’re troubleshooting
