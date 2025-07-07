@@ -1,20 +1,30 @@
-❶ Single‑day, locking‑endpoint test
-(If this 24‑h slice 504s, the cache key is corrupted or the gateway timeout is too aggressive.)
+-- 1) Find Mackenzie’s user_id (if unknown)
+SELECT DISTINCT user_id, email
+FROM audit.user_login_log
+WHERE account_id = 5367795
+  AND occurred_at BETWEEN '2025-06-17' AND '2025-07-07';
 
-bash
-Copy
-curl --location \
- --user 'IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1:<API_PASSWORD>' \
- 'https://api.impact.com/Advertisers/IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1/Actions?CampaignId=10402&LockingDateStart=2022-08-10T00:00:00Z&LockingDateEnd=2022-08-11T00:00:00Z&PageSize=20000&Page=1&IrVersion=11' \
- --header 'Accept: application/json'
-❷ Same single‑day slice, no locking filters
-(Streams directly from the DB. Should always return 200 OK and confirms the data exists.)
+-- 2) Login history
+SELECT account_id, user_id, occurred_at AT TIME ZONE 'UTC' AS login_utc
+FROM audit.user_login_log
+WHERE account_id = 5367795
+  AND user_id     = :mackenzie_id
+  AND occurred_at BETWEEN '2025-06-17' AND CURRENT_DATE
+ORDER BY occurred_at DESC;
 
-bash
-Copy
-curl --location \
- --user 'IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1:<API_PASSWORD>' \
- 'https://api.impact.com/Advertisers/IRBgCRkbwaEb1878033jpVB3WE6HWpzvU1/Actions?CampaignId=10402&ActionStatus=ALL&ActionDateStart=2022-08-10T00:00:00Z&ActionDateEnd=2022-08-11T00:00:00Z&PageSize=20000&Page=1&IrVersion=11' \
- --header 'Accept: application/json'
-(ActionDate* filters the same 24 h but bypasses the lock‑cache.)
+-- 3) Promo‑code report runs
+SELECT executed_at AT TIME ZONE 'UTC' AS run_utc,
+       parameters_json
+FROM analytics.report_execution_audit
+WHERE account_id = 5367795
+  AND user_id    = :mackenzie_id
+  AND executed_at BETWEEN '2025-06-17' AND CURRENT_DATE
+  AND report_name ILIKE '%Performance by Promo Code%';
 
+-- 4) Deletions / disables
+SELECT action, changed_at AT TIME ZONE 'UTC' AS changed_utc, changed_by_user_id
+FROM audit.user_role_changes
+WHERE account_id = 5367795
+  AND acted_on_user_id = :mackenzie_id
+  AND changed_at >= '2025-06-17'
+ORDER BY changed_at DESC;
