@@ -28,3 +28,33 @@ WHERE account_id = 5367795
   AND acted_on_user_id = :mackenzie_id
   AND changed_at >= '2025-06-17'
 ORDER BY changed_at DESC;
+
+
+
+-- run this after switching the dropdown to r_ds_irp
+SELECT table_schema, table_name
+FROM information_schema.tables
+WHERE table_name IN ('user_login_log',
+                     'report_execution_audit',
+                     'user_role_changes');
+
+
+
+-- Login history (r_ds_irp)
+SELECT account_id,
+       user_id,
+       occurred_at AT TIME ZONE 'UTC'  AS login_utc,
+       ip_address,
+       user_agent
+FROM audit.user_login_log
+WHERE account_id = 5367795
+  AND user_id     = 6876078
+  AND occurred_at BETWEEN '2025-06-17' AND CURRENT_DATE
+ORDER BY occurred_at DESC;
+
+
+-- still in r_ds_irp
+SELECT DISTINCT report_name
+FROM analytics.report_execution_audit
+WHERE account_id = 5367795
+  AND report_name ILIKE '%promo code%';
