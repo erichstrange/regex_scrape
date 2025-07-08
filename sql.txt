@@ -1,33 +1,23 @@
--- DRAFT • Warehouse: impact‑redshift‑prod
--- File name (once vetted): fin_prf_partner_breakdown.sql
--- PURPOSE  : List the partner‑level lines that feed the
---            “Advertising Partner Payout Detail” section of a PRF.
--- PARAMETER: :doc_number – full PRF number, e.g. 'F3217463_7_2025_77'
-
-WITH target_doc AS (
-    SELECT id
-    FROM   finance.documents
-    WHERE  document_number = :doc_number           -- ← replace here
-      AND  document_type   = 'PRF'                 -- safety filter
-    LIMIT  1
-)
-
+/* DRAFT • Warehouse: r_ds_iracct (MySQL) */
 SELECT
         d.document_number,
         b.partner_id,
-        p.name            AS partner_name,
+        p.name           AS partner_name,
         b.program_id,
-        pr.name           AS program_name,
+        pr.name          AS program_name,
         b.event_month,
         SUM(b.action_cost)  AS action_cost,
         SUM(b.other_costs)  AS other_costs,
         SUM(b.net_cost)     AS net_cost
 FROM    finance.document_partner_breakdown   b
-JOIN    target_doc                            td  ON td.id = b.document_id
 JOIN    finance.documents                     d   ON d.id = b.document_id
 JOIN    dim_partners                          p   ON p.id = b.partner_id
 JOIN    dim_programs                          pr  ON pr.id = b.program_id
+WHERE   d.document_number = 'F3217463_7_2025_77'   -- ← change for June test
+  AND   d.document_type   = 'PRF'
 GROUP BY
-        d.document_number, b.partner_id, p.name,
-        b.program_id, pr.name, b.event_month
+        d.document_number,
+        b.partner_id, p.name,
+        b.program_id, pr.name,
+        b.event_month
 ORDER BY net_cost DESC;
