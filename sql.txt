@@ -1,12 +1,2 @@
--- Warehouse: r_ds_iracct  (MySQL)
-SELECT d.document_number,
-       b.partner_id,
-       p.name  AS partner_name,
-       SUM(b.net_cost) AS net_cost
-FROM   finance.document_partner_breakdown b
-JOIN   finance.documents d ON d.id = b.document_id
-JOIN   dim_partners p      ON p.id = b.partner_id
-WHERE  d.document_number = 'F3217463_7_2025_77'   -- swap to _69 for June
-  AND  d.document_type   = 'PRF'
-GROUP  BY d.document_number, b.partner_id, p.name
-ORDER  BY net_cost DESC;
+curl -H "Authorization: Bearer <ADVERTISER_3217463_TOKEN>" \
+     "https://api.impact.com/Advertisers/3217463/FinanceDocuments/F3217463_7_2025_77.json?include=partnerLines"
