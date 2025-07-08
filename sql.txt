@@ -1,60 +1,33 @@
--- 1) Find Mackenzie’s user_id (if unknown)
-SELECT DISTINCT user_id, email
-FROM audit.user_login_log
-WHERE account_id = 5367795
-  AND occurred_at BETWEEN '2025-06-17' AND '2025-07-07';
+-- DRAFT • Warehouse: impact‑redshift‑prod
+-- File name (once vetted): fin_prf_partner_breakdown.sql
+-- PURPOSE  : List the partner‑level lines that feed the
+--            “Advertising Partner Payout Detail” section of a PRF.
+-- PARAMETER: :doc_number – full PRF number, e.g. 'F3217463_7_2025_77'
 
--- 2) Login history
-SELECT account_id, user_id, occurred_at AT TIME ZONE 'UTC' AS login_utc
-FROM audit.user_login_log
-WHERE account_id = 5367795
-  AND user_id     = :mackenzie_id
-  AND occurred_at BETWEEN '2025-06-17' AND CURRENT_DATE
-ORDER BY occurred_at DESC;
+WITH target_doc AS (
+    SELECT id
+    FROM   finance.documents
+    WHERE  document_number = :doc_number           -- ← replace here
+      AND  document_type   = 'PRF'                 -- safety filter
+    LIMIT  1
+)
 
--- 3) Promo‑code report runs
-SELECT executed_at AT TIME ZONE 'UTC' AS run_utc,
-       parameters_json
-FROM analytics.report_execution_audit
-WHERE account_id = 5367795
-  AND user_id    = :mackenzie_id
-  AND executed_at BETWEEN '2025-06-17' AND CURRENT_DATE
-  AND report_name ILIKE '%Performance by Promo Code%';
-
--- 4) Deletions / disables
-SELECT action, changed_at AT TIME ZONE 'UTC' AS changed_utc, changed_by_user_id
-FROM audit.user_role_changes
-WHERE account_id = 5367795
-  AND acted_on_user_id = :mackenzie_id
-  AND changed_at >= '2025-06-17'
-ORDER BY changed_at DESC;
-
-
-
--- run this after switching the dropdown to r_ds_irp
-SELECT table_schema, table_name
-FROM information_schema.tables
-WHERE table_name IN ('user_login_log',
-                     'report_execution_audit',
-                     'user_role_changes');
-
-
-
--- Login history (r_ds_irp)
-SELECT account_id,
-       user_id,
-       occurred_at AT TIME ZONE 'UTC'  AS login_utc,
-       ip_address,
-       user_agent
-FROM audit.user_login_log
-WHERE account_id = 5367795
-  AND user_id     = 6876078
-  AND occurred_at BETWEEN '2025-06-17' AND CURRENT_DATE
-ORDER BY occurred_at DESC;
-
-
--- still in r_ds_irp
-SELECT DISTINCT report_name
-FROM analytics.report_execution_audit
-WHERE account_id = 5367795
-  AND report_name ILIKE '%promo code%';
+SELECT
+        d.document_number,
+        b.partner_id,
+        p.name            AS partner_name,
+        b.program_id,
+        pr.name           AS program_name,
+        b.event_month,
+        SUM(b.action_cost)  AS action_cost,
+        SUM(b.other_costs)  AS other_costs,
+        SUM(b.net_cost)     AS net_cost
+FROM    finance.document_partner_breakdown   b
+JOIN    target_doc                            td  ON td.id = b.document_id
+JOIN    finance.documents                     d   ON d.id = b.document_id
+JOIN    dim_partners                          p   ON p.id = b.partner_id
+JOIN    dim_programs                          pr  ON pr.id = b.program_id
+GROUP BY
+        d.document_number, b.partner_id, p.name,
+        b.program_id, pr.name, b.event_month
+ORDER BY net_cost DESC;
