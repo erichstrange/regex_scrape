@@ -1,2 +1,10 @@
-curl -H "Authorization: Bearer <ADVERTISER_3217463_TOKEN>" \
-     "https://api.impact.com/Advertisers/3217463/FinanceDocuments/F3217463_7_2025_77.json?include=partnerLines"
+-- Data Source selector:  r_ds_ircs
+USE DATABASE regcompliance;
+
+SELECT partner_id,
+       media_property_id,
+       domain,
+       status,
+       deleted_at
+FROM   media_properties_domains
+WHERE  domain ILIKE '%pickyourbank.com%';
