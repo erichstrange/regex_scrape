@@ -12,7 +12,9 @@ Shopify’s own guidance confirms that cookies set on a custom storefront won’
 Shopify Community
 
 Impact’s Shopify documentation shows a “Tracking Management” toggle (Online Store → Theme → App embeds) that injects the script which copies irclickid into the checkout so attribution can occur.
-integrations.impact.com
+https://integrations.impact.com/impact-brand/docs/shopify
+
+https://help.impact.com/en/support/solutions/articles/155000005247-shopify-plugin-consent-management-explained
 
 The same requirement is reiterated in our plugin’s consent-management article under Take action step 5.
 impact.com Help Center
