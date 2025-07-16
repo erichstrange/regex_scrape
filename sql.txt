@@ -1,10 +1,10 @@
 curl --location --request POST \
   'https://api.impact.com/Advertisers/IRt8nGorUtoz6004375m4xmEsJffiSqMd1/Conversions' \
-  --user 'IRt8nGorUtoz6004375m4xmEsJffiSqMd1:NEW_AUTH_TOKEN' \
+  --user 'IRt8nGorUtoz6004375m4xmEsJffiSqMd1:iEPxXWgMMbrTpAzeZdx_GWRwPU4k.3Kp' \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --data-raw '{
-    "EventTypeId": 629148,
+    "EventTypeId": 52916,
     "CampaignId": 30665,
     "OrderId": "TEST-POSTMAN-001",
     "EventDate": "2025-07-16T18:45:00Z",
@@ -14,3 +14,4 @@ curl --location --request POST \
   }'
 
 
+iEPxXWgMMbrTpAzeZdx_GWRwPU4k.3Kp
