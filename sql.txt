@@ -1,4 +1,14 @@
-curl -u "IRt8nGorUtoz6004375m4xmEsJffiSqMd1:NEW_AUTH_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"EventTypeId":629148,"OrderId":"TEST-401","EventDate":"<UTC_ISO8601>","Amount":0.01}' \
-     https://api.impact.com/Advertisers/IRt8nGorUtoz6004375m4xmEsJffiSqMd1/Actions
+curl --location --request POST \
+  'https://api.impact.com/Advertisers/IRt8nGorUtoz6004375m4xmEsJffiSqMd1/Conversions' \
+  --user 'IRt8nGorUtoz6004375m4xmEsJffiSqMd1:NEW_AUTH_TOKEN' \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "EventTypeId": 629148,
+    "CampaignId": 30665,
+    "OrderId": "TEST-POSTMAN-001",
+    "EventDate": "2025-07-16T18:45:00Z",
+    "ClickId": "0081cafe-6265-11f0-887e-99e9f2acce19",
+    "Amount": 0.01,
+    "Currency": "USD"
+  }'
