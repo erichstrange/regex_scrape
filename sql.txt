@@ -1,1 +1,4 @@
-31747159-5e73-11f0-8f65-7b4809cb6d10
+curl -u "IRt8nGorUtoz6004375m4xmEsJffiSqMd1:NEW_AUTH_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"EventTypeId":629148,"OrderId":"TEST-401","EventDate":"<UTC_ISO8601>","Amount":0.01}' \
+     https://api.impact.com/Advertisers/IRt8nGorUtoz6004375m4xmEsJffiSqMd1/Actions
