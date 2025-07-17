@@ -15,3 +15,17 @@ curl --location --request POST \
 
 
 iEPxXWgMMbrTpAzeZdx_GWRwPU4k.3Kp
+
+-- Replace :sid and :start_ts as needed
+SET search_path TO api, logs;
+
+-- Pull by SID (recommended)
+SELECT *
+FROM api_access_token_errors_by_sid(
+         sid       := 'SID‑123456‑abcdef',
+         start_ts  := '2025‑07‑15 00:00:00'::timestamptz
+     );
+
+-- Or pull last 24 h across all SIDs
+SELECT *
+FROM api_access_token_errors_by_sid();
