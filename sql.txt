@@ -1,31 +1,12 @@
-curl --location --request POST \
-  'https://api.impact.com/Advertisers/IRt8nGorUtoz6004375m4xmEsJffiSqMd1/Conversions' \
-  --user 'IRt8nGorUtoz6004375m4xmEsJffiSqMd1:iEPxXWgMMbrTpAzeZdx_GWRwPU4k.3Kp' \
-  --header 'Accept: application/json' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-    "EventTypeId": 52916,
-    "CampaignId": 30665,
-    "OrderId": "TEST-POSTMAN-001",
-    "EventDate": "2025-07-16T18:45:00Z",
-    "ClickId": "0081cafe-6265-11f0-887e-99e9f2acce19",
-    "Amount": 0.01,
-    "Currency": "USD"
-  }'
-
-
-iEPxXWgMMbrTpAzeZdx_GWRwPU4k.3Kp
-
--- Replace :sid and :start_ts as needed
-SET search_path TO api, logs;
-
--- Pull by SID (recommended)
-SELECT *
-FROM api_access_token_errors_by_sid(
-         sid       := 'SID‑123456‑abcdef',
-         start_ts  := '2025‑07‑15 00:00:00'::timestamptz
-     );
-
--- Or pull last 24 h across all SIDs
-SELECT *
-FROM api_access_token_errors_by_sid();
+SELECT change_date,
+       username,
+       auditedvariable,
+       previousval,
+       newval
+FROM   m_audit_log_entry
+WHERE  core_account_id = 5077455                           -- Wolf & Badger
+  AND  objectid IN (3035,3036,3205)                        -- campaign IDs
+  AND  objectclassname = 'estalea.ir.creator.domain.CreatorCampaignInvitation'
+       /* ⬆ objectclassname sometimes varies; try LIKE '%Creator%Invitation%' if no rows */
+ORDER  BY change_date DESC
+LIMIT 400;
