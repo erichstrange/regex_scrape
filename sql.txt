@@ -1,5 +1,35 @@
-| Purpose                                 | Query                                                                                                                                                                                                                                                                   | Datasource |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| **Direct invitation rows**              | `sql<br>SELECT ircm_campaign_id<br>     ,partner_id<br>     ,created_ts_utc<br>     ,created_by_user_id  -- will be user ID or system<br>FROM   ircm_campaign_invitation<br>WHERE  ircm_campaign_id IN (3035,3036,3205);`                                               | `ircm`     |
-| **Creator-workflow activity** (generic) | `sql<br>SELECT created_ts_utc<br>     ,actor_user<br>     ,event_type<br>     ,details<br>FROM   activity_log  -- table behind Campaign → Activity tab<br>WHERE  account_id = 5077455<br>  AND  campaign_id IN (3035,3036,3205)<br>  AND  event_type ILIKE '%INVITE%';` | `r_ds_ods` |
-| **Loose audit sweep** (optional)        | `sql<br>SELECT change_date,username,objectclassname,auditedvariable,newval<br>FROM   m_audit_log_entry<br>WHERE  core_account_id = 5077455<br>  AND  objectid IN (3035,3036,3205)<br>  AND  objectclassname LIKE '%Creator%'  -- catches old & new names`               | `r_ds_ods` |
+SELECT
+    ircm_campaign_id,
+    partner_id,
+    created_ts_utc,
+    created_by_user_id      -- NULL or “system” can indicate auto-invite / defect
+FROM   ircm_campaign_invitation
+WHERE  ircm_campaign_id IN (3035, 3036, 3205);
+
+
+
+
+SELECT
+    created_ts_utc,
+    actor_user,            -- username or service
+    event_type,
+    details
+FROM   activity_log
+WHERE  account_id  = 5077455                     -- Wolf & Badger
+  AND  campaign_id IN (3035, 3036, 3205)
+  AND  event_type ILIKE '%INVITE%';              -- catches “CREATOR_INVITE_SENT”, etc.
+
+
+
+SELECT
+    change_date,
+    username,
+    objectclassname,
+    auditedvariable,
+    newval
+FROM   m_audit_log_entry
+WHERE  core_account_id = 5077455
+  AND  objectid        IN (3035, 3036, 3205)
+  AND  objectclassname LIKE '%Creator%'          -- wide net for class names
+ORDER  BY change_date DESC
+LIMIT 400;
