@@ -1,18 +1,14 @@
--- [r_ds_ods] API Logs by DateRange - Check for authentication failures
-SELECT 
-    doe as timestamp,
-    batch_id,
+
+
+-- [irac_action2] Checking oid details
+SELECT
+    oid,
+    campaign_id,
+    action_id,
+    payout_trace,
+    reference_date,
     error_json,
-    payload,
-    response_success,
-    response_error
-FROM ir_api_log
-WHERE iram_account_id = 6267447  -- Koi CBD
-    AND doe >= '2025-06-15 00:00:00' 
-    AND doe <= '2025-06-20 00:00:00'  -- Check around the failure date
-    AND (error_json LIKE '%auth%' 
-         OR error_json LIKE '%401%' 
-         OR error_json LIKE '%403%'
-         OR error_json LIKE '%token%')
-ORDER BY doe DESC
-LIMIT 100;
+    integration_source
+FROM irac_action2
+WHERE oid = '2218271'
+    AND campaign_id = 36368;
