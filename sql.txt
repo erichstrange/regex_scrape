@@ -1,11 +1,17 @@
--- Data Source: [r_ds_ircm] Check tracking configuration
+-- Data Source: [r_ds_ircm] Check campaign type
 SELECT
-    ircm_campaign_id,
-    tracking_domain,
-    base_site_domain,
-    permitted_deeplink_domains,
-    allow_deeplinking,
-    doe,
-    dlu
-FROM ircm_technicalintegration
-WHERE ircm_campaign_id = 36368;
+    ic.id,
+    ic.name,
+    ic.iram_advertiser_id,
+    ic.integration_type,
+    ic.is_cj_migration,
+    ic.doe,
+    ic.dlu
+FROM ircm_campaign ic
+WHERE ic.id = 36368;
+
+-- Data Source: [r_ds_iram] Check for CJ integration settings
+SELECT
+    *
+FROM iram_advertiser_cj_config
+WHERE iram_advertiser_id = 6267447;
