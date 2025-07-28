@@ -1,17 +1,7 @@
--- Data Source: [r_ds_ircm] Check campaign type
-SELECT
-    ic.id,
-    ic.name,
-    ic.iram_advertiser_id,
-    ic.integration_type,
-    ic.is_cj_migration,
-    ic.doe,
-    ic.dlu
-FROM ircm_campaign ic
-WHERE ic.id = 36368;
-
--- Data Source: [r_ds_iram] Check for CJ integration settings
-SELECT
-    *
-FROM iram_advertiser_cj_config
-WHERE iram_advertiser_id = 6267447;
+-- Look for recent API errors for this account
+SELECT batch_id, error_json, doe, payload
+FROM ir_api_log
+WHERE iram_account_id = 6267447
+  AND doe >= '2025-06-15'
+  AND error_json IS NOT NULL
+ORDER BY doe DESC;
