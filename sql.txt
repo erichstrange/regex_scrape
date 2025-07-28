@@ -1,35 +1,18 @@
-SELECT
-    ircm_campaign_id,
-    partner_id,
-    created_ts_utc,
-    created_by_user_id      -- NULL or “system” can indicate auto-invite / defect
-FROM   ircm_campaign_invitation
-WHERE  ircm_campaign_id IN (3035, 3036, 3205);
-
-
-
-
-SELECT
-    created_ts_utc,
-    actor_user,            -- username or service
-    event_type,
-    details
-FROM   activity_log
-WHERE  account_id  = 5077455                     -- Wolf & Badger
-  AND  campaign_id IN (3035, 3036, 3205)
-  AND  event_type ILIKE '%INVITE%';              -- catches “CREATOR_INVITE_SENT”, etc.
-
-
-
-SELECT
-    change_date,
-    username,
-    objectclassname,
-    auditedvariable,
-    newval
-FROM   m_audit_log_entry
-WHERE  core_account_id = 5077455
-  AND  objectid        IN (3035, 3036, 3205)
-  AND  objectclassname LIKE '%Creator%'          -- wide net for class names
-ORDER  BY change_date DESC
-LIMIT 400;
+-- [r_ds_ods] API Logs by DateRange - Check for authentication failures
+SELECT 
+    doe as timestamp,
+    batch_id,
+    error_json,
+    payload,
+    response_success,
+    response_error
+FROM ir_api_log
+WHERE iram_account_id = 6267447  -- Koi CBD
+    AND doe >= '2025-06-15 00:00:00' 
+    AND doe <= '2025-06-20 00:00:00'  -- Check around the failure date
+    AND (error_json LIKE '%auth%' 
+         OR error_json LIKE '%401%' 
+         OR error_json LIKE '%403%'
+         OR error_json LIKE '%token%')
+ORDER BY doe DESC
+LIMIT 100;
