@@ -1,14 +1,11 @@
-
-
--- [irac_action2] Checking oid details
+-- Data Source: [r_ds_ircm] Check tracking configuration
 SELECT
-    oid,
-    campaign_id,
-    action_id,
-    payout_trace,
-    reference_date,
-    error_json,
-    integration_source
-FROM irac_action2
-WHERE oid = '2218271'
-    AND campaign_id = 36368;
+    ircm_campaign_id,
+    tracking_domain,
+    base_site_domain,
+    permitted_deeplink_domains,
+    allow_deeplinking,
+    doe,
+    dlu
+FROM ircm_technicalintegration
+WHERE ircm_campaign_id = 36368;
