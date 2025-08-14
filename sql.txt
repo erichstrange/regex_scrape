@@ -1,206 +1,30 @@
-This is from event repository for that oid
-
-{
-  "dateUuid": "2025/07/24-15:08:59.087 2016b3d0-68a0-11f0-8eb7-6f4c8fb0bd17",
-  "event": {
-    "type": "conv",
-    "uuid": "2016b3d0-68a0-11f0-8eb7-6f4c8fb0bd17",
-    "profileId": "a113edc5-4fc3-11f0-8b98-2f89c4cfba7b",
-    "eventDate": 1753369739087,
-    "keys": [
-      "a113edc5-4fc3-11f0-8b98-2f89c4cfba7b_PRO",
-      "6c126a304a15c2d0e3591b5760af7505_FPR",
-      "c7dacc5a2928e0eb8e688480adc1bf59_IPA",
-      "a113edc5-4fc3-11f0-8b98-2f89c4cfba7b_FPC"
-    ],
-    "campaignId": 33555,
-    "fingerprint": "6c126a304a15c2d0e3591b5760af7505",
-    "ipAddr": "AAAADC5m8SLn4alfB/lpJ1lXaWF5ani2Sx2KtdEInkKKM9jql1PSdWOU8tCt",
-    "referringUrl": "https://www.johnsonfitness.com/",
-    "doe": 1753369739090,
-    "geo": {
-      "country": "US",
-      "area": "511",
-      "region": "Virginia",
-      "city": "Arlington",
-      "latitude": 38.9064,
-      "longitude": -77.1278,
-      "accuracy": 5000,
-      "orgName": "Verizon Fios"
-    },
-    "device": {
-      "platform": "TABLET",
-      "model": "Generic Android Tablet",
-      "vendor": "Unknown",
-      "marketingName": "Unknown Generic Android Tablet",
-      "os": {
-        "name": "Android",
-        "versionMajor": "10"
-      },
-      "userAgent": {
-        "id": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-        "name": "Chrome",
-        "versionMajor": "138",
-        "versionMinor": "0",
-        "versionPatch": "0.0",
-        "inAppWebView": false
-      }
-    },
-    "app": {},
-    "integration": {
-      "method": [
-        "MOBILE",
-        "XHR"
-      ],
-      "jsVersion": "U4"
-    },
-    "passedDeviceAttributes": {
-      "os": {}
-    },
-    "trackerId": 55525,
-    "networkId": 1,
-    "orderId": "84863",
-    "lastClickCookie": [
-      "LSjWyiOzMeVehz3gVv40ygVAf"
-    ],
-    "dataPosts": [],
-    "clientSideProfileId": "a113edc5-4fc3-11f0-8b98-2f89c4cfba7b",
-    "adServer": {},
-    "enrichment": {
-      "cookieAge": "1M"
-    },
-    "order": {
-      "items": [],
-      "currency": "USD",
-      "discount": 54.9
-    },
-    "metadata": {
-      "errors": [],
-      "queryString": "oid=84863&cs=New&currcd=USD&odsc=54.9&fqd=eyJ1IjoiaHR0cHM6Ly93d3cuam9obnNvbmZpdG5lc3MuY29tL0hvbWUvQ2hlY2tvdXRfU2luZ2xlUGF5bWVudFByb2Nlc3NvciIsImNsIjoxNDM0NjgsImh0YSI6dHJ1ZSwiaXNjIjpmYWxzZSwiaWlpIjpmYWxzZSwicGlkIjoyNCwicGlyIjoyLjI1LCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJ0em8iOjMwMCwidHpuIjoyNDB9&_ir=U4%7Ca113edc5-4fc3-11f0-8b98-2f89c4cfba7b%7C1753369738759%7C29f23686",
-      "debug": false
-    },
-    "advertiserParameters": {},
-    "crm": {
-      "status": "New"
-    },
-    "headers": {},
-    "redirect": {},
-    "session": {
-      "id": "a113edc5-4fc3-11f0-8b98-2f89c4cfba7b.1753369738759"
-    },
-    "scoringResponse": {
-      "riskScore": 0,
-      "riskLevel": "NON_SUSPECT"
-    },
-    "advertiserId": 6144899
-  },
-  "eventDate": "2025/07/24-15:08:59.087",
-  "campaign": "Johnson Fitness and Wellness",
-  "campaignUrl": "https://www.johnsonfitness.com/",
-  "geoLat": 38.9064,
-  "geoLon": -77.1278,
-  "geoAcc": 5000,
-  "correlation": "",
-  "actionTracker": "Online Sale",
-  "showJson": 1
-}
+SELECT
+  ins.name AS template_term_name,
+  st.name  AS scheduled_term_name,
+  st.start_date, st.end_date,
+  st.archived, st.doe, st.uoe, st.dlu, st.ulu
+FROM ircm_scheduled_terms st
+JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+WHERE st.ircm_campaign_id = 27240
+ORDER BY st.start_date DESC;
 
 
-------
-Using this query SELECT
-  id,
-  action_id,
-  action_date,
-  campaign_id,
-  advertiser_id,
-  publisher_id,
-  action_tracker_id,
-  doe,
-  oid
-FROM irac_action2
-WHERE campaign_id = 33555
-  AND advertiser_id = 6144899
-  AND oid = 84863
-  AND action_date BETWEEN '2025-07-01' AND '2025-07-28'
-ORDER BY action_date;
-
-I got this:
-+-----------+-------------------+---------------------+-------------+---------------+--------------+-------------------+---------------------+-------+
-| id        | action_id         | action_date         | campaign_id | advertiser_id | publisher_id | action_tracker_id | doe                 | oid   |
-+-----------+-------------------+---------------------+-------------+---------------+--------------+-------------------+---------------------+-------+
-| 584991381 | 33555.6414.198756 | 2025-07-24 15:08:59 |       33555 |       6144899 |        10621 |             55525 | 2025-07-24 15:15:13 | 84863 |
-| 585959469 | 33555.6414.198756 | 2025-07-24 15:08:59 |       33555 |       6144899 |        10621 |             55525 | 2025-07-28 21:26:58 | 84863 |
-
-----------
-
-Then pulling that action id in this query: select * from ir_referrer where action_id ='33555.6414.198756'
-
-I got this:
+SELECT sc.*, iot.credit_group
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.iram_publisher_id = 1418120
+  AND sc.ircm_campaign_id = 27240
+  AND sc.date_contract_end IS NULL;
 
 
-*************************** 1. row ***************************
-                             id: 15343671291
-                      action_id: 33555.6414.198756
-                    action_date: 2025-07-24 15:08:59
-                    action_type: CONV
-                  action_status: ZERO_COMM
-                     error_code: ʘ
-                 ref_error_code: ʘ
-                ref_credit_rule: LAST_REFERRER
-                  advertiser_id: 6144899
-                    campaign_id: 33555
-              action_tracker_id: 55525
-                  ircm_terms_id: 672869
-                            oid: 84863
-                   publisher_id: 10621
-                       ref_date: 2025-07-24 15:07:55
-                     event_type: CLICK
-                 ref_profile_id: a113edc5-4fc3-11f0-8b98-2f89c4cfba7b
-                 ref_ip_address: AAAADOWrZ0baF3MoiNK7fvL2q8pS/GioalJjUL7CSBmEbp4019xcxls3rT4I
-                        ref_url: https://www.retailmenot.com/view/johnsonfitness.com
-               ref_landing_page: https://www.johnsonfitness.com/?im_ref=WwjXa1w6zxycUPE2-RQjSTJ7Ukp0pBwNIxROz00&sharedid=&irpid=10621&irgwc=1&source=affiliate&medium=10621&campaign=3015668
-                    ref_country: US
-                       ref_area: 511
-                     ref_region: Virginia
-                       ref_city: Arlington
-                      ref_ad_id: 3015668
-                  ref_adv_ad_id: ʘ
-                 ref_promo_code: ʘ
-                  ref_unique_id: Ca113edc5-4fc3-11f0-8b98-2f89c4cfba7b/10621/3015668/554195275
-                     ref_domain: www.retailmenot.com
-                       ref_type: COOKIE
-                 ref_branded_id: ʘ
-                  ref_corr_type: PROFILE
-                 ref_user_agent: Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
-              ref_subaccount_id: ʘ
-            ref_subaccount_name: ʘ
-                ref_search_term: ʘ
-             piggyback_rewarded: false
-             piggyback_involved: false
-                piggyback_fired: false
-                     pub_subid1: 0394fKnnXjmNVajfURhJ5tf
-                     pub_subid2: ʘ
-                     pub_subid3: ʘ
-                     pub_subid4: ʘ
-                    adv_cust_id: ʘ
-                adv_cust_status: New
-              adv_cust_postcode: ʘ
-                       adv_note: ʘ
-                  call_provider: ʘ
-                call_session_id: ʘ
-  call_caller_phone_no_domestic: ʘ
-   call_caller_phone_no_country: ʘ
-  call_called_phone_no_domestic: ʘ
-   call_called_phone_no_country: ʘ
-call_total_call_duration_millis: ʘ
-      call_talk_duration_millis: ʘ
-                    call_status: ʘ
-          concurrent_call_count: ʘ
-                     channel_id: ʘ
-                  unid_src_name: ʘ
-                  unid_src_type: ʘ
-                    unid_src_id: ʘ
-                     ua_details: ʘ
-                     other_json: {"d_osma":"10","org":"Verizon Fios","d_uap":"0.0","d_ua":"Chrome","clickid":"WwjXa1w6zxycUPE2-RQjSTJ7Ukp0pBwNIxROz00","refCid":33555,"d_uama":"138","uuid":"fa131af8-689f-11f0-9ffc-a1de7973b9bc","h_accept":"text\/html,application\/xhtml+xml,application\/xml;q=0.9,image\/avif,image\/webp,image\/apng,*\/*;q=0.8,application\/signed-exchange;v=b3;q=0.7","geo_long":"-77.1278","d_os":"Android","d_mn":"Unknown Generic Android Tablet","d_m":"Generic Android Tablet","cookie-age":"1M","d_uami":"0","geo_lat":"38.9064","geo_acc":"5000","d_plat":"TABLET","d_v":"Unknown"}
-                            doe: 2025-07-24 15:15:13
-         core_estaleanetwork_id: 1
+SELECT sc.*, iot.credit_group
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.iram_publisher_id = 1418120
+  AND sc.ircm_campaign_id = 27240
+  AND sc.date_contract_end IS NULL;
+
+
+SELECT it.*
+FROM ircm_ioterms it
+WHERE it.iram_advertiser_id = 5716640;
