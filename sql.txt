@@ -1,16 +1,4 @@
--- 0) Create a temp table to hold IDs
-CREATE TEMPORARY TABLE ts_tmp_click_ids (click_id VARCHAR(128) PRIMARY KEY);
-
--- 1) Option A: bulk load from CSV (preferred if enabled)
--- LOAD DATA LOCAL INFILE '/path/to/squarespace_click_ids__union_unique_clean.csv'
--- INTO TABLE ts_tmp_click_ids
--- FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
--- IGNORE 1 LINES (click_id);
-
--- 1) Option B: run in batches with IN-lists (paste each file's content into IN (...))
--- INSERT INTO ts_tmp_click_ids(click_id) VALUES ('id1'),('id2'),...;
-
--- 2) Detailed lookup
+/* Batch N of 10 — Squarespace click lookup via IN-list */
 SELECT
   cf.campaign_id,
   cf.event_datetime,
@@ -47,5 +35,16 @@ SELECT
 FROM click_fact cf
 LEFT JOIN ad_dim        ad ON ad.id = cf.ad_dim_id
 LEFT JOIN publisher_dim p  ON p.id  = cf.publisher_id
-JOIN ts_tmp_click_ids   t  ON t.click_id = cf.click_id
+WHERE cf.click_id IN
+/* paste here: ('id1','id2',...,'idN') */
 ORDER BY cf.event_datetime DESC;
+
+-----
+
+SELECT cf.publisher_id, p.name AS publisher_name, COUNT(*) AS clicks
+FROM click_fact cf
+LEFT JOIN publisher_dim p ON p.id = cf.publisher_id
+WHERE cf.click_id IN /* paste the same IN-list */
+GROUP BY 1,2
+ORDER BY clicks DESC;
+
