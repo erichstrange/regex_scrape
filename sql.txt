@@ -1,79 +1,14 @@
-/* Batch N of 10 — Squarespace click lookup via IN-list */
+//* Use this with the 500-ID IN-lists above */
 SELECT
-  cf.campaign_id,
-  cf.event_datetime,
   cf.click_id,
+  cf.event_datetime,
   cf.publisher_id,
-  p.name                                AS publisher_name,
-  cf.profile_id,
-  ad.ad_id,
-  ad.name                                AS ad_name,
-  JSON_EXTRACT_STRING(cf.json,'inboundLink')  AS tracking_link,
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json,'ruleName')     AS rule_name,
   cf.ref_url,
-  CASE
-    WHEN cf.ref_url LIKE '%://%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cf.ref_url,'/',3),'/',-1)
-    ELSE SUBSTRING_INDEX(cf.ref_url,'/',1)
-  END AS ref_domain,
-  cf.landing_page_url,
-  cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
-  cf.method,
-  cf.classification,
-  cf.cpc_contract_id,
-  cf.cpc_adv_raw_payout,
-  cf.cpc_error_code,
-  cf.cpc_payout_trace,
-  cf.cpc_payable,
-  cf.reason_code_datacenter,
-  cf.reason_code_ip_reputation,
-  cf.reason_code_proxy,
-  cf.reason_code_domain_reputation,
-  cf.risk_level,
-  cf.tracking_server,
-  JSON_EXTRACT_STRING(cf.json,'org')          AS org
+  cf.landing_page_url
 FROM click_fact cf
-LEFT JOIN ad_dim        ad ON ad.id = cf.ad_dim_id
-LEFT JOIN publisher_dim p  ON p.id  = cf.publisher_id
 WHERE cf.click_id IN
-/* paste here: ('id1','id2',...,'idN') */
-ORDER BY cf.event_datetime DESC;
+(/* paste a sqsp_inlist_500_batch_XX.txt file here */)
+AND cf.campaign_id = 9084
+-- no ORDER BY (faster)
+LIMIT 100000;
 
------
-
-SELECT cf.publisher_id, p.name AS publisher_name, COUNT(*) AS clicks
-FROM click_fact cf
-LEFT JOIN publisher_dim p ON p.id = cf.publisher_id
-WHERE cf.click_id IN /* paste the same IN-list */
-GROUP BY 1,2
-ORDER BY clicks DESC;
-
------
-
--- winner proof at path-level
-select event_id, event_type, event_datetime, md.media_name, referral_is_winner
-from radius_path_event_fact r
-join media_dim md on md.id = r.event_media_dim_id
-where r.campaign_id = <program_id>
-  and r.conversion_event_id = '<A-…>'
-order by click_order_first_to_last;
-
-
-
-------
-
--- Who expired partner contracts for this advertiser in the last 60 days
-SELECT
-  sc.ircm_campaign_id,
-  c.name                AS campaign_name,
-  sc.iram_publisher_id  AS partner_id,
-  sc.date_contract_end  AS expired_on,
-  sc.dlu                AS updated_at,
-  sc.ulu                AS updated_by_user
-FROM ircm_signedcontract sc
-JOIN ircm_campaign c
-  ON c.id = sc.ircm_campaign_id
-WHERE c.iram_advertiser_id = 3323454
-  AND sc.date_contract_end IS NOT NULL
-  AND sc.dlu >= NOW() - INTERVAL 60 DAY
-ORDER BY sc.dlu DESC;
