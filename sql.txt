@@ -57,3 +57,23 @@ join media_dim md on md.id = r.event_media_dim_id
 where r.campaign_id = <program_id>
   and r.conversion_event_id = '<A-…>'
 order by click_order_first_to_last;
+
+
+
+------
+
+-- Who expired partner contracts for this advertiser in the last 60 days
+SELECT
+  sc.ircm_campaign_id,
+  c.name                AS campaign_name,
+  sc.iram_publisher_id  AS partner_id,
+  sc.date_contract_end  AS expired_on,
+  sc.dlu                AS updated_at,
+  sc.ulu                AS updated_by_user
+FROM ircm_signedcontract sc
+JOIN ircm_campaign c
+  ON c.id = sc.ircm_campaign_id
+WHERE c.iram_advertiser_id = 3323454
+  AND sc.date_contract_end IS NOT NULL
+  AND sc.dlu >= NOW() - INTERVAL 60 DAY
+ORDER BY sc.dlu DESC;
