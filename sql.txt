@@ -48,3 +48,12 @@ WHERE cf.click_id IN /* paste the same IN-list */
 GROUP BY 1,2
 ORDER BY clicks DESC;
 
+-----
+
+-- winner proof at path-level
+select event_id, event_type, event_datetime, md.media_name, referral_is_winner
+from radius_path_event_fact r
+join media_dim md on md.id = r.event_media_dim_id
+where r.campaign_id = <program_id>
+  and r.conversion_event_id = '<A-…>'
+order by click_order_first_to_last;
