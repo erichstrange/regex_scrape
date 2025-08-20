@@ -1,14 +1,16 @@
-//* Use this with the 500-ID IN-lists above */
-SELECT
-  cf.click_id,
-  cf.event_datetime,
-  cf.publisher_id,
-  cf.ref_url,
-  cf.landing_page_url
-FROM click_fact cf
-WHERE cf.click_id IN
-(/* paste a sqsp_inlist_500_batch_XX.txt file here */)
-AND cf.campaign_id = 9084
--- no ORDER BY (faster)
-LIMIT 100000;
+-- [iraction_sharded]
+select action_id, campaign_id, oid, batch_id, payout_trace, order_json, metadata
+from irac_action2
+where action_id = '<15311.5986.8868.83668>' and campaign_id = '<Cricut campaign id>';
+
+
+
+-- [r_ds_singlestore]
+select event_id, event_type, event_datetime, md.media_name, md.media_channel_name,
+       click_order_first_to_last, referral_is_winner
+from radius_path_event_fact r
+join media_dim md on md.id = r.event_media_dim_id
+where r.conversion_event_id = '<A-… from batch_id>'
+order by click_order_first_to_last;
+
 
