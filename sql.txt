@@ -1,14 +1,70 @@
-SELECT
-  sc.iram_publisher_id,
-  sc.ircm_campaign_id,
-  sc.date_publisher_signed,
-  sc.date_advertiser_signed,
-  sc.is_pub_pending,
-  sc.is_adv_pending,
-  sc.username_publisher_signer,
-  sc.username_advertiser_signer
+-- All campaigns (programs) under advertiser 6238421
+SELECT id            AS campaign_id,
+       name          AS campaign_name,
+       doe, dlu, ulu
+FROM ircm_campaign
+WHERE iram_advertiser_id = 6238421
+ORDER BY id;
+
+
+-- Active signed contracts with template timezone context for all programs
+SELECT sc.ircm_campaign_id                  AS campaign_id,
+       io.name                              AS contract_name,
+       iot.timezone,
+       sc.date_contract_start,
+       sc.date_contract_end
 FROM ircm_signedcontract sc
-WHERE sc.iram_publisher_id = '5945725'
-  AND sc.ircm_campaign_id = '21972'
-  AND (sc.date_contract_end IS NULL OR sc.date_contract_end = '')
-;
+JOIN ircm_ioterms        iot ON iot.id               = sc.ircm_ioterms_id
+JOIN ircm_insertionorder io  ON io.iram_advertiser_id = iot.iram_advertiser_id
+WHERE iot.iram_advertiser_id = 6238421
+ORDER BY sc.ircm_campaign_id, sc.date_contract_start DESC;
+
+
+-- Upcoming scheduled terms + which action trackers they apply to, across all programs for this advertiser
+SELECT st.ircm_campaign_id                               AS campaign_id,
+       ins.name                                          AS template_term_name,
+       st.name                                           AS scheduled_term_name,
+       st.start_date, st.end_date,
+       JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS tracker_1,
+       JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[1].actionTracker')) AS tracker_2,
+       JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[2].actionTracker')) AS tracker_3
+FROM ircm_scheduled_terms st
+JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+JOIN ircm_campaign c         ON c.id  = st.ircm_campaign_id
+WHERE c.iram_advertiser_id = 6238421
+  AND st.start_date >= NOW()
+ORDER BY st.ircm_campaign_id, st.start_date DESC;
+
+
+-- MS definitions for this advertiser (who/what is configured)
+SELECT *
+FROM iram_media_source
+WHERE iram_advertiser_id = 6238421
+ORDER BY id;
+
+-- Per-campaign media-source tracking settings
+SELECT b.ircm_campaign_id AS campaign_id,
+       b.name             AS media_source_name,
+       a.*
+FROM iram_mediasource_trackingsettings a
+JOIN iram_media_source b
+  ON b.id = a.iram_media_source_id
+WHERE b.ircm_campaign_id IN (
+  SELECT id FROM ircm_campaign WHERE iram_advertiser_id = 6238421
+)
+ORDER BY b.ircm_campaign_id, b.id;
+
+
+SELECT *
+FROM irbase_postback_config
+WHERE iram_account_id = 6238421
+ORDER BY id;
+
+
+-- Any test actions recorded for these programs (will NOT appear in live action table)
+SELECT *
+FROM irac_test_action
+WHERE program_id IN (
+  SELECT id FROM ircm_campaign WHERE iram_advertiser_id = 6238421
+)
+ORDER BY doe DESC;
