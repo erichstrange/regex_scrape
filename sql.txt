@@ -1,48 +1,14 @@
--- All IO terms for the advertiser (active windows + tz)
-select *
-from ircm_ioterms
-where iram_advertiser_id = 4921058;          -- MATE the Label adv acct
-
-
-select it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
-from ircm_ioterms it
-left join ircm_insertionorder io on it.iram_advertiser_id = io.iram_advertiser_id
-where it.ircm_campaign_id = 21972;
-
-
--- Pending contracts for this MP (any campaign; filter down in WHERE)
-select pc.*, ic.name as program_name
-from ircm_pendingcontract pc
-join ircm_campaign ic on ic.id = pc.ircm_campaign_id
-where pc.iram_publisher_id = 5945725
-  and pc.ircm_campaign_id = 21972;
-
-
--- Signed contracts for the campaign (campaign-level view)
-select *
-from ircm_signedcontract
-where ircm_campaign_id = 21972;
-
-
-select
+SELECT
   sc.iram_publisher_id,
   sc.ircm_campaign_id,
-  iot.credit_group
-from ircm_signedcontract sc
-left join ircm_ioterms iot on iot.id = sc.ircm_ioterms_id
-where sc.iram_publisher_id = '5945725'
-  and sc.ircm_campaign_id = '21972'
-  and sc.date_contract_end is null;
-
-
--- Share of Voice / program settings that sometimes constrain who sees whom
-SELECT *
-FROM ircm_campaign_share_of_voice_settings
-WHERE campaign_id = 21972;
-
-
--- Advertiser account record
-SELECT * FROM iram_account WHERE id = 4921058;
-
--- (Optional) MP account record
-SELECT * FROM iram_account WHERE id = 5945725;
+  sc.date_publisher_signed,
+  sc.date_advertiser_signed,
+  sc.is_pub_pending,
+  sc.is_adv_pending,
+  sc.username_publisher_signer,
+  sc.username_advertiser_signer
+FROM ircm_signedcontract sc
+WHERE sc.iram_publisher_id = '5945725'
+  AND sc.ircm_campaign_id = '21972'
+  AND (sc.date_contract_end IS NULL OR sc.date_contract_end = '')
+;
