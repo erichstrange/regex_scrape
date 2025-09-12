@@ -8,3 +8,7 @@ curl 'https://api.impact.com/Advertisers/<AccountSID>/Conversions' \
   --data-urlencode 'ClickId=<recent clickid from a test click>' \
   --data-urlencode 'CurrencyCode=USD' \
   --data-urlencode 'OrderId=ITSE42874-<yyyymmddHHMMss>'
+
+
+curl 'https://api.impact.com/Advertisers/<AccountSID>/APISubmissions/<SubmissionId_from_queuedUrl>' \
+  -u '<AccountSID>:<AuthToken>' -H 'Accept: application/json'
