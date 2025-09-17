@@ -1,54 +1,12 @@
--- DRAFT (IRDW) • input: :irclickid, :adv_id := 1434782
-WITH clk AS (
-  SELECT c.profile_id, c.click_id, c.publisher_id, c.campaign_id, c.occurred_at AS click_time
-  FROM   ir_clicks c
-  WHERE  c.advertiser_id = :adv_id
-    AND  c.sub_id1 = :irclickid
-  ORDER BY c.occurred_at DESC
-  LIMIT 1
-)
-SELECT a.occurred_at      AS action_time,
-       a.oid,
-       COALESCE(a.basket_id, a.user_order_id, a.external_order_ref) AS bestbuy_order_ref,
-       a.amount, a.status, a.campaign_id, a.publisher_id,
-       a.sub_id1, a.sub_id2, a.sub_id3, a.sub_id4, a.shared_id
-FROM   ir_actions a
-JOIN   clk k ON k.profile_id = a.profile_id
-WHERE  a.advertiser_id = :adv_id
-  AND  a.occurred_at BETWEEN k.click_time AND k.click_time + INTERVAL '14 days'
-ORDER BY a.occurred_at DESC;
+# Partner API (publisher); replace <AccountSID>, <AuthToken>
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/ActionUpdates/11083.6455.748772.3577547022'
 
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/ActionUpdates/11083.6455.748772.3573578177'
 
-
-
-
-
-
-
--- DRAFT (IRDW) • inputs: :adv_id := 1434782, :order_ref := 'BBY01-807084649605'
-SELECT occurred_at, oid,
-       user_order_id, basket_id, external_order_ref,
-       profile_id, campaign_id, publisher_id, amount, status
-FROM   ir_actions
-WHERE  advertiser_id = :adv_id
-  AND  (
-        oid = :order_ref
-     OR  user_order_id = :order_ref
-     OR  basket_id = :order_ref
-     OR  external_order_ref = :order_ref
-  )
-ORDER BY occurred_at DESC
-LIMIT 200;
-
-
-
-
-
-
--- DRAFT (AP telemetry in IRDW) • input: :adv_id := 1434782
-SELECT started_at, finished_at, status, file_name,
-       records_read, records_ok, records_error
-FROM   ap_batch_runs
-WHERE  advertiser_id = :adv_id
-ORDER  BY started_at DESC
-LIMIT 10;
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/Actions/11083.6455.748772'
