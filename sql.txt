@@ -1,16 +1,12 @@
-curl 'https://api.impact.com/Advertisers/<AccountSID>/Conversions' \
-  -u '<AccountSID>:<AuthToken>' \
+# Partner API (publisher); replace <AccountSID>, <AuthToken>
+curl -u '<AccountSID>:<AuthToken>' \
   -H 'Accept: application/json' \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data-urlencode 'CampaignId=30239' \
-  --data-urlencode 'EventTypeId=<your action tracker id e.g., 52613>' \
-  --data-urlencode 'EventDate=NOW' \
-  --data-urlencode 'ClickId=<recent clickid from a test click>' \
-  --data-urlencode 'CurrencyCode=USD' \
-  --data-urlencode 'OrderId=ITSE42874-<yyyymmddHHMMss>'
+  'https://api.impact.com/Mediapartners/<AccountSID>/ActionUpdates/11083.6455.748772.3577547022'
 
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/ActionUpdates/11083.6455.748772.3573578177'
 
-curl 'https://api.impact.com/Advertisers/<AccountSID>/APISubmissions/<SubmissionId_from_queuedUrl>' \
-  -u '<AccountSID>:<AuthToken>' -H 'Accept: application/json'
-
-
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/Actions/11083.6455.748772'
