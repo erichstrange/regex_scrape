@@ -10,3 +10,5 @@ curl -u '<AccountSID>:<AuthToken>' \
 curl -u '<AccountSID>:<AuthToken>' \
   -H 'Accept: application/json' \
   'https://api.impact.com/Mediapartners/<AccountSID>/Actions/11083.6455.748772'
+
+
