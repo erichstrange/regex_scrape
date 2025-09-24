@@ -31,3 +31,9 @@ SELECT p.*
 FROM core_permission p
 JOIN core_role_permission rp ON rp.core_permission_id = p.id
 WHERE rp.core_role_id = <role_id_from_step3>;
+
+
+SELECT p.*
+FROM core_permission p
+JOIN core_role_permission rp ON rp.core_permission_id = p.id
+WHERE rp.core_role_id = 2;
