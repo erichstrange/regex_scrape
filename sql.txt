@@ -1,34 +1,19 @@
--- [IRAM] Usership + user shell for Brand 5399049 (narrows to the right user)
-SELECT u.id            AS usership_id,
-       u.account_user_id,
-       u.irAccount_Id,
-       u.state,
-       ce.id           AS estalea_user_id,
-       ce.email,
-       ce.username,
-       ce.firstname,
-       ce.lastname,
-       ce.lastlogin_date
-FROM iram_usership u
-JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE u.irAccount_Id = '5399049'
-ORDER BY ce.lastlogin_date DESC;
-
-
--- [IRAM] Is Engage enabled and to which campaigns?
-SELECT u.id AS usership_id,
-       upa.product_enabled,
-       upa.campaign_json,
-       upa.dlu,
-       upa.ulu
+SELECT u.id AS usership_id, upa.product_enabled, upa.campaign_json, upa.dlu, upa.ulu
 FROM iram_user_product_access upa
 JOIN iram_usership u ON u.id = upa.iram_usership_id
 JOIN core_estaleauser ce ON ce.id = u.account_user_id
 WHERE u.irAccount_Id = 5399049
-  AND ce.email = 'josh.conyard@exinity.com';
+  AND ce.email='josh.conyard@exinity.com';
+
+SELECT u.id AS usership_id, u.account_user_id, u.irAccount_Id, u.state,
+       ce.id AS estalea_user_id, ce.email, ce.username, ce.firstname, ce.lastname, ce.lastlogin_date
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = 5399049
+  AND ce.email='josh.conyard@exinity.com'
+ORDER BY ce.lastlogin_date DESC;
 
 
--- [IRAM] Which core_role(s) does Josh have on 5399049?
 SELECT * FROM core_role
 WHERE id IN (
   SELECT core_role_id
@@ -36,14 +21,13 @@ WHERE id IN (
   WHERE core_ap_id = (
     SELECT authorizationPrincipal_id
     FROM iram_usership
-    WHERE account_user_id = <account_user_id_found>
+    WHERE account_user_id = <account_user_id_from_step1>
       AND irAccount_id = 5399049
   )
 );
 
 
--- [IRAM] What permissions are bound to this role?
 SELECT p.*
 FROM core_permission p
 JOIN core_role_permission rp ON rp.core_permission_id = p.id
-WHERE rp.core_role_id = <role_id_from_step_3>;
+WHERE rp.core_role_id = <role_id_from_step3>;
