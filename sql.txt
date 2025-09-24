@@ -67,3 +67,26 @@ JOIN core_estaleauser ce ON ce.id = u.account_user_id
 JOIN iram_account ia    ON ia.id = u.irAccount_Id
 WHERE ce.email ILIKE 'jonny.wixen@hellofresh.com'
 ORDER BY u.irAccount_Id;
+
+
+
+SELECT phone_number,
+       email,
+       authy_id,
+       use_case,               -- expect '2fa' here
+       success,
+       failure_reason,         -- e.g., 'userId 5min threshold' / 'userId 60min threshold'
+       doe,
+       contact_channel,        -- sms/email/app
+       phone_number_country
+FROM iram_authentication_verification_tracking
+WHERE core_estalea_user_id IN (
+    SELECT id FROM core_estaleauser WHERE email = 'jonny.wixen@hellofresh.com'
+)
+ORDER BY doe DESC;
+
+
+SELECT id, username, email, lastlogin_date, state
+FROM core_estaleauser
+WHERE LOWER(email) = LOWER('jonny.wixen@hellofresh.com')
+ORDER BY lastlogin_date DESC;
