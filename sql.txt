@@ -1,39 +1,34 @@
-SELECT u.id AS usership_id, upa.product_enabled, upa.campaign_json, upa.dlu, upa.ulu
-FROM iram_user_product_access upa
-JOIN iram_usership u ON u.id = upa.iram_usership_id
-JOIN core_estaleauser ce ON ce.id = u.account_user_id
-WHERE u.irAccount_Id = 5399049
-  AND ce.email='josh.conyard@exinity.com';
-
-SELECT u.id AS usership_id, u.account_user_id, u.irAccount_Id, u.state,
-       ce.id AS estalea_user_id, ce.email, ce.username, ce.firstname, ce.lastname, ce.lastlogin_date
-FROM iram_usership u
-JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE u.irAccount_Id = 5399049
-  AND ce.email='josh.conyard@exinity.com'
-ORDER BY ce.lastlogin_date DESC;
-
-
-SELECT * FROM core_role
-WHERE id IN (
-  SELECT core_role_id
-  FROM core_ap_role
-  WHERE core_ap_id = (
-    SELECT authorizationPrincipal_id
-    FROM iram_usership
-    WHERE account_user_id = <account_user_id_from_step1>
-      AND irAccount_id = 5399049
-  )
+-- [CORE / Auth] What features are enabled for this account?
+SELECT a.feature_key AS 'Key', a.name AS 'Feature Name'
+FROM iram_feature AS a
+JOIN iram_feature_auth_account_feature AS b ON a.id = b.iram_feature_id
+JOIN iram_feature_auth_account AS c ON c.id = b.iram_feature_auth_account_id
+WHERE iram_feature_auth_account_id IN (
+  SELECT iram_feature_auth_account_id
+  FROM iram_account AS d
+  JOIN core_account AS e ON d.id = e.id
+  WHERE d.id = 6488158       -- <-- replace with the advertiser Account ID from the ticket
 );
 
 
-SELECT p.*
-FROM core_permission p
-JOIN core_role_permission rp ON rp.core_permission_id = p.id
-WHERE rp.core_role_id = <role_id_from_step3>;
+-- [DRAFT] Was an ICEE job created/processed for this outreach?
+SELECT *
+FROM outreach.icee_job
+WHERE outreach_id = :outreach_id
+ORDER BY id DESC
+LIMIT 200;
 
 
-SELECT p.*
-FROM core_permission p
-JOIN core_role_permission rp ON rp.core_permission_id = p.id
-WHERE rp.core_role_id = 2;
+-- [DRAFT] What did Outreach log around this send?
+SELECT *
+FROM outreach.outreach_log
+WHERE outreach_id = :outreach_id
+ORDER BY id DESC
+LIMIT 200;
+
+
+-- [DRAFT] Who/what was in the target segment for this job?
+SELECT *
+FROM outreach.segment_preview
+WHERE outreach_id = :outreach_id
+LIMIT 200;
