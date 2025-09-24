@@ -1,92 +1,49 @@
-SELECT u.id AS usership_id,
-       ce.id AS core_user_id,
-       ce.username,
+-- [IRAM] Usership + user shell for Brand 5399049 (narrows to the right user)
+SELECT u.id            AS usership_id,
+       u.account_user_id,
+       u.irAccount_Id,
+       u.state,
+       ce.id           AS estalea_user_id,
        ce.email,
+       ce.username,
        ce.firstname,
        ce.lastname,
-       u.state,
-       ce.lastlogin_date,
-       ce.doe, ce.dlu, ce.uoe, ce.ulu
+       ce.lastlogin_date
 FROM iram_usership u
 JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE u.irAccount_Id = '6506704'
-  AND ce.email ILIKE 'jonny.wixen@hellofresh.com'
+WHERE u.irAccount_Id = '5399049'
 ORDER BY ce.lastlogin_date DESC;
 
 
-
-SELECT phone_number,
-       email,
-       authy_id,
-       use_case,
-       success,
-       failure_reason,
-       doe,
-       contact_channel,
-       phone_number_country
-FROM iram_authentication_verification_tracking
-WHERE core_estalea_user_id IN (
-  SELECT id FROM core_estaleauser
-  WHERE email = 'jonny.wixen@hellofresh.com'
-)
-ORDER BY doe DESC;
+-- [IRAM] Is Engage enabled and to which campaigns?
+SELECT u.id AS usership_id,
+       upa.product_enabled,
+       upa.campaign_json,
+       upa.dlu,
+       upa.ulu
+FROM iram_user_product_access upa
+JOIN iram_usership u ON u.id = upa.iram_usership_id
+JOIN core_estaleauser ce ON ce.id = u.account_user_id
+WHERE u.irAccount_Id = 5399049
+  AND ce.email = 'josh.conyard@exinity.com';
 
 
--- Returns member rows for the account; inspect two_factor_authentication & contact method columns
-SELECT * FROM iram_member
-WHERE current_usership_id IN (
-  SELECT id FROM iram_usership WHERE irAccount_id = 6506704
+-- [IRAM] Which core_role(s) does Josh have on 5399049?
+SELECT * FROM core_role
+WHERE id IN (
+  SELECT core_role_id
+  FROM core_ap_role
+  WHERE core_ap_id = (
+    SELECT authorizationPrincipal_id
+    FROM iram_usership
+    WHERE account_user_id = <account_user_id_found>
+      AND irAccount_id = 5399049
+  )
 );
 
 
-
-
-SELECT a.login_username  AS memberUsername,
-       a.event_date      AS loginDate,
-       b.ip              AS ipAddress,
-       b.city,
-       b.country
-FROM rti.rti_success_login_history a
-JOIN rti.rti_login_ipaddr b ON b.id = a.rti_login_ipaddr_id
-WHERE a.account_id = 6506704
-ORDER BY a.event_date DESC
-LIMIT 500;
-
-
-
-SELECT country
-FROM iram_phone_verification_restricted_countries
-WHERE blocked_country = true;
-
-
-SELECT u.irAccount_Id        AS account_id,
-       ia.organizationname,
-       u.state               AS usership_state
-FROM iram_usership u
-JOIN core_estaleauser ce ON ce.id = u.account_user_id
-JOIN iram_account ia    ON ia.id = u.irAccount_Id
-WHERE ce.email ILIKE 'jonny.wixen@hellofresh.com'
-ORDER BY u.irAccount_Id;
-
-
-
-SELECT phone_number,
-       email,
-       authy_id,
-       use_case,               -- expect '2fa' here
-       success,
-       failure_reason,         -- e.g., 'userId 5min threshold' / 'userId 60min threshold'
-       doe,
-       contact_channel,        -- sms/email/app
-       phone_number_country
-FROM iram_authentication_verification_tracking
-WHERE core_estalea_user_id IN (
-    SELECT id FROM core_estaleauser WHERE email = 'jonny.wixen@hellofresh.com'
-)
-ORDER BY doe DESC;
-
-
-SELECT id, username, email, lastlogin_date, state
-FROM core_estaleauser
-WHERE LOWER(email) = LOWER('jonny.wixen@hellofresh.com')
-ORDER BY lastlogin_date DESC;
+-- [IRAM] What permissions are bound to this role?
+SELECT p.*
+FROM core_permission p
+JOIN core_role_permission rp ON rp.core_permission_id = p.id
+WHERE rp.core_role_id = <role_id_from_step_3>;
