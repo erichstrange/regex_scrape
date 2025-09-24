@@ -1,69 +1,12 @@
-SELECT u.id AS usership_id,
-       ce.id AS core_user_id,
-       ce.username,
-       ce.email,
-       ce.firstname,
-       ce.lastname,
-       u.state,
-       ce.lastlogin_date,
-       ce.doe, ce.dlu, ce.uoe, ce.ulu
-FROM iram_usership u
-JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE u.irAccount_Id = '6506704'
-  AND ce.email ILIKE 'jonny.wixen@hellofresh.com'
-ORDER BY ce.lastlogin_date DESC;
+# Partner API (publisher); replace <AccountSID>, <AuthToken>
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/ActionUpdates/11083.6455.748772.3577547022'
 
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/ActionUpdates/11083.6455.748772.3573578177'
 
-
-SELECT phone_number,
-       email,
-       authy_id,
-       use_case,
-       success,
-       failure_reason,
-       doe,
-       contact_channel,
-       phone_number_country
-FROM iram_authentication_verification_tracking
-WHERE core_estalea_user_id IN (
-  SELECT id FROM core_estaleauser
-  WHERE email = 'jonny.wixen@hellofresh.com'
-)
-ORDER BY doe DESC;
-
-
--- Returns member rows for the account; inspect two_factor_authentication & contact method columns
-SELECT * FROM iram_member
-WHERE current_usership_id IN (
-  SELECT id FROM iram_usership WHERE irAccount_id = 6506704
-);
-
-
-
-
-SELECT a.login_username  AS memberUsername,
-       a.event_date      AS loginDate,
-       b.ip              AS ipAddress,
-       b.city,
-       b.country
-FROM rti.rti_success_login_history a
-JOIN rti.rti_login_ipaddr b ON b.id = a.rti_login_ipaddr_id
-WHERE a.account_id = 6506704
-ORDER BY a.event_date DESC
-LIMIT 500;
-
-
-
-SELECT country
-FROM iram_phone_verification_restricted_countries
-WHERE blocked_country = true;
-
-
-SELECT u.irAccount_Id        AS account_id,
-       ia.organizationname,
-       u.state               AS usership_state
-FROM iram_usership u
-JOIN core_estaleauser ce ON ce.id = u.account_user_id
-JOIN iram_account ia    ON ia.id = u.irAccount_Id
-WHERE ce.email ILIKE 'jonny.wixen@hellofresh.com'
-ORDER BY u.irAccount_Id;
+curl -u '<AccountSID>:<AuthToken>' \
+  -H 'Accept: application/json' \
+  'https://api.impact.com/Mediapartners/<AccountSID>/Actions/11083.6455.748772'
