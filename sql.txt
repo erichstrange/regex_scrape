@@ -1,53 +1,27 @@
--- DS: r_ds_outreach_snapshot
 SELECT
-  ne.outreach_id,
-  ne.outreach_type,
-  ne.message_id,
-  ne.email_address,
-  ne.subject,
-  ne.created_at
-FROM outreach.new_email ne
-WHERE ne.email_address = 'marketing@egofitwalker.com'
-  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
-ORDER BY ne.created_at DESC
-LIMIT 200;
+  sc.iram_publisher_id,
+  sc.ircm_campaign_id,
+  iot.credit_group
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.iram_publisher_id = '408233'
+  AND sc.ircm_campaign_id = '4273'
+  AND sc.date_contract_end IS NULL;
 
 
--- DS: r_ds_outreach_snapshot
-SELECT j.*
-FROM outreach.icee_job j
-JOIN outreach.new_email ne ON ne.outreach_id = j.outreach_id
-WHERE ne.email_address = 'marketing@egofitwalker.com'
-  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
-ORDER BY j.id DESC
-LIMIT 200;
-
-
--- DS: r_ds_outreach_snapshot
 SELECT *
-FROM outreach.icee_job
-WHERE outreach_id = <PASTE_THE_OUTREACH_ID_FROM_STEP_1>
-ORDER BY id DESC
-LIMIT 200;
+FROM ircm_signedcontract
+WHERE ircm_campaign_id = 4273;
 
 
--- DS: r_ds_outreach_snapshot
-SELECT sp.*
-FROM outreach.segment_preview sp
-JOIN outreach.new_email ne ON ne.outreach_id = sp.outreach_id
-WHERE ne.email_address = 'marketing@egofitwalker.com'
-  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
-LIMIT 200;
+SELECT *
+FROM ircm_pendingcontract pen
+INNER JOIN ircm_campaign ic ON ic.id = pen.ircm_campaign_id
+WHERE pen.iram_publisher_id = 408233;
 
 
--- DS: r_ds_iram
-SELECT a.feature_key AS 'Key', a.name AS 'Feature Name'
-FROM iram_feature a
-JOIN iram_feature_auth_account_feature b ON a.id = b.iram_feature_id
-JOIN iram_feature_auth_account c ON c.id = b.iram_feature_auth_account_id
-WHERE c.id IN (
-  SELECT iram_feature_auth_account_id
-  FROM iram_account d
-  WHERE d.id = 6488158
-)
-ORDER BY a.feature_key;
+SELECT it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
+FROM ircm_ioterms AS it
+LEFT JOIN ircm_insertionorder AS io
+  ON it.iram_advertiser_id = io.iram_advertiser_id
+WHERE it.ircm_campaign_id = 4273;
