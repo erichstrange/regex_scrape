@@ -1,34 +1,53 @@
--- [CORE / Auth] What features are enabled for this account?
-SELECT a.feature_key AS 'Key', a.name AS 'Feature Name'
-FROM iram_feature AS a
-JOIN iram_feature_auth_account_feature AS b ON a.id = b.iram_feature_id
-JOIN iram_feature_auth_account AS c ON c.id = b.iram_feature_auth_account_id
-WHERE iram_feature_auth_account_id IN (
-  SELECT iram_feature_auth_account_id
-  FROM iram_account AS d
-  JOIN core_account AS e ON d.id = e.id
-  WHERE d.id = 6488158       -- <-- replace with the advertiser Account ID from the ticket
-);
+-- DS: r_ds_outreach_snapshot
+SELECT
+  ne.outreach_id,
+  ne.outreach_type,
+  ne.message_id,
+  ne.email_address,
+  ne.subject,
+  ne.created_at
+FROM outreach.new_email ne
+WHERE ne.email_address = 'marketing@egofitwalker.com'
+  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
+ORDER BY ne.created_at DESC
+LIMIT 200;
 
 
--- [DRAFT] Was an ICEE job created/processed for this outreach?
+-- DS: r_ds_outreach_snapshot
+SELECT j.*
+FROM outreach.icee_job j
+JOIN outreach.new_email ne ON ne.outreach_id = j.outreach_id
+WHERE ne.email_address = 'marketing@egofitwalker.com'
+  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
+ORDER BY j.id DESC
+LIMIT 200;
+
+
+-- DS: r_ds_outreach_snapshot
 SELECT *
 FROM outreach.icee_job
-WHERE outreach_id = :outreach_id
+WHERE outreach_id = <PASTE_THE_OUTREACH_ID_FROM_STEP_1>
 ORDER BY id DESC
 LIMIT 200;
 
 
--- [DRAFT] What did Outreach log around this send?
-SELECT *
-FROM outreach.outreach_log
-WHERE outreach_id = :outreach_id
-ORDER BY id DESC
+-- DS: r_ds_outreach_snapshot
+SELECT sp.*
+FROM outreach.segment_preview sp
+JOIN outreach.new_email ne ON ne.outreach_id = sp.outreach_id
+WHERE ne.email_address = 'marketing@egofitwalker.com'
+  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
 LIMIT 200;
 
 
--- [DRAFT] Who/what was in the target segment for this job?
-SELECT *
-FROM outreach.segment_preview
-WHERE outreach_id = :outreach_id
-LIMIT 200;
+-- DS: r_ds_iram
+SELECT a.feature_key AS 'Key', a.name AS 'Feature Name'
+FROM iram_feature a
+JOIN iram_feature_auth_account_feature b ON a.id = b.iram_feature_id
+JOIN iram_feature_auth_account c ON c.id = b.iram_feature_auth_account_id
+WHERE c.id IN (
+  SELECT iram_feature_auth_account_id
+  FROM iram_account d
+  WHERE d.id = 6488158
+)
+ORDER BY a.feature_key;
