@@ -1,32 +1,9 @@
-SELECT  pen.ircm_insertionorder_id,
-        pen.iram_publisher_id,
-        pen.name_advertiser_signer,
-        pen.name_publisher_signer,
-        pen.date_advertiser_signed,
-        pen.date_publisher_signed,
-        pen.result_state,
-        msg.conversation
-FROM ircm_pendingcontract  pen
-INNER JOIN ircm_contract_message msg
+
+
+SELECT msg.*
+FROM ircm_contract_message msg
+JOIN ircm_pendingcontract pen
   ON pen.ircm_contract_message_uuid = msg.uuid
-WHERE pen.ircm_campaign_id = 16836       -- 25home.com
-  AND pen.iram_publisher_id = 2405196    -- Life of Reiley
-ORDER BY pen.result_state ASC;
-
-
-SELECT *
-FROM ircm_pendingcontract pc
-INNER JOIN ircm_campaign ic ON ic.id = pc.ircm_campaign_id
-WHERE pc.iram_publisher_id = 2405196
-  AND pc.ircm_campaign_id  = 16836;
-
-
-SELECT username AS user, ip_addr AS ipaddress, account_id, session_id,
-       MIN(IF(logout=0, event_date, NULL)) logindate,
-       MIN(IF(logout=1, event_date, NULL)) logoutdate
-FROM rti_login_history
-WHERE account_id = 2405196
-  AND event_date >= '2025-09-24' AND event_date < '2025-09-26'
-GROUP BY 1,2,3,4
-ORDER BY 5 DESC
-LIMIT 200;
+WHERE pen.ircm_campaign_id = 16836
+  AND pen.iram_publisher_id = 2405196
+ORDER BY msg.doe;
