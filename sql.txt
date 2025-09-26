@@ -1,14 +1,15 @@
-SELECT ne.outreach_id, ne.email_address, ne.subject, ne.created_at
-FROM outreach.new_email ne
-WHERE ne.created_at BETWEEN '2025-09-23 03:30:00' AND '2025-09-23 04:45:00'
-ORDER BY ne.created_at DESC
-LIMIT 1000;
+-- [IRAM, vetted] Retrieve user details for a specific account
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state, ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = "<accountId>"
+ORDER BY ce.lastlogin_date DESC;
 
 
-SELECT j.*
-FROM outreach.icee_job j
-JOIN outreach.new_email ne ON ne.outreach_id = j.outreach_id
-WHERE ne.email_address = 'marketing@egofitwalker.com'
-  AND ne.created_at BETWEEN '2025-09-22 00:00:00' AND '2025-09-24 23:59:59'
-ORDER BY j.id DESC
-LIMIT 200;
+-- [IRAM, vetted] Roles by user & account (CORE confirmed)
+select * from core_role where id in (
+  select core_role_id from core_ap_role where core_ap_id = (
+    select authorizationPrincipal_id from iram_usership
+    where account_user_id = {userId} and irAccount_id = {accountId}
+  )
+);
