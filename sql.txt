@@ -1,6 +1,24 @@
--- Which domain(s) are configured on their programs?
-SELECT c.id AS campaign_id, c.name,
-       it.tracking_domain, it.sub_tracking_domain, it.landing_page
-FROM ircm_technicalintegration it
-JOIN ircm_campaign c ON c.id = it.ircm_campaign_id
-WHERE c.account_id = 86394;
+SELECT
+  c.id            AS campaign_id,
+  c.name          AS campaign_name,
+  it.tracking_domain,
+  it.sub_tracking_domain,
+  it.landing_page
+FROM ircm.ircm_technicalintegration it
+JOIN ircm.ircm_campaign c
+  ON c.id = it.ircm_campaign_id
+WHERE c.iram_advertiser_id = 86394
+ORDER BY c.id;
+
+
+SELECT
+  c.id            AS campaign_id,
+  c.name          AS campaign_name,
+  it.tracking_domain,
+  it.sub_tracking_domain,
+  it.landing_page
+FROM ircm.ircm_technicalintegration it
+JOIN ircm.ircm_campaign c
+  ON c.id = it.ircm_campaign_id
+WHERE c.id IN (9453, 2623)
+ORDER BY c.id;
