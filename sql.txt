@@ -1,7 +1,52 @@
--- DRAFT: verify product entitlements for two users on one IR account
-SELECT u.id AS usership_id, ce.email, upa.product_enabled, upa.campaign_json, upa.dlu, upa.ulu
-FROM iram_usership u
-JOIN core_estaleauser ce ON ce.id = u.account_user_id
-LEFT JOIN iram_user_product_access upa ON upa.iram_usership_id = u.id
-WHERE u.irAccount_Id = 5399049
-  AND ce.email IN ('josh.conyard@exinity.com','line.peteri@exinity.com');
+-- Creator (28102)
+SELECT * FROM click_fact
+WHERE advertiser_id = 1434782
+  AND campaign_id = 28102
+  AND event_datetime BETWEEN '2025-09-03' AND '2025-09-05'
+  AND landing_page_url LIKE '%irclickid=Q1hyDQUtyxycTfwx6dwTjRJRUkpz4uWcKRCTws0%'
+ORDER BY event_datetime DESC;
+
+-- Performance (10014)
+SELECT * FROM click_fact
+WHERE advertiser_id = 1434782
+  AND campaign_id = 10014
+  AND event_datetime BETWEEN '2025-09-03' AND '2025-09-05'
+  AND landing_page_url LIKE '%irclickid=Q1hyDQUtyxycTfwx6dwTjRJRUkpz4uWcKRCTws0%'
+ORDER BY event_datetime DESC;
+
+
+select
+   af.action_datetime
+  ,af.advertiser_id
+  ,af.campaign_id
+  ,af.action_id
+  ,af.publisher_id
+  ,af.batch_id
+  ,af.oid
+  ,SUBSTRING_INDEX(SUBSTRING(af.ref_landingpage_url, LOCATE('irclickid=', af.ref_landingpage_url) + 10), '&', 1) AS irclickid
+  ,af.pubsubid1, af.pubsubid2, af.pubsubid3, af.pubsubid4
+  ,af.ref_url, af.ref_domain, af.ref_landingpage_url, af.ref_profile_id, af.conv_profile_id
+from action_fact af
+where af.advertiser_id = 1434782
+  and af.campaign_id in (10014,28102)
+  and af.action_datetime between '2025-09-03' and '2025-09-06'
+  -- Filter one test at a time:
+  and (af.oid in ('BBY01-807084649605')
+       or af.pubsubid1 = 'Q1hyDQUtyxycTfwx6dwTjRJRUkpz4uWcKRCTws0'
+       or af.ref_landingpage_url like '%Q1hyDQUtyxycTfwx6dwTjRJRUkpz4uWcKRCTws0%')
+order by af.action_datetime desc;
+
+
+SELECT * FROM ir_noreferrer_event
+WHERE campaign_id = 10014
+  AND (oid IN ('BBY01-807084649605') OR doe BETWEEN '2025-09-03' AND '2025-09-06')
+ORDER BY doe DESC
+LIMIT 1000;
+
+
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 1434782
+  AND doe BETWEEN '2025-09-03' AND '2025-09-06'
+ORDER BY doe DESC
+LIMIT 1000;
