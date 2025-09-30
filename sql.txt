@@ -1,4 +1,36 @@
+-- Basic sanity check on the 5 partner IDs
+SELECT id,
+       type,               -- should be PUBLISHER
+       state,              -- 'active' expected
+       organizationname,
+       activation_date,
+       country
+FROM iram_account
+WHERE id IN (2340682,3526655,1390754,4203622,3586222);
+
+
+-- Pending relationships (applications) for this advertiser with these partners
+SELECT pc.*,
+       ic.name       AS campaign_name,
+       ic.id         AS ircm_campaign_id
+FROM ircm_pendingcontract pc
+JOIN ircm_campaign ic
+  ON ic.id = pc.ircm_campaign_id
+WHERE ic.iram_advertiser_id = 6546402
+  AND pc.iram_publisher_id IN (2340682,3526655,1390754,4203622,3586222);
+
+
+-- Signed (active) relationships across all campaigns for this advertiser
+SELECT sc.*, ic.name AS campaign_name, ic.id AS ircm_campaign_id
+FROM ircm_signedcontract sc
+JOIN ircm_campaign ic
+  ON ic.id = sc.ircm_campaign_id
+WHERE ic.iram_advertiser_id = 6546402
+  AND sc.iram_publisher_id IN (2340682,3526655,1390754,4203622,3586222)
+  AND sc.date_contract_end IS NULL;
+
 
 SELECT *
-FROM trkcfg.trkcfg_tracking_domain
-WHERE domain IN ('affiliate.basspro.com','affiliate.cabelas.com');
+FROM iram_advertiser_defined_mediapartner_ids
+WHERE iram_advertiser_id = 6546402
+  AND iram_publisher_id IN (2340682,3526655,1390754,4203622,3586222);
