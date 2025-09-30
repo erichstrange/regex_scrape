@@ -1,44 +1,78 @@
--- DRAFT — Data source: ircm
--- Vanity link inventory for advertiser 6321789 (Helium 10)
+-- API logs for the account around the incident window
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 2588618
+  AND doe >= '2025-09-22' AND doe < '2025-09-23'
+LIMIT 500;
+
+
+-- DRAFT helper filter (use only if needed during analysis)
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 2588618
+  AND doe >= '2025-09-22' AND doe < '2025-09-23'
+  AND payload LIKE '%in_1SA6utHzyCyUMgYZT6gdVPag%'
+LIMIT 200;
+
+
+-- Actions created for the OID in this campaign
+SELECT action_id, oid, campaign_id, ircm_terms_id, payout_trace, sku, ircm_category_list_id, doe
+FROM irac_action2
+WHERE oid = 'in_1SA6utHzyCyUMgYZT6gdVPag'
+  AND campaign_id = 12776
+ORDER BY doe;
+
+
+-- Replace the placeholders with the action_id(s) from Step A
 SELECT
-    su.short_url,               -- e.g., i.helium10.com/xxxxxx or helium10.pxf.io/xxxxxx
-    su.long_url,                -- destination landing page
-    su.ircm_campaign_id,        -- program id (e.g., 37271)
-    su.iram_publisher_id,       -- media partner id (creator/owner)
-    su.archived,                -- TRUE/FALSE
-    su.doe,                     -- created timestamp
-    su.dlu                      -- last updated
-FROM ircm_short_url su
-JOIN ircm_campaign c ON c.id = su.ircm_campaign_id
-WHERE c.iram_advertiser_id = 6321789
-ORDER BY su.doe DESC;
+  action_id, action_date, action_type, campaign_id, action_tracker_id, oid,
+  publisher_id, batch_id, adv_currency, cart_currency, raw_currency,
+  adv_saleamt, cart_saleamt, pub_saleamt,
+  item_json, order_json, metadata, ref_user_agent, ref_url, ref_domain
+FROM irac_action2
+WHERE action_id IN ('<ACTION_ID_1>','<ACTION_ID_2>')
+  AND campaign_id = 12776;
 
 
+-- Catch failed/ignored conversion events for the same OID/campaign
+SELECT *
+FROM ir_noreferrer_event
+WHERE oid = 'in_1SA6utHzyCyUMgYZT6gdVPag'
+  AND campaign_id = 12776
+ORDER BY action_date DESC;
+
+
+-- Action Fact cross-check (shareable result set)
 SELECT
-  CAST(su.short_url AS CHAR)               AS short_url,
-  su.ircm_campaign_id,
-  c.name                                    AS program_name,
-  su.archived,
-  su.ulu,
-  su.dlu
-FROM ircm_short_url su
-JOIN ircm_campaign c
-  ON su.ircm_campaign_id = c.id
-WHERE c.iram_advertiser_id = 6321789
-ORDER BY su.dlu DESC;
+   af.action_datetime
+  ,af.advertiser_id
+  ,af.campaign_id
+  ,af.action_id
+  ,atr.action_tracker_name
+  ,af.batch_id
+  ,af.oid
+  ,af.ref_url
+  ,af.ref_domain
+  ,af.ref_landingpage_url
+  ,af.ref_profile_id
+  ,af.conv_profile_id
+FROM action_fact af
+LEFT JOIN action_tracker_dim atr ON atr.id = af.action_tracker_dim_id
+WHERE af.campaign_id = 12776
+  AND af.action_datetime >= '2025-09-22' AND af.action_datetime < '2025-09-23'
+  AND af.oid = 'in_1SA6utHzyCyUMgYZT6gdVPag'
+ORDER BY af.action_datetime DESC;
 
 
-SELECT
-  CAST(su.short_url AS CHAR) AS short_url,
-  su.ircm_campaign_id, c.name AS program_name,
-  su.archived, su.ulu, su.dlu
-FROM ircm_short_url su
-JOIN ircm_campaign c ON su.ircm_campaign_id = c.id
-WHERE c.iram_advertiser_id = 6321789
-  AND CAST(su.short_url AS CHAR) LIKE 'i.helium10.com/%'
-ORDER BY su.dlu DESC;
+-- Test actions don't appear in irac_action2; rule them out
+SELECT *
+FROM irac_test_action
+WHERE program_id = '12776'
+  AND oid = 'in_1SA6utHzyCyUMgYZT6gdVPag';
 
 
-... WHERE c.iram_advertiser_id = 6321789
-  AND CAST(su.short_url AS CHAR) LIKE '%.pxf.io/%'
-ORDER BY su.dlu DESC;
+-- After you pick an action_id from step 2, pull its referrer chain
+SELECT *
+FROM ir_referrer
+WHERE action_id = '<ACTION_ID>'
+ORDER BY id;
