@@ -1,13 +1,22 @@
--- r_ds_iram
-SELECT * FROM iram_account WHERE id IN (2340682,3526655,1390754,4203622,3586222);
-SELECT * FROM iram_advertiser_defined_mediapartner_ids
- WHERE iram_advertiser_id = 6546402
-   AND iram_publisher_id IN (2340682,3526655,1390754,4203622,3586222);
+-- [IRAM] Retrieve all information for an advertiser/publisher account
+SELECT * FROM iram_account WHERE id IN (2097176,1982379,1808421);
 
--- ircm
-SELECT sc.*, ic.name AS campaign_name
-FROM ircm_signedcontract sc
-JOIN ircm_campaign ic ON ic.id = sc.ircm_campaign_id
-WHERE ic.iram_advertiser_id = 6546402
-  AND sc.iram_publisher_id IN (2340682,3526655,1390754,4203622,3586222)
-  AND sc.date_contract_end IS NULL;
+
+-- [IRAM] User details & last login by account
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state, ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id IN ('2097176','1982379','1808421')
+ORDER BY ce.lastlogin_date DESC;
+
+
+-- [IRAM] Check if someone invited Gary but the invite lapsed
+SELECT * FROM iram_member_user_invitation
+WHERE iram_iraccount_id IN (2097176,1982379,1808421);
+
+
+-- IRAM (auth) – locate user by email, then list all account memberships
+SELECT ce.id user_id, ce.email, u.irAccount_Id account_id, u.state usership_state
+FROM core_estaleauser ce
+JOIN iram_usership u ON u.account_user_id = ce.id
+WHERE LOWER(ce.email) = 'gary@gravityfed.com';
