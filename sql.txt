@@ -20,3 +20,8 @@ SELECT ce.id user_id, ce.email, u.irAccount_Id account_id, u.state usership_stat
 FROM core_estaleauser ce
 JOIN iram_usership u ON u.account_user_id = ce.id
 WHERE LOWER(ce.email) = 'gary@gravityfed.com';
+
+SELECT id, type_desc, state, name, deactivate_date, close_date
+FROM iram_account
+WHERE id IN (1808421,1993237,2066329,2066340,2066345,2097176,2211522,2213151,2343631,255268,2572146,2662258,2003851);
+
