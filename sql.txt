@@ -1,8 +1,51 @@
--- [ircm] Signed contracts for program 22648
-select * from ircm_signedcontract
-where ircm_campaign_id = 22648
+SELECT doe, batch_id, payload
+FROM ir_api_log
+WHERE iram_account_id = 2588618
+  AND doe >= '2025-10-01 11:00:00'
+  AND doe <  '2025-10-01 12:00:00'
+  AND payload LIKE '%OrderId=in_1SA6utHzyCyUMgYZT6gdVPag%';
 
 
--- [ircm] Terms for advertiser; filter or adapt to program 22648
-select * from ircm_ioterms
-where iram_advertiser_id = 1450394;
+
+
+
+SELECT action_date, campaign_id, oid, adv_sub_total, cart_sub_total, adv_rebate,
+       metadata, order_json, item_json
+FROM ir_noreferrer_event
+WHERE oid = 'in_1SA6utHzyCyUMgYZT6gdVPag'
+  AND campaign_id = 35856  -- Tinyhood - Advocate
+ORDER BY action_date;
+
+
+
+
+
+For the Advocate purchase and refund rules, the event’s amount comes from the item lines you send (sum of ItemPriceN * ItemQuantityN). Order level fields like OrderDiscount and OrderSubTotalPostDiscount are recorded, but they don’t drive the amount the Advocate rule evaluates.
+
+That’s why the first refund submission with:
+
+ItemPrice0 = 155.40
+OrderDiscount = 155.40
+OrderSubTotalPostDiscount = 0.00
+
+did not trigger the retraction: the item line still evaluated to 155.40, so the event amount seen by the rule was not zero.
+
+
+
+To submit refund:
+
+Full refund:
+Send the same OID with item amounts zeroed:
+
+CampaignId=...
+OrderId=...
+EventTypeCode...
+ItemPrice0=0
+ItemQuantity0=1
+
+Partial refund:
+Send the same OID and set your items to the new amount after refund. Ex: original item was 155.40, after a $38.85 refund should be 116.55:
+
+ItemPrice0=116.55
+ItemQuantity0=1
+
