@@ -1,12 +1,8 @@
-/* All actions where the same SubID (pubsubid1) repeats */
-SELECT *
-FROM action_fact
-WHERE campaign_id = 5714
-  AND pubsubid1 IN (
-    SELECT pubsubid1
-    FROM action_fact
-    WHERE campaign_id = 5714
-    GROUP BY pubsubid1
-    HAVING COUNT(pubsubid1) > 1
-  )
-ORDER BY pubsubid1, action_datetime;
+-- [ircm] Signed contracts for program 22648
+select * from ircm_signedcontract
+where ircm_campaign_id = 22648
+
+
+-- [ircm] Terms for advertiser; filter or adapt to program 22648
+select * from ircm_ioterms
+where iram_advertiser_id = 1450394;
