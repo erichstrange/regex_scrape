@@ -1,37 +1,35 @@
+-- [Singlestore] Click detail for this campaign & ad
 SELECT
-  r.event_id, r.event_type, r.event_datetime,
-  md.media_name, md.media_type,
-  r.referral_ad_type, r.referring_url,
-  r.click_order_first_to_last, r.referral_is_winner
-FROM radius_path_event_fact r
-JOIN media_dim md ON md.id = r.event_media_dim_id
-WHERE r.campaign_id = 9488
-  AND r.conversion_event_id IN (
-    'A-9488.6475.13560', 'A-9488.6476.1182803',
-    'A-9488.6480.169991', 'A-9488.6480.717713'
-  )
-ORDER BY r.click_order_first_to_last;
-
-
-SELECT
-  af.action_id, af.oid, af.publisher_id,
-  ad.ad_id AS stamped_ad_id, ad.name AS stamped_ad_name,
-  af.ref_url, af.ref_domain, af.ref_landingpage_url, af.ref_profile_id
-FROM action_fact af
-LEFT JOIN ad_dim ad ON ad.id = af.ref_ad_dim_id
-WHERE af.campaign_id = 9488
-  AND af.action_id IN ('9488.6475.13560','9488.6476.1182803',
-                       '9488.6480.169991','9488.6480.717713');
-
-
--- Once you have click_id from the path or the action's landingpage_url,
--- pull the click record (narrow date range to the day of each conversion):
-SELECT
-  cf.campaign_id, cf.event_datetime,
-  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
-  cf.click_id, cf.publisher_id, cf.ref_domain, cf.ref_url
+  cf.campaign_id,
+  cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
+  cf.click_id,
+  cf.profile_id,
+  ad.ad_id,
+  ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json, 'ruleName') AS rule_name,
+  cf.landing_page_url,
+  cf.publisher_id,
+  cf.method,
+  cf.classification
 FROM click_fact cf
+LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
 WHERE cf.campaign_id = 9488
-  AND cf.publisher_id = 34844
-  AND cf.event_datetime BETWEEN '2025-09-01' AND '2025-10-03'
+  AND cf.publisher_id IN (34844,10579)       -- Cartera & Rakuten
+  AND ad.ad_id = 3273108                      -- the restricted ad
+  AND cf.event_datetime BETWEEN '2025-09-22' AND '2025-09-29'  -- bracket the 4 actions
 ORDER BY cf.event_datetime DESC;
+
+
+
+-- [ircm] Active contract + credit group for Cartera on TFD
+SELECT
+  sc.iram_publisher_id,
+  sc.ircm_campaign_id,
+  iot.credit_group
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.iram_publisher_id = '34844'
+  AND sc.ircm_campaign_id = '9488'
+  AND sc.date_contract_end IS NULL;
