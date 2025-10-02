@@ -1,43 +1,32 @@
--- Clicks by adv/publisher/campaign over the period
-SELECT * FROM click_fact
-WHERE advertiser_id = 173567
-  AND publisher_id  = 376373
-  AND campaign_id   = 3899          -- Lenovo Canada
-  AND event_datetime BETWEEN '2025-07-01' AND '2025-10-02'
-ORDER BY event_datetime DESC;
-
-
-
-SELECT campaign_id, COUNT(*) clicks
-FROM click_fact
-WHERE advertiser_id = 173567
-  AND publisher_id  = 376373
-  AND event_datetime BETWEEN '2025-07-01' AND '2025-10-02'
-GROUP BY campaign_id
-ORDER BY clicks DESC;
-
-
-
-SELECT
-  cf.campaign_id,
-  cf.event_datetime,
-  JSON_EXTRACT_STRING(cf.json, 'inboundLink')  AS tracking_link,
-  cf.click_id, cf.profile_id,
-  ad.ad_id, ad.name AS ad_name,
-  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json, 'ruleName')     AS rule_name,
-  cf.landing_page_url,
-  cf.method, cf.classification
-FROM click_fact cf
-LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE cf.advertiser_id = 173567
-  AND cf.publisher_id  = 376373
-  AND cf.event_datetime BETWEEN '2025-09-30' AND '2025-10-02'
-ORDER BY cf.event_datetime DESC;
-
-
-SELECT action_id, oid, campaign_id, publisher_id, ref_url, ref_domain, ref_user_agent, doe
+-- [iraction_sharded] small, indexed pull by OID + campaign
+SELECT action_id, action_date, campaign_id, publisher_id,
+       ref_profile_id, ref_url, ref_domain, ref_landingpage_url, ref_user_agent, oid
 FROM irac_action2
 WHERE campaign_id = 3899
-  AND oid IN ('4649748041','4649667754','4649551514')
-ORDER BY doe;
+  AND oid IN ('4649748041','4649667754','4649551514');
+
+
+-- [actionlogging_sharded] authoritative mapping of conversion ↔ referral
+SELECT action_id, ref_type, click_id, ref_campaign_id, publisher_id, profile_id, event_datetime
+FROM ir_referrer
+WHERE action_id IN ('<paste_action_id_1>','<paste_action_id_2>','<paste_action_id_3>')
+ORDER BY action_id, event_datetime;
+
+
+-- [singlestore] fetch precise click rows by click_id to avoid wide date scans
+SELECT
+  cf.event_datetime,
+  cf.advertiser_id,
+  cf.campaign_id,
+  cf.publisher_id,
+  cf.profile_id,
+  cf.click_id,
+  cf.classification,         -- PAYABLE/TRACKED/FILTERED/BLOCKED/etc.
+  cf.method,                 -- GET/POST/REDIRECT
+  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json,'ruleName')     AS rule_name,
+  cf.landing_page_url,
+  cf.landing_page_url_noquery
+FROM click_fact cf
+WHERE cf.click_id IN ('<click_id_1>','<click_id_2>','<click_id_3>')
+ORDER BY cf.event_datetime;
