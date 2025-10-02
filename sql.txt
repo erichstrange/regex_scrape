@@ -1,14 +1,14 @@
-select * from ircm_signedcontract
-where ircm_campaign_id = 22648
-
-
-SELECT ins.name AS template_term_name, st.name AS scheduled_term_name, st.start_date, st.end_date
-, atr1.name AS tracker_name_1
-FROM ircm_scheduled_terms st
-INNER JOIN ircm_insertionorder ins on ins.id=st.ircm_insertionorder_id
-WHERE st.ircm_campaign_id = 22648
-AND st.start_date >= now()
-ORDER BY st.start_date DESC
-
-
-SELECT * FROM iram_account WHERE id = 1450394
+-- DRAFT — Source: r_ds_iraction_sharded
+-- Aim: show any action updates for MP 186137 on 2025‑10‑01
+SELECT action_id,
+       action_date,
+       publisher_id,
+       status,
+       modification_date,
+       adj_reason,
+       payout_amount,
+       scheduled_clearing_date,
+       actual_clearing_date
+FROM   irac_action2
+WHERE  publisher_id = 186137
+  AND  action_date >= '2025-10-01' AND action_date < '2025-10-02';
