@@ -1,27 +1,14 @@
--- [IRAM] Retrieve all information for an advertiser/publisher account
-SELECT * FROM iram_account WHERE id IN (2097176,1982379,1808421);
+select * from ircm_signedcontract
+where ircm_campaign_id = 22648
 
 
--- [IRAM] User details & last login by account
-SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state, ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
-FROM iram_usership u
-JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE u.irAccount_Id IN ('2097176','1982379','1808421')
-ORDER BY ce.lastlogin_date DESC;
+SELECT ins.name AS template_term_name, st.name AS scheduled_term_name, st.start_date, st.end_date
+, atr1.name AS tracker_name_1
+FROM ircm_scheduled_terms st
+INNER JOIN ircm_insertionorder ins on ins.id=st.ircm_insertionorder_id
+WHERE st.ircm_campaign_id = 22648
+AND st.start_date >= now()
+ORDER BY st.start_date DESC
 
 
--- [IRAM] Check if someone invited Gary but the invite lapsed
-SELECT * FROM iram_member_user_invitation
-WHERE iram_iraccount_id IN (2097176,1982379,1808421);
-
-
--- IRAM (auth) – locate user by email, then list all account memberships
-SELECT ce.id user_id, ce.email, u.irAccount_Id account_id, u.state usership_state
-FROM core_estaleauser ce
-JOIN iram_usership u ON u.account_user_id = ce.id
-WHERE LOWER(ce.email) = 'gary@gravityfed.com';
-
-SELECT id, type_desc, state, name, deactivate_date, close_date
-FROM iram_account
-WHERE id IN (1808421,1993237,2066329,2066340,2066345,2097176,2211522,2213151,2343631,255268,2572146,2662258,2003851);
-
+SELECT * FROM iram_account WHERE id = 1450394
