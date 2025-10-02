@@ -1,8 +1,16 @@
--- [r_ds_ods] API logs for an account/time window
-SELECT id, batch_id, submit_date, completed_date, type, event_code, error_json
+-- Full rows (with error details) for the batch_ids that errored
+SELECT
+   id, batch_id, doe AS event_time, submit_date, completed_date,
+   iram_account_id, ircm_campaign_id,
+   type, action_id, oid,
+   payload,        -- request body that was posted
+   error_json      -- validation / error details (if any)
 FROM ir_api_log
-WHERE iram_account_id = 2984864
-  AND doe >= '2025-10-01 13:00:00' -- 9am ET
-  AND doe <  '2025-10-01 21:00:00' -- 5pm ET
-  AND type = 'Conversion'          -
-ORDER BY submit_date;
+WHERE batch_id IN (
+  -- example values from your CSV; replace with your list
+  'A-3aba6fec-4637-4f20-8ea3-e99e53c50fe7',
+  'A-c29a3a01-b283-4023-9eff-109bd9b941e3',
+  'A-9a2b8be1-80ba-4028-93fe-13ae0f5f0aac',
+  'A-109c2be8-6e00-4b14-8935-e6a1f5bfa82e'
+)
+ORDER BY event_time;
