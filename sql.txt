@@ -1,15 +1,12 @@
--- DRAFT — Source: r_ds_iraction_sharded
--- Aim: show any action updates for MP 186137 on 2025‑10‑01
-SELECT action_id,
-       action_date,
-       publisher_id,
-       status,
-       modification_date,
-       adj_reason,
-       payout_amount,
-       scheduled_clearing_date,
-       actual_clearing_date
-FROM   irac_action2
-WHERE  publisher_id = 186137
-  AND  action_date >= '2025-10-01' AND action_date < '2025-10-02';
-##
+/* All actions where the same SubID (pubsubid1) repeats */
+SELECT *
+FROM action_fact
+WHERE campaign_id = 5714
+  AND pubsubid1 IN (
+    SELECT pubsubid1
+    FROM action_fact
+    WHERE campaign_id = 5714
+    GROUP BY pubsubid1
+    HAVING COUNT(pubsubid1) > 1
+  )
+ORDER BY pubsubid1, action_datetime;
