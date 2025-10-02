@@ -1,35 +1,43 @@
--- [Singlestore] Click detail for this campaign & ad
+-- Clicks by adv/publisher/campaign over the period
+SELECT * FROM click_fact
+WHERE advertiser_id = 173567
+  AND publisher_id  = 376373
+  AND campaign_id   = 3899          -- Lenovo Canada
+  AND event_datetime BETWEEN '2025-07-01' AND '2025-10-02'
+ORDER BY event_datetime DESC;
+
+
+
+SELECT campaign_id, COUNT(*) clicks
+FROM click_fact
+WHERE advertiser_id = 173567
+  AND publisher_id  = 376373
+  AND event_datetime BETWEEN '2025-07-01' AND '2025-10-02'
+GROUP BY campaign_id
+ORDER BY clicks DESC;
+
+
+
 SELECT
   cf.campaign_id,
   cf.event_datetime,
-  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
-  cf.click_id,
-  cf.profile_id,
-  ad.ad_id,
-  ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json, 'inboundLink')  AS tracking_link,
+  cf.click_id, cf.profile_id,
+  ad.ad_id, ad.name AS ad_name,
   JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json, 'ruleName') AS rule_name,
+  JSON_EXTRACT_STRING(cf.json, 'ruleName')     AS rule_name,
   cf.landing_page_url,
-  cf.publisher_id,
-  cf.method,
-  cf.classification
+  cf.method, cf.classification
 FROM click_fact cf
 LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE cf.campaign_id = 9488
-  AND cf.publisher_id IN (34844,10579)       -- Cartera & Rakuten
-  AND ad.ad_id = 3273108                      -- the restricted ad
-  AND cf.event_datetime BETWEEN '2025-09-22' AND '2025-09-29'  -- bracket the 4 actions
+WHERE cf.advertiser_id = 173567
+  AND cf.publisher_id  = 376373
+  AND cf.event_datetime BETWEEN '2025-09-30' AND '2025-10-02'
 ORDER BY cf.event_datetime DESC;
 
 
-
--- [ircm] Active contract + credit group for Cartera on TFD
-SELECT
-  sc.iram_publisher_id,
-  sc.ircm_campaign_id,
-  iot.credit_group
-FROM ircm_signedcontract sc
-LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
-WHERE sc.iram_publisher_id = '34844'
-  AND sc.ircm_campaign_id = '9488'
-  AND sc.date_contract_end IS NULL;
+SELECT action_id, oid, campaign_id, publisher_id, ref_url, ref_domain, ref_user_agent, doe
+FROM irac_action2
+WHERE campaign_id = 3899
+  AND oid IN ('4649748041','4649667754','4649551514')
+ORDER BY doe;
