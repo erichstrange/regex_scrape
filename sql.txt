@@ -36,6 +36,19 @@ WHERE oid IN ('ajs-next-1759092389883-a0beb68a-570a-4ff6-9659-120d3935eeb2',
   AND campaign_id = 9488;
 
 
+
+-- [singlestore] Path events for each conversion
+SELECT event_id, event_type, event_datetime, md.media_name, md.media_type,
+       referral_ad_type, referring_url, click_order_first_to_last, referral_is_winner
+FROM radius_path_event_fact r
+JOIN media_dim md ON md.id = r.event_media_dim_id
+WHERE r.campaign_id = <PROGRAM_ID>
+  AND r.conversion_event_id IN (<FILL_FROM_ACTION_LOOKUP>)  -- from step 1
+ORDER BY click_order_first_to_last;
+
+
+
+
 -- [singlestore] Click events for Cartera using Ad 3273108
 SELECT cf.campaign_id, cf.event_datetime,
        JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
