@@ -1,34 +1,21 @@
--- [ODS] Check last eBay batch import(s) for account 1354875
-select process_entity_count, tot_entity_count, error_file_ready
-from irods.ir_ftp_batch_log
-where iram_account_id = 1354875
-order by doe desc
-limit 1;
-
-
--- [IRAM] Verify advertiser record exists / state
-SELECT * FROM iram_account
-WHERE id = 1354875;
-
-
--- [ODS] List recent eBay SFTP batches (to locate reconciliation runs)
-SELECT doe, directory, filename, process_entity_count, tot_entity_count, error_file_ready
-FROM irods.ir_ftp_batch_log
-WHERE iram_account_id = 1354875
-ORDER BY doe DESC
-LIMIT 50;
-
-
--- DRAFT [r_ds_ods]: confirm reconciliation payload content for Manage Account Links
--- Assumes reconciliation files are logged with batch_id/filename in ODS API log.
--- (Please peer-review table/column names before execution.)
-SELECT batch_id, filename, doe, payload
+-- VETTED pattern (adjusted): r_ds_ods.ir_api_log
+SELECT *
 FROM ir_api_log
-WHERE iram_account_id = 1354875
-  AND (filename ILIKE '%reconciliation%' OR filename ILIKE '%account_links%')
-ORDER BY doe DESC
-LIMIT 10;
+WHERE iram_account_id = 2984864
+  AND doe >= '2025-10-01 12:00:00'
+  AND doe <  '2025-10-01 22:00:00'
+LIMIT 1000;
 
 
--- [IRAM] Advertiser metadata
-SELECT * FROM iram_account WHERE id = 1354875;
+-- DRAFT (needs peer review before committing to shared repo)
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 2984864
+  AND doe >= '2025-10-01 12:00:00'
+  AND doe <  '2025-10-01 22:00:00'
+  AND payload LIKE '%/Advertisers/%/Conversions%';
+
+
+SELECT payload
+FROM ir_api_log
+WHERE batch_id = '<paste-batch-id-here>';
