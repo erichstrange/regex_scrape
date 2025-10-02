@@ -1,16 +1,37 @@
--- Full rows (with error details) for the batch_ids that errored
 SELECT
-   id, batch_id, doe AS event_time, submit_date, completed_date,
-   iram_account_id, ircm_campaign_id,
-   type, action_id, oid,
-   payload,        -- request body that was posted
-   error_json      -- validation / error details (if any)
-FROM ir_api_log
-WHERE batch_id IN (
-  -- example values from your CSV; replace with your list
-  'A-3aba6fec-4637-4f20-8ea3-e99e53c50fe7',
-  'A-c29a3a01-b283-4023-9eff-109bd9b941e3',
-  'A-9a2b8be1-80ba-4028-93fe-13ae0f5f0aac',
-  'A-109c2be8-6e00-4b14-8935-e6a1f5bfa82e'
-)
-ORDER BY event_time;
+  r.event_id, r.event_type, r.event_datetime,
+  md.media_name, md.media_type,
+  r.referral_ad_type, r.referring_url,
+  r.click_order_first_to_last, r.referral_is_winner
+FROM radius_path_event_fact r
+JOIN media_dim md ON md.id = r.event_media_dim_id
+WHERE r.campaign_id = 9488
+  AND r.conversion_event_id IN (
+    'A-9488.6475.13560', 'A-9488.6476.1182803',
+    'A-9488.6480.169991', 'A-9488.6480.717713'
+  )
+ORDER BY r.click_order_first_to_last;
+
+
+SELECT
+  af.action_id, af.oid, af.publisher_id,
+  ad.ad_id AS stamped_ad_id, ad.name AS stamped_ad_name,
+  af.ref_url, af.ref_domain, af.ref_landingpage_url, af.ref_profile_id
+FROM action_fact af
+LEFT JOIN ad_dim ad ON ad.id = af.ref_ad_dim_id
+WHERE af.campaign_id = 9488
+  AND af.action_id IN ('9488.6475.13560','9488.6476.1182803',
+                       '9488.6480.169991','9488.6480.717713');
+
+
+-- Once you have click_id from the path or the action's landingpage_url,
+-- pull the click record (narrow date range to the day of each conversion):
+SELECT
+  cf.campaign_id, cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
+  cf.click_id, cf.publisher_id, cf.ref_domain, cf.ref_url
+FROM click_fact cf
+WHERE cf.campaign_id = 9488
+  AND cf.publisher_id = 34844
+  AND cf.event_datetime BETWEEN '2025-09-01' AND '2025-10-03'
+ORDER BY cf.event_datetime DESC;
