@@ -1,65 +1,8 @@
--- VETTED pattern (adjusted): r_ds_ods.ir_api_log
-SELECT *
+-- [r_ds_ods] API logs for an account/time window
+SELECT id, batch_id, submit_date, completed_date, type, event_code, error_json
 FROM ir_api_log
 WHERE iram_account_id = 2984864
-  AND doe >= '2025-10-01 12:00:00'
-  AND doe <  '2025-10-01 22:00:00'
-LIMIT 1000;
-
-
--- DRAFT (needs peer review before committing to shared repo)
-SELECT *
-FROM ir_api_log
-WHERE iram_account_id = 2984864
-  AND doe >= '2025-10-01 12:00:00'
-  AND doe <  '2025-10-01 22:00:00'
-  AND payload LIKE '%/Advertisers/%/Conversions%';
-
-
-SELECT payload
-FROM ir_api_log
-WHERE batch_id = '<paste-batch-id-here>';
-
-
-
-
------
-
--- [iraction_sharded] Action details by OID + campaign (vetted)
-SELECT action_id, oid, campaign_id, publisher_id, ref_profile_id, ref_url, ref_domain,
-       pub_subid1, pub_subid2, pub_subid3, pub_subid4, order_json, item_json
-FROM irac_action2
-WHERE oid IN ('ajs-next-1759092389883-a0beb68a-570a-4ff6-9659-120d3935eeb2',
-              'ajs-next-1759065566748-73595f93-d4a0-48d0-88a5-26d4096544c2',
-              'ajs-next-1758770123510-d4ced5e9-1994-4728-9bbc-2fa4d560b9ed',
-              'ajs-next-1758616097820-a8149132-18b9-4cfa-95c1-5e486dbbae93')
-  AND campaign_id = 9488;
-
-
-
--- [singlestore] Path events for each conversion
-SELECT event_id, event_type, event_datetime, md.media_name, md.media_type,
-       referral_ad_type, referring_url, click_order_first_to_last, referral_is_winner
-FROM radius_path_event_fact r
-JOIN media_dim md ON md.id = r.event_media_dim_id
-WHERE r.campaign_id = <PROGRAM_ID>
-  AND r.conversion_event_id IN (<FILL_FROM_ACTION_LOOKUP>)  -- from step 1
-ORDER BY click_order_first_to_last;
-
-
-
-
--- [singlestore] Click events for Cartera using Ad 3273108
-SELECT cf.campaign_id, cf.event_datetime,
-       JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
-       cf.click_id, cf.profile_id, ad.ad_id, ad.name AS ad_name,
-       JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
-       JSON_EXTRACT_STRING(cf.json, 'ruleName')      AS rule_name,
-       cf.landing_page_url, cf.pub_subid1, cf.pub_subid2
-FROM click_fact cf
-LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE cf.advertiser_id = 1374555
-  AND cf.publisher_id  = 34844          -- Cartera
-  AND ad.ad_id         = 3273108
-  AND cf.event_datetime BETWEEN <START> AND <END>
-ORDER BY cf.event_datetime DESC;
+  AND doe >= '2025-10-01 13:00:00' -- 9am ET
+  AND doe <  '2025-10-01 21:00:00' -- 5pm ET
+  AND type = 'Conversion'          -
+ORDER BY submit_date;
