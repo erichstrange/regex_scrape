@@ -1,30 +1,43 @@
--- OID 4649551514 window (~±30 min)
+-- irdw_imp.singlestore
+-- Action facts for suspicious OIDs + extract irclickid
 SELECT
-  cf.campaign_id, cf.event_datetime, JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
-  cf.click_id, cf.profile_id, ad.ad_id, ad.name AS ad_name,
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json,'ruleName')     AS rule_name,
-  cf.landing_page_url, cf.method, cf.classification
-FROM click_fact cf
-LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE cf.advertiser_id = 173567
-  AND cf.publisher_id  = 376373
-  AND cf.campaign_id   = 3899
-  AND ad.ad_id         = 797408
-  AND cf.event_datetime >= '2025-09-03 19:24:37'
-  AND cf.event_datetime <= '2025-09-03 20:24:37'
-ORDER BY cf.event_datetime DESC;
-
-
--- Is ad 797408 attached to campaign 3899 (CA)?
-SELECT * FROM irad_ad WHERE ircm_campaign_id = 3899 AND ad_id = 797408;
--- Also list all linkages of this ad_id across campaigns (optional):
-SELECT * FROM irad_ad WHERE ad_id = 797408;
-
-
-SELECT * FROM click_fact
-WHERE advertiser_id = 173567
-  AND publisher_id  = 376373
-  AND campaign_id   = 3899
-  AND event_datetime BETWEEN '2025-09-01' AND '2025-10-02'
-ORDER BY event_datetime DESC;
+  af.action_datetime,
+  af.advertiser_id,
+  af.campaign_id,
+  af.publisher_id,
+  af.action_id,
+  af.oid,
+  SUBSTRING_INDEX(SUBSTRING(af.ref_landingpage_url, LOCATE('irclickid=', af.ref_landingpage_url) + 10), '&', 1) AS irclickid,
+  af.pubsubid1,
+  af.pubsubid2,
+  af.pubsubid3,
+  af.pubsubid4,
+  af.ref_domain,
+  af.ref_url,
+  af.ref_landingpage_url,
+  af.ref_profile_id,
+  af.conv_profile_id,
+  ad.ad_id,
+  ad.name AS ad_name,
+  atr.action_tracker_name,
+  atr.action_tracker_id
+FROM action_fact af
+LEFT JOIN action_tracker_dim atr ON action_tracker_dim_id = atr.id
+LEFT JOIN ad_dim ad           ON ad.id = af.ref_ad_dim_id
+WHERE af.advertiser_id = 393133
+  AND af.campaign_id   = 5714
+  AND af.publisher_id  = 1247203
+  AND af.action_datetime >= '2025-09-08' AND af.action_datetime < '2025-09-16 23:59:59'
+  AND af.oid IN (
+       '029b31c480da30bc5646ca02c08a853cc153804699dab50be0d0f9088961acbb',
+       '0dba403db8a95fff889c399fb4c673e2410dd08009d64b414d811561d29e2eb8',
+       'c13356554557bca2e923cec23e8b5eff2431ae4a2b001c1059f9bfca99670cda',
+       'eb9136f7f790a1517ed404746efd19e6083cc1a259dcd50173345da6d6ef8710',
+       '88a03107512c42c6280547e1de9020784adff314e7a862fd7329f046069981e3',
+       '931eaaf86c8c00b34b641c266da84b5ed670989c42407e6c4c24a5e8abeba4e2',
+       '6dd5c200575274e28f1aeafe73e88b8c093c9ca09fa1f1eb1cefd3ab414a198a',
+       '52d721f913dceb4c0ef5a65635cde7670d618b8e15a24496bccbc5500ba24ce1',
+       'efbc96279f50886867f349fc61fcdb5d2c9ebc89137ec01189ba9903ce4d10a4',
+       '29cc0a4cc098ec0f7a20cf747208924af6c5e5b40efb1f701a304e88be7e329b'
+  )
+ORDER BY af.action_datetime;
