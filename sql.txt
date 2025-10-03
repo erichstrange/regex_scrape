@@ -1,32 +1,21 @@
--- [iraction_sharded] small, indexed pull by OID + campaign
-SELECT action_id, action_date, campaign_id, publisher_id,
-       ref_profile_id, ref_url, ref_domain, ref_landingpage_url, ref_user_agent, oid
+-- ACTIONS for suspicious OIDs in Program 5714 (Uber Eats)
+SELECT action_id, action_date, action_type, campaign_id, action_tracker_id,
+       oid, publisher_id, ref_profile_id, ref_url, ref_domain,
+       pub_subid1, pub_subid2, pub_subid3, pub_subid4,
+       metadata, ref_user_agent, adv_currency, cart_currency, adv_saleamt, cart_saleamt
 FROM irac_action2
-WHERE campaign_id = 3899
-  AND oid IN ('4649748041','4649667754','4649551514');
-
-
--- [actionlogging_sharded] authoritative mapping of conversion ↔ referral
-SELECT action_id, ref_type, click_id, ref_campaign_id, publisher_id, profile_id, event_datetime
-FROM ir_referrer
-WHERE action_id IN ('<paste_action_id_1>','<paste_action_id_2>','<paste_action_id_3>')
-ORDER BY action_id, event_datetime;
-
-
--- [singlestore] fetch precise click rows by click_id to avoid wide date scans
-SELECT
-  cf.event_datetime,
-  cf.advertiser_id,
-  cf.campaign_id,
-  cf.publisher_id,
-  cf.profile_id,
-  cf.click_id,
-  cf.classification,         -- PAYABLE/TRACKED/FILTERED/BLOCKED/etc.
-  cf.method,                 -- GET/POST/REDIRECT
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json,'ruleName')     AS rule_name,
-  cf.landing_page_url,
-  cf.landing_page_url_noquery
-FROM click_fact cf
-WHERE cf.click_id IN ('<click_id_1>','<click_id_2>','<click_id_3>')
-ORDER BY cf.event_datetime;
+WHERE campaign_id = 5714
+  AND oid IN (
+    -- sample from trip 0mfal9lm93c19tmm – expand with full list as needed
+    '0dba403db8a95fff889c399fb4c673e2410dd08009d64b414d811561d29e2eb8',
+    '029b31c480da30bc5646ca02c08a853cc153804699dab50be0d0f9088961acbb',
+    '29cc0a4cc098ec0f7a20cf747208924af6c5e5b40efb1f701a304e88be7e329b',
+    'efbc96279f50886867f349fc61fcdb5d2c9ebc89137ec01189ba9903ce4d10a4',
+    '52d721f913dceb4c0ef5a65635cde7670d618b8e15a24496bccbc5500ba24ce1',
+    '6dd5c200575274e28f1aeafe73e88b8c093c9ca09fa1f1eb1cefd3ab414a198a',
+    '931eaaf86c8c00b34b641c266da84b5ed670989c42407e6c4c24a5e8abeba4e2',
+    '88a03107512c42c6280547e1de9020784adff314e7a862fd7329f046069981e3',
+    'eb9136f7f790a1517ed404746efd19e6083cc1a259dcd50173345da6d6ef8710',
+    'c13356554557bca2e923cec23e8b5eff2431ae4a2b001c1059f9bfca99670cda'
+  )
+ORDER BY action_date DESC;
