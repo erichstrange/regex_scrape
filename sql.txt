@@ -1,29 +1,109 @@
--- Finance email log (full history, newest first)
+SELECT
+  oid,
+  action_id,
+  platform        AS device,
+  device_family   AS device_type,
+  os_name         AS OS,
+  ua_name         AS User_Agent
+FROM action_fact fact
+INNER JOIN client_dim cld
+  ON cld.id = ref_client_dim_id
+WHERE fact.action_datetime BETWEEN '2025-08-02 00:00:00' AND '2025-09-23 00:00:00'
+  AND advertiser_id = 393133
+  AND campaign_id   = 5714
+  AND oid IN (
+    '9d4a800e8324f2819eb410adce47d570c810450e016d5da4d88416986d99831e',
+    '029b31c480da30bc5646ca02c08a853cc153804699dab50be0d0f9088961acbb',
+    '22ac44aa592f01b605d5c2d37a6034b7e6692629873259900e04052225034652',
+    'da7aa574fbe10651f55c1c8ee8ca500535164c2246372bde9eb790251ff1bfc5',
+    '9ca78c4cde4c5238cc07c27454b2e23ad4fcc5f1eb5069bde293bb60abe20d1c',
+    '7c9c57c0d196e56668eb2467d81d341e0a1db9e28a93161138c2d6270a7037c5',
+    'a5381f181ff234e7ed3a1f3d5d9cd6b1951716fa52894f0e739bebc5b9e2d06a',
+    '69a338b58a0f72952347592fea656fe87ce356b28efe41661c7a3001e28301f0',
+    'a0663a6f386df687a2e1d7f2949910c1eb328d5d3d4b225b1c435f84e876f90e',
+    '6d46b3deb22e61f690c15e22ce1d7cfc8ea747044a85e999cb22a465cb8b7abb'
+  );
+
+
+SELECT
+   af.action_datetime
+  ,af.advertiser_id
+  ,af.campaign_id
+  ,af.action_id
+  ,af.publisher_id
+  ,af.localadv_ref_datetime
+  ,af.localmp_ref_datetime
+  ,atr.action_tracker_name
+  ,atr.action_tracker_id
+  ,af.batch_id
+  ,af.oid
+  ,SUBSTRING_INDEX(SUBSTRING(af.ref_landingpage_url, LOCATE('irclickid=', af.ref_landingpage_url) + 10), '&', 1) AS irclickid
+  ,af.pubsubid1
+  ,af.pubsubid2
+  ,af.pubsubid3
+  ,af.pubsubid4
+  ,ad.ad_id
+  ,ad.name AS ad_name
+  ,af.ref_url
+  ,af.ref_domain
+  ,af.ref_landingpage_url
+  ,af.ref_profile_id
+  ,af.conv_profile_id
+FROM action_fact af
+LEFT JOIN action_tracker_dim atr ON action_tracker_dim_id = atr.id
+LEFT JOIN ad_dim ad            ON ad.id                = af.ref_ad_dim_id
+WHERE af.campaign_id = 5714
+  AND af.action_datetime >= '2025-08-02'
+  AND af.action_datetime <  '2025-09-23'
+  AND af.oid IN (
+    '9d4a800e8324f2819eb410adce47d570c810450e016d5da4d88416986d99831e',
+    '029b31c480da30bc5646ca02c08a853cc153804699dab50be0d0f9088961acbb',
+    '22ac44aa592f01b605d5c2d37a6034b7e6692629873259900e04052225034652',
+    'da7aa574fbe10651f55c1c8ee8ca500535164c2246372bde9eb790251ff1bfc5',
+    '9ca78c4cde4c5238cc07c27454b2e23ad4fcc5f1eb5069bde293bb60abe20d1c',
+    '7c9c57c0d196e56668eb2467d81d341e0a1db9e28a93161138c2d6270a7037c5',
+    'a5381f181ff234e7ed3a1f3d5d9cd6b1951716fa52894f0e739bebc5b9e2d06a',
+    '69a338b58a0f72952347592fea656fe87ce356b28efe41661c7a3001e28301f0',
+    'a0663a6f386df687a2e1d7f2949910c1eb328d5d3d4b225b1c435f84e876f90e',
+    '6d46b3deb22e61f690c15e22ce1d7cfc8ea747044a85e999cb22a465cb8b7abb'
+  )
+ORDER BY af.action_datetime DESC;
+
+
+
+SELECT
+  action_id, oid, campaign_id, publisher_id, ircm_terms_id, payout_trace,
+  ref_profile_id, ref_url, ref_domain, ref_user_agent, metadata, doe
+FROM irac_action2
+WHERE campaign_id = '5714'
+  AND oid IN (
+    '9d4a800e8324f2819eb410adce47d570c810450e016d5da4d88416986d99831e',
+    '029b31c480da30bc5646ca02c08a853cc153804699dab50be0d0f9088961acbb',
+    '22ac44aa592f01b605d5c2d37a6034b7e6692629873259900e04052225034652',
+    'da7aa574fbe10651f55c1c8ee8ca500535164c2246372bde9eb790251ff1bfc5',
+    '9ca78c4cde4c5238cc07c27454b2e23ad4fcc5f1eb5069bde293bb60abe20d1c',
+    '7c9c57c0d196e56668eb2467d81d341e0a1db9e28a93161138c2d6270a7037c5',
+    'a5381f181ff234e7ed3a1f3d5d9cd6b1951716fa52894f0e739bebc5b9e2d06a',
+    '69a338b58a0f72952347592fea656fe87ce356b28efe41661c7a3001e28301f0',
+    'a0663a6f386df687a2e1d7f2949910c1eb328d5d3d4b225b1c435f84e876f90e',
+    '6d46b3deb22e61f690c15e22ce1d7cfc8ea747044a85e999cb22a465cb8b7abb'
+  )
+ORDER BY doe;
+
+
+
 SELECT *
-FROM finance_email_log
-WHERE iram_account_id = 327676
-ORDER BY doe DESC;
-
-
-
--- Audit log entries scoped to InvoiceSettings (verbose entries)
-SELECT *
-FROM maudit_log_entry
-WHERE objectclassname = 'estalea.ir.accounting.invoice.domain.InvoiceSettings'
-  AND coreaccountid = 327676
-ORDER BY changedate DESC;
-
--- Companion audit table for InvoiceSettings (summary entries)
-SELECT *
-FROM maudit_log
-WHERE accountid = 327676
-  AND entity_type = 'InvoiceSettings'
-ORDER BY changedate DESC;
-
-
-
--- Pull invoice headers if you have specific IDs or want to confirm generation
-SELECT *
-FROM finance_invoice
-WHERE iram_account_id = 327676
-ORDER BY id DESC;
+FROM ir_noreferrer_event
+WHERE campaign_id = 5714
+  AND oid IN (
+    '9d4a800e8324f2819eb410adce47d570c810450e016d5da4d88416986d99831e',
+    '029b31c480da30bc5646ca02c08a853cc153804699dab50be0d0f9088961acbb',
+    '22ac44aa592f01b605d5c2d37a6034b7e6692629873259900e04052225034652',
+    'da7aa574fbe10651f55c1c8ee8ca500535164c2246372bde9eb790251ff1bfc5',
+    '9ca78c4cde4c5238cc07c27454b2e23ad4fcc5f1eb5069bde293bb60abe20d1c',
+    '7c9c57c0d196e56668eb2467d81d341e0a1db9e28a93161138c2d6270a7037c5',
+    'a5381f181ff234e7ed3a1f3d5d9cd6b1951716fa52894f0e739bebc5b9e2d06a',
+    '69a338b58a0f72952347592fea656fe87ce356b28efe41661c7a3001e28301f0',
+    'a0663a6f386df687a2e1d7f2949910c1eb328d5d3d4b225b1c435f84e876f90e',
+    '6d46b3deb22e61f690c15e22ce1d7cfc8ea747044a85e999cb22a465cb8b7abb'
+  );
