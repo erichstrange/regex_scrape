@@ -14,3 +14,17 @@ WHERE cf.advertiser_id = 173567
   AND cf.event_datetime >= '2025-09-03 19:24:37'
   AND cf.event_datetime <= '2025-09-03 20:24:37'
 ORDER BY cf.event_datetime DESC;
+
+
+-- Is ad 797408 attached to campaign 3899 (CA)?
+SELECT * FROM irad_ad WHERE ircm_campaign_id = 3899 AND ad_id = 797408;
+-- Also list all linkages of this ad_id across campaigns (optional):
+SELECT * FROM irad_ad WHERE ad_id = 797408;
+
+
+SELECT * FROM click_fact
+WHERE advertiser_id = 173567
+  AND publisher_id  = 376373
+  AND campaign_id   = 3899
+  AND event_datetime BETWEEN '2025-09-01' AND '2025-10-02'
+ORDER BY event_datetime DESC;
