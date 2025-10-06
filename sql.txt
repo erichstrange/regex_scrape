@@ -1,41 +1,4 @@
--- [irdw_imp • singlestore] action_fact → extract the Impact irclickid from winning click LP URL
-select
-   af.action_datetime
-  ,af.advertiser_id
-  ,af.campaign_id
-  ,af.action_id
-  ,af.oid
-  ,SUBSTRING_INDEX(SUBSTRING(af.ref_landingpage_url, LOCATE('irclickid=', af.ref_landingpage_url) + 10), '&', 1) AS irclickid
-  ,af.ref_url
-  ,af.ref_domain
-  ,af.ref_landingpage_url
-from action_fact af
-where af.advertiser_id = 1327055
-  and af.campaign_id = 9099
-  and af.action_datetime >= '2025-09-27' and af.action_datetime < '2025-10-04'
-  and af.oid IN (
-    'd558c7f3d22341346356bebc561b4b04f2dfac497031b1a7f0ad014b2be859b0',
-    '8761c62c231044009a42a71a152a95235fe80599a4052ad3a394a9b38a23567f',
-    'eb76d5ba63a6f7b22ac30f7ff3e873fc982d3c69f924a8296da4b8eded685dd8',
-    'ffb0094001324c2d152c29206230aed456d97e6824ca81e8e4f15d4b7d599709',
-    '65b65b9dfa09c26ee45c4520389a2e789c1f9de74d4abbd0c97fe5996edc9921',
-    '645c4d0b7b50a9d8fa8bf201ccf044b595f943f5fb5a9e63ae180707657f7f82',
-    '7b5b871c0afe2a0bdf9ff7bdcb5b5b2a6f47b8deb1d179842f860cba559db7a7',
-    '5a3a1dfc95d6c832d46e072498852fb2b7965ce7e8c72a5cba41c7b603f6ba6f',
-    '1ffaea9b5ee6a16d8e0a7eb44fef2ac8e5ae0469cd2d26bcd7f94b2d7b0ec020',
-    '7c1dfc7b63620a58a59d4fff44f88b6edd88ef7b34844aaf49d317d52ca4a296',
-    '4121c9f3ea7795cfa93d5ecfbceac0134d3647a206f0eea951a01a844963ac80',
-    '2e7f7177d06a2f8b58cd756f7929791d3c6c25311185a8e0a0300895d04b261f',
-    '7e4e9d4b83c1b579f6d33e7b886a04db1883b5b766ab6077fbea73804634f847',
-    '805349239e9f664d612ea5cd3ca6687ce4474c4a5d3d927b0b2d9761fbf61cea',
-    '50d9a7fcb175883b269b56dd8702b3762b252182ac7b5f2e2d3e9cba05014d01'
-  )
-order by af.action_datetime desc;
-
-
-
-
--- [iraction_sharded] irac_action2 → pull raw metadata / JSON to verify advertiser-sent `clickid`
+-- VETTED: Detailed action view for a set of actions
 select
   action_id, oid, campaign_id, action_date,
   metadata, order_json, item_json
@@ -45,47 +8,23 @@ where campaign_id = 9099
     '9099.6485.738628','9099.6485.753108','9099.6485.753094',
     '9099.6485.735406','9099.6485.722045','9099.6485.732435',
     '9099.6485.732434','9099.6485.717142','9099.6485.717071',
-    '9099.6485.732324','9099.6485.714308','9099.6485.714300',
-    '9099.6485.714316','9099.6485.728913','9099.6485.712962'
+    '9099.6485.732324','9099.6485.714308','9099.6485.714316',
+    '9099.6485.714300','9099.6485.722915','9099.6485.712962'
   );
 
 
-
-  -- DRAFT: Try to parse clickid if it lives in order_json (MySQL 5.7+ JSON_EXTRACT)
 select
-  action_id, oid,
-  JSON_UNQUOTE(JSON_EXTRACT(order_json, '$.clickid')) as advertiser_clickid_from_order_json,
-  JSON_UNQUOTE(JSON_EXTRACT(item_json, '$.clickid'))  as advertiser_clickid_from_item_json
-from irac_action2
-where campaign_id = 9099
-  and action_id in ('9099.6485.738628','9099.6485.753108', '9099.6485.753094', '9099.6485.735406',
-                    '9099.6485.722045','9099.6485.732435','9099.6485.732434','9099.6485.717142',
-                    '9099.6485.717071','9099.6485.732324','9099.6485.714308','9099.6485.714300',
-                    '9099.6485.714316','9099.6485.728913','9099.6485.712962');
-
-
-
--- Vetted base shape (account + date range) + DRAFT payload filter by OID
-SELECT doe, iram_account_id, endpoint, status, payload
-FROM ir_api_log
-WHERE iram_account_id = 1327055
-  AND doe >= '2025-09-27' AND doe < '2025-10-04'
-  AND (
-       payload LIKE '%"oid":"d558c7f3d22341346356bebc561b4b04f2dfac497031b1a7f0ad014b2be859b0"%'
-    OR payload LIKE '%"oid":"8761c62c231044009a42a71a152a95235fe80599a4052ad3a394a9b38a23567f"%'
-    OR payload LIKE '%"oid":"eb76d5ba63a6f7b22ac30f7ff3e873fc982d3c69f924a8296da4b8eded685dd8"%'
-    OR payload LIKE '%"oid":"ffb0094001324c2d152c29206230aed456d97e6824ca81e8e4f15d4b7d599709"%'
-    OR payload LIKE '%"oid":"65b65b9dfa09c26ee45c4520389a2e789c1f9de74d4abbd0c97fe5996edc9921"%'
-    OR payload LIKE '%"oid":"645c4d0b7b50a9d8fa8bf201ccf044b595f943f5fb5a9e63ae180707657f7f82"%'
-    OR payload LIKE '%"oid":"7b5b871c0afe2a0bdf9ff7bdcb5b5b2a6f47b8deb1d179842f860cba559db7a7"%'
-    OR payload LIKE '%"oid":"5a3a1dfc95d6c832d46e072498852fb2b7965ce7e8c72a5cba41c7b603f6ba6f"%'
-    OR payload LIKE '%"oid":"1ffaea9b5ee6a16d8e0a7eb44fef2ac8e5ae0469cd2d26bcd7f94b2d7b0ec020"%'
-    OR payload LIKE '%"oid":"7c1dfc7b63620a58a59d4fff44f88b6edd88ef7b34844aaf49d317d52ca4a296"%'
-    OR payload LIKE '%"oid":"4121c9f3ea7795cfa93d5ecfbceac0134d3647a206f0eea951a01a844963ac80"%'
-    OR payload LIKE '%"oid":"2e7f7177d06a2f8b58cd756f7929791d3c6c25311185a8e0a0300895d04b261f"%'
-    OR payload LIKE '%"oid":"7e4e9d4b83c1b579f6d33e7b886a04db1883b5b766ab6077fbea73804634f847"%'
-    OR payload LIKE '%"oid":"805349239e9f664d612ea5cd3ca6687ce4474c4a5d3d927b0b2d9761fbf61cea"%'
-    OR payload LIKE '%"oid":"50d9a7fcb175883b269b56dd8702b3762b252182ac7b5f2e2d3e9cba05014d01"%'
+  af.action_datetime, af.advertiser_id, af.campaign_id, af.action_id, af.oid,
+  af.ref_url, af.ref_domain, af.ref_landingpage_url
+from action_fact af
+where af.advertiser_id = 1327055
+  and af.campaign_id = 9099
+  and af.action_datetime >= '2025-09-27' and af.action_datetime < '2025-10-04'
+  and af.oid in (
+    'd558c7f3d22341346356bebc561b4b04f2dfac497031b1a7f0ad014b2be859b0',
+    '8761c62c231044009a42a71a152a95235fe80599a4052ad3a394a9b38a23567f',
+    'eb76d5ba63a6f7b22ac30f7ff3e873fc982d3c69f924a8296da4b8eded685dd8',
+    'ffb0094001324c2d152c29206230aed456d97e6824ca81e8e4f15d4b7d599709',
+    '65b65b9dfa09c26ee45c4520389a2e789c1f9de74d4abbd0c97fe5996edc9921'
   )
-ORDER BY doe DESC
-LIMIT 500;
+order by af.action_datetime desc;
