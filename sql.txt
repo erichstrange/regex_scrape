@@ -1,12 +1,25 @@
-SELECT
-  ins.name AS template_term_name, st.name AS scheduled_term_name,
-  st.start_date, st.end_date,
-  atr1.name AS tracker_name_1,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON),'$.actionTrackers[0].actionTracker')) AS payout_tracker_1
-FROM ircm_scheduled_terms st
-INNER JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
-LEFT JOIN ircm_actiontracker atr1
-  ON atr1.ircm_campaign_id = st.ircm_campaign_id
- AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON),'$.actionTrackers[0].actionTracker'))
-WHERE st.ircm_campaign_id = 33961
-ORDER BY st.start_date DESC;
+-- [IRDW / r_ds_singlestore]
+SELECT *
+FROM radius_path_event_fact
+WHERE conversion_event_id = 'A-b75370d1-f65a-4100-8f19-095413060245';
+
+
+-- [r_ds_iraction_general]
+SELECT *
+FROM irac_test_action
+WHERE program_id = '33961'
+  AND oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S');
+
+
+-- [r_ds_iraction_general]
+SELECT *
+FROM irac_missingactionenquiry
+WHERE oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S');
+
+
+-- DRAFT (needs peer review): [r_ds_ircm]
+-- Confirm the “Online Sale” tracker (id 56125 per payload) exists/active on 33961
+SELECT id, name, active, ircm_campaign_id
+FROM ircm_actiontracker
+WHERE ircm_campaign_id = 33961
+  AND (id = 56125 OR name LIKE '%Online Sale%');
