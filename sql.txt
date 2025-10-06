@@ -1,26 +1,48 @@
--- r_ds_ods
-SELECT *
-FROM maudit_log_entry
-WHERE objectclassname = 'estalea.ir.accounting.invoice.domain.InvoiceSettings'
-  AND coreaccountid = 327676
-ORDER BY changedate DESC;
-
-SELECT *
-FROM maudit_log
-WHERE accountid = 327676
-  AND entity_type = 'InvoiceSettings'
-ORDER BY changedate DESC;
+-- DRAFT: campaign distribution for clicks
+SELECT campaign_id, COUNT(*) AS clicks
+FROM click_fact
+WHERE advertiser_id = 173567
+  AND publisher_id = 376373
+  AND event_datetime >= '2025-07-01' AND event_datetime < '2025-10-02'
+GROUP BY campaign_id
+ORDER BY clicks DESC;
 
 
--- r_ds_ods
-SELECT *
-FROM m_audit_log_entry
-WHERE core_account_id = 327676
-ORDER BY change_date DESC;
+SELECT * FROM click_fact
+WHERE advertiser_id = 173567
+AND publisher_id = 376373
+AND campaign_id = 3899
+AND event_datetime BETWEEN '2025-07-01' AND '2025-10-02'
+ORDER BY event_datetime DESC;
 
 
--- r_ds_iracct
-SELECT *
-FROM finance_email_log
-WHERE iram_account_id = 327676
-ORDER BY doe DESC;
+SELECT
+ cf.campaign_id, cf.event_datetime,
+ JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
+ cf.click_id, cf.profile_id,
+ ad.ad_id, ad.name AS ad_name,
+ JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
+ JSON_EXTRACT_STRING(cf.json,'ruleName') AS rule_name,
+ landing_page_url, cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
+ cf.method, cf.classification
+FROM click_fact cf
+LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
+WHERE advertiser_id = 173567
+  AND cf.publisher_id = 376373
+  AND cf.campaign_id = 3899
+  AND event_datetime >= '2025-07-01' AND event_datetime < '2025-10-02'
+ORDER BY cf.event_datetime DESC;
+
+
+SELECT * FROM irad_ad
+WHERE ircm_campaign_id = 3899
+  AND ad_id = 797408;
+
+
+SELECT campaign_id, COUNT(*) AS clicks
+FROM click_fact
+WHERE advertiser_id = 173567
+  AND publisher_id = 376373
+  AND event_datetime >= '2025-07-01' AND event_datetime < '2025-10-02'
+GROUP BY campaign_id
+ORDER BY clicks DESC;
