@@ -1,30 +1,12 @@
--- VETTED: Detailed action view for a set of actions
-select
-  action_id, oid, campaign_id, action_date,
-  metadata, order_json, item_json
-from irac_action2
-where campaign_id = 9099
-  and action_id in (
-    '9099.6485.738628','9099.6485.753108','9099.6485.753094',
-    '9099.6485.735406','9099.6485.722045','9099.6485.732435',
-    '9099.6485.732434','9099.6485.717142','9099.6485.717071',
-    '9099.6485.732324','9099.6485.714308','9099.6485.714316',
-    '9099.6485.714300','9099.6485.722915','9099.6485.712962'
-  );
-
-
-select
-  af.action_datetime, af.advertiser_id, af.campaign_id, af.action_id, af.oid,
-  af.ref_url, af.ref_domain, af.ref_landingpage_url
-from action_fact af
-where af.advertiser_id = 1327055
-  and af.campaign_id = 9099
-  and af.action_datetime >= '2025-09-27' and af.action_datetime < '2025-10-04'
-  and af.oid in (
-    'd558c7f3d22341346356bebc561b4b04f2dfac497031b1a7f0ad014b2be859b0',
-    '8761c62c231044009a42a71a152a95235fe80599a4052ad3a394a9b38a23567f',
-    'eb76d5ba63a6f7b22ac30f7ff3e873fc982d3c69f924a8296da4b8eded685dd8',
-    'ffb0094001324c2d152c29206230aed456d97e6824ca81e8e4f15d4b7d599709',
-    '65b65b9dfa09c26ee45c4520389a2e789c1f9de74d4abbd0c97fe5996edc9921'
-  )
-order by af.action_datetime desc;
+SELECT
+  ins.name AS template_term_name, st.name AS scheduled_term_name,
+  st.start_date, st.end_date,
+  atr1.name AS tracker_name_1,
+  JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON),'$.actionTrackers[0].actionTracker')) AS payout_tracker_1
+FROM ircm_scheduled_terms st
+INNER JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+LEFT JOIN ircm_actiontracker atr1
+  ON atr1.ircm_campaign_id = st.ircm_campaign_id
+ AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON),'$.actionTrackers[0].actionTracker'))
+WHERE st.ircm_campaign_id = 33961
+ORDER BY st.start_date DESC;
