@@ -1,25 +1,2 @@
--- [IRDW / r_ds_singlestore]
-SELECT *
-FROM radius_path_event_fact
-WHERE conversion_event_id = 'A-b75370d1-f65a-4100-8f19-095413060245';
-
-
--- [r_ds_iraction_general]
-SELECT *
-FROM irac_test_action
-WHERE program_id = '33961'
-  AND oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S');
-
-
--- [r_ds_iraction_general]
-SELECT *
-FROM irac_missingactionenquiry
-WHERE oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S');
-
-
--- DRAFT (needs peer review): [r_ds_ircm]
--- Confirm the “Online Sale” tracker (id 56125 per payload) exists/active on 33961
-SELECT id, name, active, ircm_campaign_id
-FROM ircm_actiontracker
-WHERE ircm_campaign_id = 33961
-  AND (id = 56125 OR name LIKE '%Online Sale%');
+-- [ircm] signed contracts on this campaign
+select * from ircm_signedcontract where ircm_campaign_id = 33961;
