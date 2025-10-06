@@ -1,8 +1,0 @@
-select * from ircm_signedcontract
-where ircm_campaign_id = 33961 and iram_publisher_id = 6181753;
-
-
-select * from ircm_onlineactionterms
-where ircm_ioterms_id = <ioterms_id_from_step_1>;
-
-
