@@ -1,6 +1,7 @@
-select * from ircm_signedcontract
-where ircm_campaign_id = 33961 and iram_publisher_id = 6181753;
+SELECT *
+FROM ircm_pendingcontract pc
+INNER JOIN ircm_campaign ic on ic.id = pc.ircm_campaign_id
+WHERE pc.iram_publisher_id = 6181753 AND pc.ircm_campaign_id = 33961;
 
 
-select * from ircm_onlineactionterms
-where ircm_ioterms_id = <ioterms_id_from_step_1>;
+SELECT * FROM iram_account WHERE id = 6181753;
