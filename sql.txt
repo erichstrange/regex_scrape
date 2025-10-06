@@ -1,33 +1,65 @@
+-- Datasource: irdw_imp (SingleStore)
 SELECT
-  cf.campaign_id, cf.event_datetime,
-  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
-  cf.click_id, cf.profile_id,
-  ad.ad_id, ad.name AS ad_name,
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json,'ruleName')      AS rule_name,
-  landing_page_url, cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
-  cf.method, cf.classification
-FROM click_fact cf
-LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE advertiser_id = 173567
-  AND cf.publisher_id = 376373
-  AND cf.campaign_id = 3899
-  AND event_datetime >= '2025-09-30' AND event_datetime < '2025-10-03'
-ORDER BY cf.event_datetime DESC;
+  oid,
+  action_id,
+  platform AS device,
+  device_family AS device_type,
+  os_name AS OS,
+  ua_name AS User_Agent
+FROM action_fact fact
+INNER JOIN client_dim cld
+  ON cld.id = client_dim_id
+WHERE
+  fact.action_datetime BETWEEN '2025-09-29 00:00:00' AND '2025-10-06 23:59:59'
+  AND advertiser_id = 5804675
+  AND campaign_id  = 33961
+  AND oid IN (
+    'US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S'
+  );
 
 
-select
-   af.action_datetime, af.advertiser_id, af.campaign_id, af.action_id,
-   af.publisher_id, af.oid,
-   ad.ad_id, ad.name,
-   af.ref_url, af.ref_domain, af.ref_landingpage_url,
-   af.ref_profile_id
-from action_fact af
-left join ad_dim ad on ad.id = af.ref_ad_dim_id
-where af.campaign_id = 3899
-  and af.publisher_id = 376373
-  and af.oid IN ('4649748041','4649667754','4649551514')
-order by af.action_datetime desc;
+
+-- Datasource: irdw_imp (SingleStore) – alternate join
+SELECT
+  oid,
+  action_id,
+  platform AS device,
+  device_family AS device_type,
+  os_name AS OS,
+  ua_name AS User_Agent
+FROM action_fact fact
+INNER JOIN client_dim cld
+  ON cld.id = ref_client_dim_id
+WHERE
+  fact.action_datetime BETWEEN '2025-09-29 00:00:00' AND '2025-10-06 23:59:59'
+  AND advertiser_id = 5804675
+  AND campaign_id  = 33961
+  AND oid IN (
+    'US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S'
+  );
 
 
-SELECT * FROM irad_ad WHERE ircm_campaign_id IN (3808,3899) AND ad_id = 797408;
+
+-- Datasource: iraction_sharded
+SELECT
+  action_id, oid, campaign_id, ircm_terms_id, payout_trace, sku,
+  ircm_category_list_id, doe
+FROM irac_action2
+WHERE campaign_id = 33961
+  AND oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S')
+ORDER BY doe;
+
+
+-- Datasource: actionlogging_sharded
+SELECT *
+FROM ir_noreferrer_event
+WHERE campaign_id = 33961
+  AND oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S')
+ORDER BY action_date DESC;
+
+
+-- Datasource: r_ds_iraction_general
+SELECT *
+FROM irac_test_action
+WHERE program_id = '33961'
+  AND oid IN ('US-12062826-S','US-12060804-S','US-12043560-S','US-12031873-S','US-12031307-S');
