@@ -1,48 +1,33 @@
--- DRAFT: campaign distribution for clicks
-SELECT campaign_id, COUNT(*) AS clicks
-FROM click_fact
-WHERE advertiser_id = 173567
-  AND publisher_id = 376373
-  AND event_datetime >= '2025-07-01' AND event_datetime < '2025-10-02'
-GROUP BY campaign_id
-ORDER BY clicks DESC;
-
-
-SELECT * FROM click_fact
-WHERE advertiser_id = 173567
-AND publisher_id = 376373
-AND campaign_id = 3899
-AND event_datetime BETWEEN '2025-07-01' AND '2025-10-02'
-ORDER BY event_datetime DESC;
-
-
 SELECT
- cf.campaign_id, cf.event_datetime,
- JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
- cf.click_id, cf.profile_id,
- ad.ad_id, ad.name AS ad_name,
- JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
- JSON_EXTRACT_STRING(cf.json,'ruleName') AS rule_name,
- landing_page_url, cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
- cf.method, cf.classification
+  cf.campaign_id, cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
+  cf.click_id, cf.profile_id,
+  ad.ad_id, ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json,'ruleName')      AS rule_name,
+  landing_page_url, cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
+  cf.method, cf.classification
 FROM click_fact cf
 LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
 WHERE advertiser_id = 173567
   AND cf.publisher_id = 376373
   AND cf.campaign_id = 3899
-  AND event_datetime >= '2025-07-01' AND event_datetime < '2025-10-02'
+  AND event_datetime >= '2025-09-30' AND event_datetime < '2025-10-03'
 ORDER BY cf.event_datetime DESC;
 
 
-SELECT * FROM irad_ad
-WHERE ircm_campaign_id = 3899
-  AND ad_id = 797408;
+select
+   af.action_datetime, af.advertiser_id, af.campaign_id, af.action_id,
+   af.publisher_id, af.oid,
+   ad.ad_id, ad.name,
+   af.ref_url, af.ref_domain, af.ref_landingpage_url,
+   af.ref_profile_id
+from action_fact af
+left join ad_dim ad on ad.id = af.ref_ad_dim_id
+where af.campaign_id = 3899
+  and af.publisher_id = 376373
+  and af.oid IN ('4649748041','4649667754','4649551514')
+order by af.action_datetime desc;
 
 
-SELECT campaign_id, COUNT(*) AS clicks
-FROM click_fact
-WHERE advertiser_id = 173567
-  AND publisher_id = 376373
-  AND event_datetime >= '2025-07-01' AND event_datetime < '2025-10-02'
-GROUP BY campaign_id
-ORDER BY clicks DESC;
+SELECT * FROM irad_ad WHERE ircm_campaign_id IN (3808,3899) AND ad_id = 797408;
