@@ -1,3 +1,35 @@
+SELECT action_id, oid, campaign_id, ircm_terms_id, payout_trace, sku, ircm_category_list_id, doe
+FROM irac_action2
+WHERE oid = '6023556333756' AND campaign_id = 25209
+ORDER BY doe;
+
+
+
+SELECT * FROM ir_noreferrer_event
+WHERE oid = '6023556333756' AND campaign_id = 25209;
+
+-- Check scheduled terms & trackers for campaign 25209
+SELECT ins.name AS template_term_name, st.name AS scheduled_term_name, st.start_date, st.end_date,
+       atr1.name AS tracker_name_1,
+       JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
+FROM ircm_scheduled_terms st
+JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+LEFT JOIN ircm_actiontracker atr1
+  ON atr1.ircm_campaign_id = st.ircm_campaign_id
+ AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
+WHERE st.ircm_campaign_id = 25209
+ORDER BY st.start_date DESC;
+
+
+
+SELECT it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
+FROM ircm_ioterms it
+LEFT JOIN ircm_insertionorder io ON it.iram_advertiser_id = io.iram_advertiser_id
+WHERE ircm_campaign_id = 25209;
+
+
+
+
 -- [ircm] signed contracts on this campaign
 select * from ircm_signedcontract where ircm_campaign_id = 33961
 
