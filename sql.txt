@@ -1,17 +1,3 @@
-SELECT mpid,
-       CASE
-         WHEN sc.id IS NOT NULL THEN 'signed'
-         WHEN pc.id IS NOT NULL THEN 'pending'
-         ELSE 'none'
-       END AS contract_state
-FROM (
-  SELECT 6181753 AS mpid
-  UNION ALL SELECT 6569947
-) m
-LEFT JOIN ircm_signedcontract sc
-       ON sc.iram_publisher_id = m.mpid
-      AND sc.ircm_campaign_id = 33961
-      AND sc.date_contract_end IS NULL
-LEFT JOIN ircm_pendingcontract pc
-       ON pc.iram_publisher_id = m.mpid
-      AND pc.ircm_campaign_id = 33961;
+SELECT id, seo_alias, description
+FROM iram_account
+WHERE id IN (6181753,6569947);
