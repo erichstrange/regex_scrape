@@ -1,7 +1,29 @@
-SELECT *
-FROM ircm_pendingcontract pc
-INNER JOIN ircm_campaign ic on ic.id = pc.ircm_campaign_id
-WHERE pc.iram_publisher_id = 6181753 AND pc.ircm_campaign_id = 33961;
+SELECT * FROM iram_account
+WHERE id IN (2097176, 1982379, 1808421, 255268);
 
 
-SELECT * FROM iram_account WHERE id = 6181753;
+-- DRAFT: Map user email(s) -> all account memberships
+SELECT
+  ce.id AS user_id,
+  LOWER(ce.email) AS email,
+  u.irAccount_Id AS account_id,
+  u.state AS usership_state
+FROM core_estaleauser ce
+JOIN iram_usership u ON u.account_user_id = ce.id
+WHERE LOWER(ce.email) IN ('gary@gravityfed.com','garym@gravityfed.com')
+ORDER BY email, account_id;
+
+
+
+255268, 2066329, 2066345, 1982379
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state,
+       ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = "255268"          -- replace with each account id
+ORDER BY ce.lastlogin_date DESC;
+
+
+
+SELECT * FROM iram_member_user_invitation
+WHERE iram_iraccount_id IN (255268, 2066329, 2066345, 1982379, 2097176);
