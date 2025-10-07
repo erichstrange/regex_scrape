@@ -1,83 +1,37 @@
-SELECT  id, uuid, state, partner_approval_state,rejection_reason_type, rejection_reason, type_desc, date_last_scored , deactivate_date, deactivation_reason_type, close_date
-FROM iram_account
-WHERE id IN (2097176, 1982379, 1808421, 255268);
-
-+---------+-----------------------------------------------------+-------------+------------------------+-----------------------+------------------+-------------------+---------------------+---------------------+--------------------------+---------------------+
-|      id | uuid                                                | state       | partner_approval_state | rejection_reason_type | rejection_reason | type_desc         | date_last_scored    | deactivate_date     | deactivation_reason_type | close_date          |
-+---------+-----------------------------------------------------+-------------+------------------------+-----------------------+------------------+-------------------+---------------------+---------------------+--------------------------+---------------------+
-|  255268 | A255268-d905-4d0a-9a92-680a31bab0711                | ACTIVE      | NOT_APPLICABLE         | ʘ                     | ʘ                | PUBLISHER         | 2025-07-24 21:30:00 | ʘ                   | ʘ                        | ʘ                   |
-| 1808421 | A1808421-8278-49c7-b11f-281423c7ba801               | DEACTIVATED | DEACTIVATED_BY_PARTNER | ʘ                     | ʘ                | ADVERTISER        | ʘ                   | 2020-02-21 16:56:35 | CUSTOMER_REQUEST         | ʘ                   |
-| 1982379 | A1982379-61ec-4329-a77b-a3515d34cdf51               | ACTIVE      | NOT_APPLICABLE         | ʘ                     | ʘ                | SOLUTION_PROVIDER | ʘ                   | ʘ                   | ʘ                        | ʘ                   |
-| 2097176 | A2097176-bb31-4c66-a59b-52f8e2e7fa641_1759148951078 | CLOSED      | NOT_APPLICABLE         | ʘ                     | ʘ                | SOLUTION_PROVIDER | ʘ                   | 2025-09-29 12:28:46 | ADVERTISER_REQUEST       | 2025-09-29 12:29:11 |
-+---------+-----------------------------------------------------+-------------+------------------------+-----------------------+------------------+-------------------+---------------------+---------------------+--------------------------+---------------------+
-
-
--- DRAFT: Map user email(s) -> all account memberships
-SELECT
-  ce.id AS user_id,
-  LOWER(ce.email) AS email,
-  u.irAccount_Id AS account_id,
-  u.state AS usership_state
-FROM core_estaleauser ce
-JOIN iram_usership u ON u.account_user_id = ce.id
-WHERE LOWER(ce.email) IN ('gary@gravityfed.com','garym@gravityfed.com')
-ORDER BY email, account_id;
-
-+---------+----------------------+------------+----------------+
-| user_id | email                | account_id | usership_state |
-+---------+----------------------+------------+----------------+
-|  257633 | gary@gravityfed.com  |     255268 | ACTIVE         |
-|  257633 | gary@gravityfed.com  |    1808421 | ACTIVE         |
-|  257633 | gary@gravityfed.com  |    1993237 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2003851 | DEACTIVATED    |
-|  257633 | gary@gravityfed.com  |    2066329 | ACTIVE         |
-|  257633 | gary@gravityfed.com  |    2066340 | ACTIVE         |
-|  257633 | gary@gravityfed.com  |    2066345 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2097176 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2211522 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2213151 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2236422 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2258989 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2296910 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2343631 | ACTIVE         |
-| 2626604 | gary@gravityfed.com  |    2572146 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2589354 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    2630202 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    2662258 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    2737483 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    3060330 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    3585795 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    4094609 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    4638504 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    4885363 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    4986994 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    5050124 | DEACTIVATED    |
-| 2138598 | gary@gravityfed.com  |    5073372 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    5756827 | ACTIVE         |
-| 2138598 | gary@gravityfed.com  |    5887850 | DEACTIVATED    |
-| 6699009 | garym@gravityfed.com |    2097176 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    2662258 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    3585795 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    4094609 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    4885363 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    5050124 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    5073372 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    5887850 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    6124983 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    6476969 | ACTIVE         |
-| 6699009 | garym@gravityfed.com |    6488816 | ACTIVE         |
-+---------+----------------------+------------+----------------+
-
-
-255268, 2066329, 2066345, 1982379
-SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state,
-       ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
-FROM iram_usership u
-JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE u.irAccount_Id = "255268"          -- replace with each account id
-ORDER BY ce.lastlogin_date DESC;
+-- A) Creators (MPIDs) that generated conversions in the last 14 days
+SELECT mediapartner_id AS mpid,
+       COUNT(*) AS convs,
+       MAX(oid) AS sample_oid,
+       MAX(submit_date) AS last_seen
+FROM ir_api_log
+WHERE iram_account_id = 5804675          -- Topps
+  AND ircm_campaign_id = 33961           -- Topps Creator
+  AND type = 'Conversion'
+  AND submit_date >= DATE_SUB(NOW(), INTERVAL 14 DAY)
+GROUP BY mediapartner_id
+ORDER BY convs DESC;
 
 
 
-SELECT * FROM iram_member_user_invitation
-WHERE iram_iraccount_id IN (255268, 2066329, 2066345, 1982379, 2097176);
+-- B) Of the above MPIDs, which are NOT under a signed active contract on 33961?
+WITH cte AS (
+  SELECT DISTINCT mediapartner_id AS mpid
+  FROM ir_api_log
+  WHERE iram_account_id = 5804675
+    AND ircm_campaign_id = 33961
+    AND type = 'Conversion'
+    AND submit_date >= DATE_SUB(NOW(), INTERVAL 14 DAY)
+)
+SELECT cte.mpid,
+       CASE WHEN sc.id IS NOT NULL THEN 'signed'
+            WHEN pc.id IS NOT NULL THEN 'pending'
+            ELSE 'none'
+       END AS contract_state
+FROM cte
+LEFT JOIN ircm_signedcontract sc
+  ON sc.iram_publisher_id = cte.mpid
+ AND sc.ircm_campaign_id = 33961
+ AND sc.date_contract_end IS NULL
+LEFT JOIN ircm_pendingcontract pc
+  ON pc.iram_publisher_id = cte.mpid
+ AND pc.ircm_campaign_id = 33961;
