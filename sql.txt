@@ -1,37 +1,17 @@
--- A) Creators (MPIDs) that generated conversions in the last 14 days
-SELECT mediapartner_id AS mpid,
-       COUNT(*) AS convs,
-       MAX(oid) AS sample_oid,
-       MAX(submit_date) AS last_seen
-FROM ir_api_log
-WHERE iram_account_id = 5804675          -- Topps
-  AND ircm_campaign_id = 33961           -- Topps Creator
-  AND type = 'Conversion'
-  AND submit_date >= DATE_SUB(NOW(), INTERVAL 14 DAY)
-GROUP BY mediapartner_id
-ORDER BY convs DESC;
-
-
-
--- B) Of the above MPIDs, which are NOT under a signed active contract on 33961?
-WITH cte AS (
-  SELECT DISTINCT mediapartner_id AS mpid
-  FROM ir_api_log
-  WHERE iram_account_id = 5804675
-    AND ircm_campaign_id = 33961
-    AND type = 'Conversion'
-    AND submit_date >= DATE_SUB(NOW(), INTERVAL 14 DAY)
-)
-SELECT cte.mpid,
-       CASE WHEN sc.id IS NOT NULL THEN 'signed'
-            WHEN pc.id IS NOT NULL THEN 'pending'
-            ELSE 'none'
+SELECT mpid,
+       CASE
+         WHEN sc.id IS NOT NULL THEN 'signed'
+         WHEN pc.id IS NOT NULL THEN 'pending'
+         ELSE 'none'
        END AS contract_state
-FROM cte
+FROM (
+  SELECT 6181753 AS mpid
+  UNION ALL SELECT 6569947
+) m
 LEFT JOIN ircm_signedcontract sc
-  ON sc.iram_publisher_id = cte.mpid
- AND sc.ircm_campaign_id = 33961
- AND sc.date_contract_end IS NULL
+       ON sc.iram_publisher_id = m.mpid
+      AND sc.ircm_campaign_id = 33961
+      AND sc.date_contract_end IS NULL
 LEFT JOIN ircm_pendingcontract pc
-  ON pc.iram_publisher_id = cte.mpid
- AND pc.ircm_campaign_id = 33961;
+       ON pc.iram_publisher_id = m.mpid
+      AND pc.ircm_campaign_id = 33961;
