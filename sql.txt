@@ -1,56 +1,19 @@
-/* MPIDs observed creating conversions on 33961 (paste yours here) */
-WITH mp AS (
-  SELECT 6181753 AS mpid
-  UNION ALL SELECT 6569947
-)
-
-SELECT 
-  mp.mpid,
-  ia.description AS partner_name,             -- null when there is no partner account
-  CASE 
-    WHEN sc.id IS NOT NULL THEN 'signed'      -- signed, date_contract_end IS NULL
-    WHEN pc.id IS NOT NULL THEN 'pending'     -- pending application/offer
-    ELSE 'none'
-  END AS contract_state,
-  sc.date_advertiser_signed,
-  sc.date_publisher_signed
-FROM mp
-LEFT JOIN ircm.ircm_signedcontract sc
-       ON sc.iram_publisher_id = mp.mpid
-      AND sc.ircm_campaign_id = 33961
-      AND sc.date_contract_end IS NULL
-LEFT JOIN ircm.ircm_pendingcontract pc
-       ON pc.iram_publisher_id = mp.mpid
-      AND pc.ircm_campaign_id = 33961
-LEFT JOIN iram.iram_account ia               -- may require cross‑schema support
-       ON ia.id = mp.mpid
-ORDER BY contract_state DESC, partner_name;
+SELECT action_id, oid, campaign_id, ref_profile_id, ref_url, ref_domain, ref_user_agent, payout_trace, doe
+FROM irac_action2
+WHERE campaign_id = 12885
+  AND oid IN ('079220018642440','079220018642467','079220018642480')
+ORDER BY doe;
 
 
-WITH mp AS (SELECT 6181753 AS mpid UNION ALL SELECT 6569947)
-SELECT
-  mp.mpid,
-  CASE
-    WHEN sc.id IS NOT NULL THEN 'signed'
-    WHEN pc.id IS NOT NULL THEN 'pending'
-    ELSE 'none'
-  END AS contract_state
-FROM mp
-LEFT JOIN ircm_signedcontract sc
-  ON sc.iram_publisher_id = mp.mpid
- AND sc.ircm_campaign_id = 33961
- AND sc.date_contract_end IS NULL
-LEFT JOIN ircm_pendingcontract pc
-  ON pc.iram_publisher_id = mp.mpid
- AND pc.ircm_campaign_id = 33961;
+SELECT * FROM ir_noreferrer_event
+WHERE campaign_id = 12885
+  AND oid IN ('079220018642440','079220018642467','079220018642480');
 
 
-SELECT id AS mpid, description AS partner_name, state
-FROM iram_account
-WHERE id IN (6181753, 6569947);
-
-+---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
-|    mpid | partner_name                                                                                                                                                                                              | state  |
-+---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
-| 6569947 | The Marine Layer aims to tell the story of being a Seattle Mariners fan, while tying in numbers-based analysis, top-shelf interviews, and growing into one of the biggest brands in the Mariners' space.  | ACTIVE |
-+---------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+
+SELECT *
+FROM click_fact
+WHERE advertiser_id = 2632809
+  AND publisher_id = 116548        -- LTK
+  AND campaign_id  = 12885
+  AND event_datetime BETWEEN '2025-10-06 00:00:00' AND '2025-10-07 00:00:00'
+ORDER BY event_datetime DESC;
