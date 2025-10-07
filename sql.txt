@@ -1,52 +1,50 @@
--- CURRENT RULES ON THE TRACKER (Active trackers + patterns)
-SELECT  C.iram_advertiser_id,
-        M.ircm_campaign_id,
-        M.id              AS tracker_id,
-        M.name            AS tracker_name,
-        M.state,
-        M.trackerType,
-        M.method,
-        M.activation_date,
-        M.deactivation_date,
-        M.oid_pattern,           -- Order ID regex (allow-list)
-        M.url_pattern,           -- Conversion page URL regex (allow-list)
-        M.dlu, M.ulu, M.doe, M.uoe
-FROM ircm_actiontracker M
-LEFT JOIN ircm_campaign C ON M.ircm_campaign_id = C.id
-WHERE M.ircm_campaign_id = 25209
-  AND M.id = 46312;
+/* MPIDs observed creating conversions on 33961 (paste yours here) */
+WITH mp AS (
+  SELECT 6181753 AS mpid
+  UNION ALL SELECT 6569947
+)
+
+SELECT 
+  mp.mpid,
+  ia.description AS partner_name,             -- null when there is no partner account
+  CASE 
+    WHEN sc.id IS NOT NULL THEN 'signed'      -- signed, date_contract_end IS NULL
+    WHEN pc.id IS NOT NULL THEN 'pending'     -- pending application/offer
+    ELSE 'none'
+  END AS contract_state,
+  sc.date_advertiser_signed,
+  sc.date_publisher_signed
+FROM mp
+LEFT JOIN ircm.ircm_signedcontract sc
+       ON sc.iram_publisher_id = mp.mpid
+      AND sc.ircm_campaign_id = 33961
+      AND sc.date_contract_end IS NULL
+LEFT JOIN ircm.ircm_pendingcontract pc
+       ON pc.iram_publisher_id = mp.mpid
+      AND pc.ircm_campaign_id = 33961
+LEFT JOIN iram.iram_account ia               -- may require cross‑schema support
+       ON ia.id = mp.mpid
+ORDER BY contract_state DESC, partner_name;
 
 
-+--------------------+------------------+------------+--------------+--------+-------------+--------+---------------------+-------------------+-------------+----------------------------------+---------------------+------------+---------------------+-----------+
-| iram_advertiser_id | ircm_campaign_id | tracker_id | tracker_name | state  | trackerType | method | activation_date     | deactivation_date | oid_pattern | url_pattern                      | dlu                 | ulu        | doe                 | uoe       |
-+--------------------+------------------+------------+--------------+--------+-------------+--------+---------------------+-------------------+-------------+----------------------------------+---------------------+------------+---------------------+-----------+
-|            5449922 |            25209 |      46312 | Online Sale  | ACTIVE | SALE        | PIXEL  | 2024-06-20 23:56:40 | ʘ                 | ʘ           | .*(confirm|confirmation|order).* | 2025-03-12 20:12:31 | TRACK-2241 | 2024-05-09 15:10:57 | dwinenger |
-+--------------------+------------------+------------+--------------+--------+-------------+--------+---------------------+-------------------+-------------+----------------------------------+---------------------+------------+---------------------+-----------+
+WITH mp AS (SELECT 6181753 AS mpid UNION ALL SELECT 6569947)
+SELECT
+  mp.mpid,
+  CASE
+    WHEN sc.id IS NOT NULL THEN 'signed'
+    WHEN pc.id IS NOT NULL THEN 'pending'
+    ELSE 'none'
+  END AS contract_state
+FROM mp
+LEFT JOIN ircm_signedcontract sc
+  ON sc.iram_publisher_id = mp.mpid
+ AND sc.ircm_campaign_id = 33961
+ AND sc.date_contract_end IS NULL
+LEFT JOIN ircm_pendingcontract pc
+  ON pc.iram_publisher_id = mp.mpid
+ AND pc.ircm_campaign_id = 33961;
 
 
-
-
-
-SELECT change_date, username, auditedvariable, previousval, newval
-FROM m_audit_log_entry
-WHERE objectclassname = 'estalea.ir.cm.campaign.domain.TechnicalIntegration'
-  AND objectid = 25209
-  AND newval != previousval
-ORDER BY change_date DESC
-LIMIT 400;
-
-+-------------+----------+-----------------+-------------+--------+
-| change_date | username | auditedvariable | previousval | newval |
-+-------------+----------+-----------------+-------------+--------+
-+-------------+----------+-----------------+-------------+--------+
-
-
-SELECT *
-FROM ircm_action_credit_rule_history
-WHERE ircm_actiontracker_id = 46312
-ORDER BY date_started DESC;
-+-------+-----------------------+----------------------------------------------------+---------------------+------------+---------------------+---------------------+-----------+-----------+------------------------+
-|    id | ircm_actiontracker_id | rule_json                                          | date_started        | date_ended | doe                 | dlu                 | uoe       | ulu       | core_estaleanetwork_id |
-+-------+-----------------------+----------------------------------------------------+---------------------+------------+---------------------+---------------------+-----------+-----------+------------------------+
-| 38680 |                 46312 | [{"rule":"LAST_REFERRER","order":0,"lookback":""}] | 2024-05-09 15:10:57 | ʘ          | 2024-05-09 15:10:57 | 2024-05-09 15:10:57 | dwinenger | dwinenger |                      1 |
-+---
+SELECT id AS mpid, description AS partner_name, state
+FROM iram_account
+WHERE id IN (6181753, 6569947);
