@@ -1,4 +1,22 @@
--- Vetted: Payload by batch_id (ODS r_ds_ods)
-Select payload
-from ir_api_log
-where batch_id = 'A-2bf28bff-ff75-4d37-b925-4db7ba4b9c44';
+-- [Singlestore] Click-level validation (vetted pattern)
+SELECT
+  cf.campaign_id,
+  cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
+  cf.click_id,
+  cf.profile_id,
+  ad.ad_id,
+  ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json, 'ruleName') AS rule_name,
+  cf.landing_page_url,
+  cf.method,
+  cf.classification,
+  cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4
+FROM click_fact cf
+LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
+WHERE cf.advertiser_id = <WALMART_ADVERTISER_ID>
+  AND cf.publisher_id  = <PINTEREST_PUBLISHER_ID>
+  AND ad.ad_id IN (1207219)
+  AND cf.event_datetime >= '2025-10-07' AND cf.event_datetime < '2025-10-09'
+ORDER BY cf.event_datetime DESC;
