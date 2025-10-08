@@ -1,54 +1,49 @@
-SELECT ins.name AS template_term_name, st.name AS scheduled_term_name, st.start_date, st.end_date,
-       atr1.name AS tracker_name_1,
-       JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
+-- iraction_sharded
+SELECT
+  action_date,
+  action_id,
+  oid,
+  action_type,
+  action_tracker_id,
+  campaign_id,
+  publisher_id,
+  batch_id,
+  ref_domain,
+  ref_url
+FROM irac_action2
+WHERE campaign_id = 9383
+  AND action_tracker_id = 16681      -- “Online Sale”
+  AND action_date >= '2025-09-08'     -- <from>
+  AND action_date <  '2025-10-09'     -- <to>, exclusive
+ORDER BY action_date DESC
+LIMIT 1000;
+
+
+-- iraction_sharded
+SELECT DISTINCT action_id, oid
+FROM irac_action2
+WHERE campaign_id = 9383
+  AND action_tracker_id = 16681
+  AND action_date >= '2025-09-08'
+  AND action_date <  '2025-10-09'
+ORDER BY action_id DESC;
+
+
+-- ircm
+SELECT
+  ins.name  AS template_term_name,
+  st.name   AS scheduled_term_name,
+  st.start_date, st.end_date,
+  atr1.name AS tracker_name_1,
+  JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON),
+    '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
 FROM ircm_scheduled_terms st
 JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
-LEFT JOIN ircm_actiontracker atr1 ON atr1.ircm_campaign_id = st.ircm_campaign_id
-  AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
-WHERE st.ircm_campaign_id = 9383 -- performacne
+LEFT JOIN ircm_actiontracker atr1
+  ON atr1.ircm_campaign_id = st.ircm_campaign_id
+ AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON),
+    '$.actionTrackers[0].actionTracker'))
+WHERE st.ircm_campaign_id = 9383
+  AND st.end_date   >= '2025-09-08'
+  AND st.start_date <  '2025-10-09'
 ORDER BY st.start_date DESC;
-
-
-+--------------------------------+--------------------------------------+---------------------+---------------------+----------------+------------------+
-| template_term_name             | scheduled_term_name                  | start_date          | end_date            | tracker_name_1 | payout_tracker_1 |
-+--------------------------------+--------------------------------------+---------------------+---------------------+----------------+------------------+
-| Rakuten September Test         | Rakuten 12.21 - 12.31 Rates          | 2024-12-21 08:00:00 | 2025-01-01 08:00:00 | Online Sale    | 16681            |
-| Capital One | Feb 2024         | CapitalOne 7% Contract               | 2024-12-05 08:00:00 | 2024-12-19 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 12.3 to 12.30 Q4 Terms       | 2024-12-03 08:00:00 | 2024-12-21 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn 10% Contract 12.3 to 12.20     | 2024-12-03 08:00:00 | 2024-12-21 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 9% Toys          | 2024-12-03 08:00:00 | 2024-12-21 08:00:00 | Online Sale    | 16681            |
-| Connexity | OPD FD AP | 3/7/24 | Connexity Q4, 10% All                | 2024-12-03 08:00:00 | 2024-12-21 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn 14% Contract 12.2              | 2024-12-02 08:00:00 | 2024-12-03 08:00:00 | Online Sale    | 16681            |
-| TopCashBack Base Terms         | TopCashBack CM Terms 12.2            | 2024-12-02 08:00:00 | 2024-12-03 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 13% All CM       | 2024-12-02 08:00:00 | 2024-12-03 08:00:00 | Online Sale    | 16681            |
-| TopCashBack Base Terms         | TopCashBack BF Extended Weekend      | 2024-11-30 08:00:00 | 2024-12-02 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn Top Partners 14%               | 2024-11-30 08:00:00 | 2024-12-02 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 13% Toys         | 2024-11-30 08:00:00 | 2024-12-02 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 11.27 to 12.2 Q4 Terms       | 2024-11-27 08:00:00 | 2024-12-03 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn 14% Contract 11.27 to 11.29    | 2024-11-27 08:00:00 | 2024-11-30 08:00:00 | Online Sale    | 16681            |
-| TopCashBack Base Terms         | TopCashBack AE2 Terms 11.27 to 11.29 | 2024-11-27 08:00:00 | 2024-11-30 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 13% All          | 2024-11-27 08:00:00 | 2024-11-30 08:00:00 | Online Sale    | 16681            |
-| Connexity | OPD FD AP | 3/7/24 | Connexity Q4, 14% All BF.CM          | 2024-11-27 08:00:00 | 2024-12-03 08:00:00 | Online Sale    | 16681            |
-| Klarna Nov/Dec Always On       | Klarna 11.25 to 12.2 Holiday Rates   | 2024-11-25 08:00:00 | 2024-12-03 08:00:00 | Online Sale    | 16681            |
-| Capital One | Feb 2024         | CapitalOne AE2 Contract              | 2024-11-25 08:00:00 | 2024-12-05 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 11.19 to 11.26 Q4 Terms      | 2024-11-19 08:00:00 | 2024-11-27 08:00:00 | Online Sale    | 16681            |
-| Capital One | Feb 2024         | CapitalOne 7% Contract               | 2024-11-18 08:00:00 | 2024-11-25 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Fallback to Base Rates Rakuten       | 2024-11-18 08:00:00 | 2024-11-19 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 9% Toys          | 2024-11-18 08:00:00 | 2024-11-27 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 11.14 to 11.17 Q4 Terms      | 2024-11-14 08:00:00 | 2024-11-18 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn 10% Contract 11.14 to 11.26    | 2024-11-14 08:00:00 | 2024-11-27 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 11% Toys         | 2024-11-14 08:00:00 | 2024-11-18 08:00:00 | Online Sale    | 16681            |
-| Connexity | OPD FD AP | 3/7/24 | Connexity Q4, 10% All                | 2024-11-14 08:00:00 | 2024-11-27 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 11.12 Q4 Terms               | 2024-11-12 08:00:00 | 2024-11-14 08:00:00 | Online Sale    | 16681            |
-| Klarna Nov/Dec Always On       | Klarna 11.11 to 11.13 Holiday Rates  | 2024-11-11 08:00:00 | 2024-11-14 08:00:00 | Online Sale    | 16681            |
-| Capital One | Feb 2024         | CapitalOne AE1 Contract              | 2024-11-11 08:00:00 | 2024-11-18 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn 14% Contract                   | 2024-11-11 08:00:00 | 2024-11-14 08:00:00 | Online Sale    | 16681            |
-| TopCashBack Base Terms         | TopCashBack AE1 Terms 11.11 to 11.13 | 2024-11-11 08:00:00 | 2024-11-14 08:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 11% All          | 2024-11-11 08:00:00 | 2024-11-14 08:00:00 | Online Sale    | 16681            |
-| Connexity | OPD FD AP | 3/7/24 | Connexity Q4, 14% All                | 2024-11-11 08:00:00 | 2024-11-14 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 11.11 Q4 Terms               | 2024-11-11 01:00:00 | 2024-11-12 08:00:00 | Online Sale    | 16681            |
-| Sovrn | FD | 8.7 Partner Test  | Sovrn 10% Contract                   | 2024-11-01 07:00:00 | 2024-11-11 08:00:00 | Online Sale    | 16681            |
-| Connexity | OPD FD AP | 3/7/24 | Connexity Q4, 10% All                | 2024-11-01 07:00:00 | 2024-11-11 08:00:00 | Online Sale    | 16681            |
-| Rakuten September Test         | Rakuten 11.1 to 11.10 Q4 Terms       | 2024-11-01 04:00:00 | 2024-11-11 01:00:00 | Online Sale    | 16681            |
-| Ibotta Q4 Campaign, 9% Toys    | Ibotta Q4 Campaign, 9% Toys          | 2024-10-23 07:00:00 | 2024-11-11 08:00:00 | Online Sale    | 16681            |
-+--------------------------------+--------------------------------------+---------------------+---------------------+----------------+------------------+
