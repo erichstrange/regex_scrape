@@ -1,49 +1,35 @@
--- iraction_sharded
+-- [singlestore] click_fact_by_campaign_ad_template.sql (reference)
 SELECT
-  action_date,
-  action_id,
-  oid,
-  action_type,
-  action_tracker_id,
-  campaign_id,
-  publisher_id,
-  batch_id,
-  ref_domain,
-  ref_url
-FROM irac_action2
-WHERE campaign_id = 9383
-  AND action_tracker_id = 16681      -- “Online Sale”
-  AND action_date >= '2025-09-08'     -- <from>
-  AND action_date <  '2025-10-09'     -- <to>, exclusive
-ORDER BY action_date DESC
-LIMIT 1000;
+  cf.campaign_id,
+  cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
+  cf.click_id,
+  cf.profile_id,
+  ad.ad_id,
+  ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json, 'ruleName') AS rule_name,
+  cf.landing_page_url,
+  cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
+  cf.method,
+  cf.classification
+FROM click_fact cf
+LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
+WHERE cf.event_datetime >= '2025-10-06' AND cf.event_datetime < '2025-10-09'
+  AND cf.landing_page_url LIKE '%walmart.com/sc/cart/addToCart%'
+ORDER BY cf.event_datetime DESC;
 
 
--- iraction_sharded
-SELECT DISTINCT action_id, oid
-FROM irac_action2
-WHERE campaign_id = 9383
-  AND action_tracker_id = 16681
-  AND action_date >= '2025-09-08'
-  AND action_date <  '2025-10-09'
-ORDER BY action_id DESC;
 
 
--- ircm
-SELECT
-  ins.name  AS template_term_name,
-  st.name   AS scheduled_term_name,
-  st.start_date, st.end_date,
-  atr1.name AS tracker_name_1,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON),
-    '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
-FROM ircm_scheduled_terms st
-JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
-LEFT JOIN ircm_actiontracker atr1
-  ON atr1.ircm_campaign_id = st.ircm_campaign_id
- AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON),
-    '$.actionTrackers[0].actionTracker'))
-WHERE st.ircm_campaign_id = 9383
-  AND st.end_date   >= '2025-09-08'
-  AND st.start_date <  '2025-10-09'
-ORDER BY st.start_date DESC;
+SELECT event_datetime, advertiser_id, campaign_id, click_id, method, classification,
+       referring_url, landing_page_url, ua_name, os_name, platform, json
+FROM click_fact
+WHERE click_id IN ('2s2wGRWmixycWEVSyNXYVya-Ukp3bYwe8TPb1A0',
+                   '2s2wGRWmixycWEVSyNXYVya-Ukp3bYUv8TPb1A0')
+  AND event_datetime >= '2025-10-06' AND event_datetime < '2025-10-10';
+
+
+
+-- [iram] get_account_by_id.sql
+SELECT * FROM iram_account WHERE id = 1356456;
