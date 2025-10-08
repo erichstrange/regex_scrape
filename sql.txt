@@ -1,22 +1,4 @@
-/* Helium 10 – Vanity Links (Query 47) + Partner ID
-   Snapshot as-of EOD 2025-10-07 (UTC) */
-
-SELECT
-  CAST(su.short_url AS CHAR)                                AS short_url,
-  su.ircm_campaign_id,
-  c.name                                                    AS program_name,
-  su.archived,
-  su.ulu,
-  su.dlu,
-  /* Derive partner_id from /c/<pid>/ in the tracking URL */
-  CASE
-    WHEN CAST(su.tracking_url AS CHAR) LIKE '%/c/%' THEN
-      CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(CAST(su.tracking_url AS CHAR), '/c/', -1), '/', 1) AS UNSIGNED)
-    ELSE NULL
-  END                                                       AS partner_id
-FROM ircm_short_url su
-JOIN ircm_campaign c
-  ON c.id = su.ircm_campaign_id
-WHERE c.iram_advertiser_id = 6321789
-  AND su.doe < '2025-10-08 00:00:00'   -- EOD 10/07 in UTC (use 07:00:00 if you need Pacific EOD)
-ORDER BY su.dlu DESC;
+-- Vetted: Payload by batch_id (ODS r_ds_ods)
+Select payload
+from ir_api_log
+where batch_id = 'A-2bf28bff-ff75-4d37-b925-4db7ba4b9c44';
