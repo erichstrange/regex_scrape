@@ -1,59 +1,22 @@
--- DRAFT (r_ds_ods) – get the API ingestion row for the exact order Mike cited
-SELECT id, batch_id, iram_account_id, ircm_campaign_id, ircm_tracker_id,
-       mediapartner_id, submit_date, type, oid, payload
-FROM ir_api_log
-WHERE iram_account_id = 5804675
-  AND ircm_campaign_id = 33961
-  AND type = 'Conversion'
-  AND oid = 'US-12029583-S'     -- Mike’s example OID from 2025‑10‑02
-ORDER BY submit_date DESC
-LIMIT 5;
+/* Helium 10 – Vanity Links (Query 47) + Partner ID
+   Snapshot as-of EOD 2025-10-07 (UTC) */
 
-+-------------+----------------------------------------+-----------------+------------------+-----------------+-----------------+---------------------+------------+---------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| id          | batch_id                               | iram_account_id | ircm_campaign_id | ircm_tracker_id | mediapartner_id | submit_date         | type       | oid           | payload                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-+-------------+----------------------------------------+-----------------+------------------+-----------------+-----------------+---------------------+------------+---------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 24047875613 | A-2bf28bff-ff75-4d37-b925-4db7ba4b9c44 |         5804675 |            33961 |           56125 |         6181753 | 2025-10-02 19:48:14 | Conversion | US-12029583-S | CampaignId=33961&CurrencyCode=USD&ActionTrackerID=56125&EventDate=2025-10-02T15%3A41%3A18-04%3A00&OrderId=US-12029583-S&ClickId=Q-OwMOR63xycT%3ARx-30mPU2MUkp3jsQmIy7Sww0&CustomerEmail=29a264b573dd89c6244483d0f525cd5941ff19a408e2e15aefe9f784accd3864&CustomerId=8237509279901&CustomerStatus=New&ItemSku1=ARTBB-16C2S-25TN-0811-QTY1&ItemSubTotal1=8.99&ItemQuantity1=1&ItemCategory1=Mookie%20Betts%20-%202025%20MLB%20Topps%20NOW%C2%AE%20-%20Card%20811&ItemSku2=ARTBB-16C2S-25TN-0810-QTY1&ItemSubTotal2=8.99&ItemQuantity2=1&ItemCategory2=Yoshinobu%20Yamamoto%20-%202025%20MLB%20Topps%20NOW%C2%AE%20-%20Card%20810&PromoCode&Text1=&IntegrationSource=IMPACT_POSTBACK |
-+-------------+----------------------------------------+-----------------+------------------+-----------------+-----------------+---------------------+------------+---------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-
-
-
--- VETTED PATTERN (singlestore) – adapted to search by ClickId
 SELECT
-  cf.event_datetime,
-  cf.advertiser_id,
-  cf.campaign_id,
-  cf.publisher_id,      -- the *partner (MPID)* you need
-  cf.profile_id,        -- the *media profile* (often what looks like a “publisher-ish” id)
-  cf.click_id,
-  cf.landing_page_url,
-  cf.classification,
-  cf.method
-FROM click_fact cf
-LEFT JOIN ad_dim ad ON ad.id = cf.ad_dim_id
-WHERE cf.click_id = 'Q-OwMOR63xycT:Rx-30mPU2MUkp3jsQmIy7Sww0'   -- ClickId from Mike’s payload
-ORDER BY cf.event_datetime DESC
-LIMIT 100;
-
-+---------------------+---------------+-------------+--------------+--------------------------------------+-----------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+---------------------+
-| event_datetime      | advertiser_id | campaign_id | publisher_id | profile_id                           | click_id                                | landing_page_url                                                                                                                                                                                                                                                                                                                | classification | method              |
-+---------------------+---------------+-------------+--------------+--------------------------------------+-----------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+---------------------+
-| 2025-10-02 19:45:27 |       5804675 |       28055 |      6181751 | cfaa4a2a-9fc6-11f0-be89-1f8604ae80a8 | Q-OwMOR63xycT:Rx-30mPU2MUkp3jsQmIy7Sww0 | https://account.topps.com/orders/a1c19a1713a82f153cf9b5e0e2529081                                                                                                                                                                                                                                                               | U              | API,IPC             |
-| 2025-10-02 19:41:20 |       5804675 |       28055 |      6181751 | cfaa4a2a-9fc6-11f0-be89-1f8604ae80a8 | Q-OwMOR63xycT:Rx-30mPU2MUkp3jsQmIy7Sww0 | https://shop.topps.com/checkouts/cn/hWN3f3ZdSTWXqmIZR5k1A8PK/en-us?auto_redirect=false&edge_redirect=true&skip_shop_pay=true                                                                                                                                                                                                    | U              | API,IPC             |
-| 2025-10-02 19:41:20 |       5804675 |       28055 |      6181751 | cfaa4a2a-9fc6-11f0-be89-1f8604ae80a8 | Q-OwMOR63xycT:Rx-30mPU2MUkp3jsQmIy7Sww0 | https://shop.topps.com/checkouts/cn/hWN3f3ZdSTWXqmIZR5k1A8PK/en-us?auto_redirect=false&edge_redirect=true&skip_shop_pay=true                                                                                                                                                                                                    | U              | API,IPC             |
-| 2025-10-02 19:34:28 |       5804675 |       33961 |      6463332 | cfaa4a2a-9fc6-11f0-be89-1f8604ae80a8 | Q-OwMOR63xycT:Rx-30mPU2MUkp3jsQmIy7Sww0 | https://www.topps.com/collections/mlb-topps-now?fbclid=PAZXh0bgNhZW0CMTEAAacWkjvFPxllW83fvgU3A6Ja8ZqBdpymMsPKfMZ-IgDbLFbYwOJmCn9XLZ-Ilg_aem_CfFPi4UpdrHPsQp5Vt84Mg&utm_campaign=toppsnow_mlb_creator&utm_medium=affiliate&utm_source=impact&irgwc=1                                                                             | U              | DEEP,GATEWAY,MOBILE |
-| 2025-10-02 19:34:28 |       5804675 |       28055 |      6181762 | cfaa4a2a-9fc6-11f0-be89-1f8604ae80a8 | Q-OwMOR63xycT:Rx-30mPU2MUkp3jsQmIy7Sww0 | https://www.topps.com/collections/mlb-topps-now?fbclid=PAZXh0bgNhZW0CMTEAAacWkjvFPxllW83fvgU3A6Ja8ZqBdpymMsPKfMZ-IgDbLFbYwOJmCn9XLZ-Ilg_aem_CfFPi4UpdrHPsQp5Vt84Mg&utm_campaign=toppsnow_mlb_creator&utm_medium=affiliate&utm_source=impact&irgwc=1&irclickid=Q-OwMOR63xycT%3ARx-30mPU2MUkp3jsQmIy7Sww0&sharedid=&irpid=6181762 | U              | DEEP,MOBILE         |
-+---------------------+---------------+-------------+--------------+--------------------------------------+-----------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+---------------------+
-
-
-
--- Signed contract?
-SELECT sc.iram_publisher_id, sc.ircm_campaign_id, sc.date_contract_start, sc.date_contract_end
-FROM ircm_signedcontract sc
-WHERE sc.ircm_campaign_id = 33961
-  AND sc.iram_publisher_id = <publisher_id_from_click_fact>
-  AND sc.date_contract_end IS NULL;
-
- +-------------------+------------------+---------------------+-------------------+
-| iram_publisher_id | ircm_campaign_id | date_contract_start | date_contract_end |
-+-------------------+------------------+---------------------+-------------------+
-+-------------------+------------------+---------------------+-------------------+
+  CAST(su.short_url AS CHAR)                                AS short_url,
+  su.ircm_campaign_id,
+  c.name                                                    AS program_name,
+  su.archived,
+  su.ulu,
+  su.dlu,
+  /* Partner ID: prefer explicit column if present, else parse from tracking_url (/c/<pid>/...) */
+  COALESCE(
+      su.iram_publisher_id,
+      CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(CAST(su.tracking_url AS CHAR), '/c/', -1), '/', 1) AS UNSIGNED)
+  )                                                         AS partner_id
+FROM ircm_short_url su
+JOIN ircm_campaign c
+  ON c.id = su.ircm_campaign_id
+WHERE c.iram_advertiser_id = 6321789
+  /* snapshot boundary – include only links created on/before 10/07 */
+  AND su.doe < '2025-10-08 00:00:00'   -- EOD 10/07 in UTC
+ORDER BY su.dlu DESC;
