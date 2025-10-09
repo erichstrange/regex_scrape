@@ -12,3 +12,13 @@ WHERE cf.advertiser_id=1356456 AND cf.publisher_id=6235929
   AND cf.event_datetime >= '2025-10-07' AND cf.event_datetime < '2025-10-09'
 GROUP BY 1,2,3
 ORDER BY total_clicks DESC;
+
+
++----------+---------+---------+-------------+--------------+
+| platform | os_name | ua_name | deep_clicks | total_clicks |
++----------+---------+---------+-------------+--------------+
+| PHONE    | iOS     | Safari  |          89 |           89 |
+| ʘ        | ʘ       | ʘ       |          15 |           15 |
+| DESKTOP  | macOS   | Chrome  |           5 |            5 |
+| DESKTOP  | OS X    | Safari  |           4 |            4 |
++----------+---------+---------+-------------+--------------+
