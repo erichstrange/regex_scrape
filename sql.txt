@@ -5,3 +5,10 @@ WHERE iram_account_id = 5804675
   AND type = 'Conversion'
   AND submit_date >= '2025-10-01' AND submit_date < '2025-10-06'
 ORDER BY mpid;
+
+
++---------+
+|    mpid |
++---------+
+| 6181753 |
++---------+
