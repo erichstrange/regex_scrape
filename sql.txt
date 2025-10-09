@@ -8,6 +8,10 @@ FROM ircm_scheduled_terms st
 WHERE st.ircm_campaign_id = 33961
 ORDER BY st.start_date DESC;
 
++---------------------+------------+----------+-----------+-----------+
+| scheduled_term_name | start_date | end_date | tracker_1 | tracker_2 |
++---------------------+------------+----------+-----------+-----------+
++---------------------+------------+----------+-----------+-----------+
 
 -- MPIDs that posted conversions to 33961 and their contract state
 WITH conv_mpid AS (
@@ -33,3 +37,15 @@ LEFT JOIN ircm_signedcontract sc
 LEFT JOIN ircm_pendingcontract pc
   ON pc.iram_publisher_id = m.mpid
  AND pc.ircm_campaign_id = 33961;
+
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'conv_mpid AS (
+SELECT DISTINCT mediapartner_id AS mpid
+FROM ir_api_log
+WHE' at line 2
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'conv_mpid AS (
+SELECT DISTINCT mediapartner_id AS mpid
+FROM ir_api_log
+WHE' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'conv_mpid AS (
+SELECT DISTINCT mediapartner_id AS mpid
+FROM ir_api_log
+WHE' at line 2
