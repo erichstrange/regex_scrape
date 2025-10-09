@@ -1,14 +1,7 @@
-SELECT DISTINCT mediapartner_id AS mpid
-FROM ir_api_log
-WHERE iram_account_id = 5804675
-  AND ircm_campaign_id = 33961
-  AND type = 'Conversion'
-  AND submit_date >= '2025-10-01' AND submit_date < '2025-10-06'
-ORDER BY mpid;
-
-
-+---------+
-|    mpid |
-+---------+
-| 6181753 |
-+---------+
+SELECT action_date,
+       oid,
+       campaign_id,
+       JSON_EXTRACT_STRING(metadata,'conv_ref_url') AS conv_ref_url
+FROM ir_noreferrer_event
+WHERE oid = '6027323015356'
+  AND campaign_id = 25209;
