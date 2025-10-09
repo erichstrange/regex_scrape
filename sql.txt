@@ -1,55 +1,49 @@
-SELECT DISTINCT mediapartner_id AS mpid
-FROM ir_api_log
-WHERE iram_account_id = 5804675
-  AND ircm_campaign_id = 33961
-  AND type = 'Conversion'
-  AND submit_date >= '2025-10-01' AND submit_date < '2025-10-06'
-ORDER BY mpid;
-
-+---------+
-|    mpid |
-+---------+
-| 6181753 |
-+---------+
-
-
-SELECT *
-FROM ircm_signedcontract
-WHERE ircm_campaign_id = 33961
-  AND iram_publisher_id IN (6181753);
+-- IO/Terms snapshot & audit around Oct 2 (window is adjustable)
+SELECT
+    it.id                AS ircm_ioterms_id,
+    it.ircm_campaign_id,
+    it.timezone,
+    it.active_start_date,
+    it.active_end_date,
+    io.name              AS insertion_order_name,
+    io.ulu               AS last_updated_by
+FROM ircm_ioterms it
+LEFT JOIN ircm_insertionorder io
+  ON it.iram_advertiser_id = io.iram_advertiser_id
+WHERE it.ircm_campaign_id = 4318
+ORDER BY it.active_start_date DESC;
 
 
-SELECT sc.iram_publisher_id AS mpid,
-       sc.ircm_campaign_id,
-       sc.ircm_ioterms_id,
-       sc.date_contract_start,
-       sc.date_contract_end
+
+-- Who (partners) had signed/active contracts during the CPC-public window?
+SELECT
+    sc.iram_publisher_id,
+    sc.ircm_campaign_id,
+    sc.ircm_ioterms_id,
+    sc.date_contract_begin,
+    sc.date_contract_end
 FROM ircm_signedcontract sc
-WHERE sc.ircm_campaign_id = 33961
-  AND sc.iram_publisher_id = 6569947
-ORDER BY sc.date_contract_start;
+WHERE sc.ircm_campaign_id = 4318
+  AND sc.date_contract_begin < '2025-10-03'  -- end of window (adjust)
+  AND (sc.date_contract_end IS NULL OR sc.date_contract_end >= '2025-10-02');
 
-+----+-----------------+------------------------+-------------------+------------------+---------------------------+---------------------------+------------------------+---------------------+-------------------+------------------------+-----------------------+------------------------+-----------------------+--------------------+-------------------------------+-------------------------------+------------------+----------------------------+--------------------------------------+----------+---------+-------------------+-----+-----+-----+-----+------------------------+----------------------------+---------------------------+-----+
-| id | ircm_ioterms_id | ircm_insertionorder_id | iram_publisher_id | ircm_campaign_id | ircm_proposal_contract_id | ircm_upcoming_contract_id | ircm_signedcontract_id | date_contract_start | date_contract_end | date_advertiser_signed | date_publisher_signed | name_advertiser_signer | name_publisher_signer | termination_reason | current_action_count_fraction | current_budget_spend_fraction | date_cap_reached | ircm_contract_message_uuid | ircm_contract_terminate_message_uuid | is_fraud | version | postback_consumed | doe | dlu | uoe | ulu | core_estaleanetwork_id | username_advertiser_signer | username_publisher_signer | tlu |
-+----+-----------------+------------------------+-------------------+------------------+---------------------------+---------------------------+------------------------+---------------------+-------------------+------------------------+-----------------------+------------------------+-----------------------+--------------------+-------------------------------+-------------------------------+------------------+----------------------------+--------------------------------------+----------+---------+-------------------+-----+-----+-----+-----+------------------------+----------------------------+---------------------------+-----+
-+----+-----------------+------------------------+-------------------+------------------+---------------------------+---------------------------+------------------------+---------------------+-------------------+------------------------+-----------------------+------------------------+-----------------------+--------------------+-------------------------------+-------------------------------+------------------+----------------------------+--------------------------------------+----------+---------+-------------------+-----+-----+-----+-----+------------------------+----------------------------+---------------------------+-----+
 
 
 SELECT
-  st.id,
-  st.name AS scheduled_term_name,
-  st.start_date,
-  st.end_date,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS tracker_1,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[1].actionTracker')) AS tracker_2,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[2].actionTracker')) AS tracker_3,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[3].actionTracker')) AS tracker_4
-FROM ircm_scheduled_terms st
-WHERE st.ircm_campaign_id = 33961
-  AND st.start_date >= '2025-10-01'
-ORDER BY st.start_date DESC;
-
-+----+---------------------+------------+----------+-----------+-----------+-----------+-----------+
-| id | scheduled_term_name | start_date | end_date | tracker_1 | tracker_2 | tracker_3 | tracker_4 |
-+----+---------------------+------------+----------+-----------+-----------+-----------+-----------+
-+----+---------------------+------------+----------+-----------+-----------+-----------+-----------+
+  cf.campaign_id,
+  cf.event_datetime,
+  cf.click_id,
+  cf.profile_id,
+  cf.classification,
+  cf.cpc_contract_id,
+  cf.cpc_adv_raw_payout,
+  cf.cpc_error_code,
+  cf.cpc_payout_trace,
+  cf.cpc_payable
+FROM click_fact cf
+WHERE cf.campaign_id = 4318
+  AND cf.advertiser_id = 230603          -- if different, we’ll adjust
+  AND cf.publisher_id IN (<partner ids from Step 2>)
+  AND cf.event_datetime >= '2025-10-02'
+  AND cf.event_datetime <  '2025-10-03'
+ORDER BY cf.event_datetime;
