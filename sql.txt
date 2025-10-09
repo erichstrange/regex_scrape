@@ -14,11 +14,28 @@ GROUP BY 1,2,3
 ORDER BY total_clicks DESC;
 
 
-+----------+---------+---------+-------------+--------------+
-| platform | os_name | ua_name | deep_clicks | total_clicks |
-+----------+---------+---------+-------------+--------------+
-| PHONE    | iOS     | Safari  |          89 |           89 |
-| ʘ        | ʘ       | ʘ       |          15 |           15 |
-| DESKTOP  | macOS   | Chrome  |           5 |            5 |
-| DESKTOP  | OS X    | Safari  |           4 |            4 |
-+----------+---------+---------+-------------+--------------+
+
+SELECT
+  cf.campaign_id,
+  cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
+  cf.click_id,
+  cf.profile_id,
+  ad.ad_id,
+  ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json,'ruleName')      AS rule_name,
+  cf.landing_page_url,
+  cf.method,
+  cf.classification,
+  -- Device & UA enrichment
+  JSON_EXTRACT_STRING(cf.json,'d_plat') AS platform,
+  JSON_EXTRACT_STRING(cf.json,'d_os')   AS os_name,
+  JSON_EXTRACT_STRING(cf.json,'d_ua')   AS ua_name
+FROM click_fact cf
+LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
+WHERE cf.advertiser_id = 1356456      -- Walmart
+  AND cf.publisher_id  = 6235929       -- Pinterest
+  AND ad.ad_id IN (1207219)            -- Provided ad id
+  AND cf.event_datetime >= '2025-10-07' AND cf.event_datetime < '2025-10-09'
+ORDER BY cf.event_datetime DESC;
