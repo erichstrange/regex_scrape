@@ -27,7 +27,8 @@ LEFT JOIN iram_account a
   ON a.id = m.mpid
 ORDER BY contract_state DESC, partner_name;
 
-
+Table 'ircm.iram_account' doesn't exist
+Table 'ircm.iram_account' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'ircm.iram_account' doesn't exist
 
 
 
