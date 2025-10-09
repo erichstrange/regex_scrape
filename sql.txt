@@ -1,3 +1,36 @@
+/* Data source: r_ds_ircm  |  Campaign: 33961 (Topps Creator) */
+
+SELECT
+  m.mpid,
+  a.description AS partner_name,
+  CASE
+    WHEN sc.id IS NOT NULL THEN 'signed'     -- active signed contract
+    WHEN pc.id IS NOT NULL THEN 'pending'    -- pending application/offer
+    ELSE 'none'                              -- no relationship in this program
+  END AS contract_state,
+  sc.date_advertiser_signed,
+  sc.date_publisher_signed,
+  pc.date_advertiser_signed AS pending_adv_signed,
+  pc.date_publisher_signed  AS pending_pub_signed
+FROM (
+  /* MPIDs found in ir_api_log for 2025-10-01 .. 2025-10-05 */
+  SELECT 6181753 AS mpid
+) AS m
+LEFT JOIN ircm_signedcontract sc
+  ON sc.iram_publisher_id = m.mpid
+ AND sc.ircm_campaign_id  = 33961
+ AND sc.date_contract_end IS NULL
+LEFT JOIN ircm_pendingcontract pc
+  ON pc.iram_publisher_id = m.mpid
+ AND pc.ircm_campaign_id  = 33961
+LEFT JOIN iram_account a
+  ON a.id = m.mpid
+ORDER BY contract_state DESC, partner_name;
+
+
+
+
+
 select * from ir_referrer where action_id ='25209.6491.343526'
 
 
