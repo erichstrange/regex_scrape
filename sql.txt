@@ -1,88 +1,48 @@
-SELECT
-  ircm_ioterms_id,
-  advertiser_id,
-  campaign_id,
-  terms_type,          -- expect 'PUBLIC' / similar
-  payout_type,         -- useful to spot CPC vs CPA
-  date_from,
-  date_to,
-  dlu                  -- last updated timestamp
-FROM datalake_irdwm.io_terms_dim
-WHERE campaign_id = 4318
-  AND LOWER(terms_type) LIKE '%public%'
-ORDER BY dlu DESC, date_from DESC;
+select * from ircm_signedcontract
+where ircm_campaign_id = 4318;
+
+
+select it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
+from ircm_ioterms AS it
+LEFT JOIN ircm_insertionorder AS io
+ON it.iram_advertiser_id=io.iram_advertiser_id
+where ircm_campaign_id=4318
 
 
 SELECT
-  insertion_order_terms_id                  AS ircm_ioterms_id,
-  program_id                                AS campaign_id,
-  template_insertion_order_id,              -- indicates template/public lineage
-  activation_date,
-  deactivation_date,
-  start_date,
-  end_date,
-  timezone,
-  doe, dlu
-FROM base_ods.platform_io_terms
-WHERE program_id = 4318
-  AND template_insertion_order_id IS NOT NULL  -- template/public-related rows
-ORDER BY dlu DESC, start_date DESC;
-
--- Partners with an active signed contract on Oct 2, whose IO Terms do NOT have CPC config
-SELECT
-  s.publisher_account_id      AS publisher_id,
-  s.program_id                AS campaign_id,
-  s.ircm_ioterms_id,
-  s.contract_date_started,
-  s.contract_date_ended
-FROM base_ods.platform_io_contract_signed s
-LEFT JOIN base_ods.int_cost_per_click_terms c
-  ON c.ircm_ioterms_id = s.ircm_ioterms_id
- AND c.program_id      = s.program_id
-WHERE s.program_id = 4318
-  AND s.contract_date_started < '2025-10-03'
-  AND (s.contract_date_ended IS NULL OR s.contract_date_ended >= '2025-10-02')
-  AND c.ircm_ioterms_id IS NULL           -- no CPC mapped on those terms
-ORDER BY publisher_id;
-
-
-
-SELECT
-  cf.event_datetime,
-  cf.click_id,
-  cf.publisher_id,
-  cf.campaign_id,
-  cf.classification,
-  cf.cpc_contract_id,
-  cf.cpc_payable,
-  cf.cpc_payout_trace
-FROM click_fact cf
-WHERE cf.campaign_id = 4318
-  AND cf.event_datetime >= '2025-10-02' AND cf.event_datetime < '2025-10-03'
-  AND cf.publisher_id IN (
-      SELECT s.publisher_account_id
-      FROM base_ods.platform_io_contract_signed s
-      LEFT JOIN base_ods.int_cost_per_click_terms c
-        ON c.ircm_ioterms_id = s.ircm_ioterms_id
-       AND c.program_id      = s.program_id
-      WHERE s.program_id = 4318
-        AND s.contract_date_started < '2025-10-03'
-        AND (s.contract_date_ended IS NULL OR s.contract_date_ended >= '2025-10-02')
-        AND c.ircm_ioterms_id IS NULL
-  )
-ORDER BY cf.event_datetime;
-
-
-
-SELECT DISTINCT
-  c.program_id      AS campaign_id,
-  c.ircm_ioterms_id,
-  c.cost_per_click_amount,
-  c.cost_per_click_currency,
-  c.ircm_signedcontract_date_started,
-  c.ircm_signedcontract_date_ended,
-  c.dlu
-FROM base_ods.int_cost_per_click_terms c
-WHERE c.program_id = 4318
-ORDER BY c.dlu DESC;
-
+ins.name AS template_term_name
+,st.name AS scheduled_term_name
+,st.start_date
+,st.end_Date
+#,st.payout_json
+,atr1.name AS tracker_name_1
+,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
+,atr2.name AS tracker_name_2
+,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[1].actionTracker')) AS payout_tracker_2
+,atr3.name AS tracker_name_3
+,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[2].actionTracker')) AS payout_tracker_3
+,atr4.name AS tracker_name_4
+,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[3].actionTracker')) AS payout_tracker_4
+,st.archived
+,st.doe
+,st.uoe
+,st.dlu
+,st.ulu
+FROM ircm_scheduled_terms st
+INNER JOIN ircm_insertionorder ins
+on ins.id=st.ircm_insertionorder_id
+    LEFT JOIN ircm_actiontracker AS atr1
+        ON atr1.ircm_campaign_id = st.ircm_campaign_id
+        AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
+    LEFT JOIN ircm_actiontracker AS atr2
+        ON atr2.ircm_campaign_id = st.ircm_campaign_id
+        AND atr2.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[1].actionTracker'))
+    LEFT JOIN ircm_actiontracker AS atr3
+        ON atr3.ircm_campaign_id = st.ircm_campaign_id
+        AND atr3.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[2].actionTracker'))
+    LEFT JOIN ircm_actiontracker AS atr4
+        ON atr4.ircm_campaign_id = st.ircm_campaign_id
+        AND atr4.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[3].actionTracker'))
+WHERE st.ircm_Campaign_id=4318
+AND start_date >=now()
+ORDER BY start_date DESC
