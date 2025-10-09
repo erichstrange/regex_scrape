@@ -20,3 +20,6 @@ LEFT JOIN ircm_actiontracker atr
 WHERE sc.iram_publisher_id = 6569947            -- Marine Layer Podcast
   AND sc.ircm_campaign_id = 33961               -- Creator program
 ORDER BY sc.date_contract_start DESC, oat.action_tracker_id;
+
+Unknown column 'oat.action_tracker_id' in 'on clause'
+Unknown column 'oat.action_tracker_id' in 'on clause'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'oat.action_tracker_id' in 'on clause'
