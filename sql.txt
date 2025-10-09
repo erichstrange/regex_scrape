@@ -49,3 +49,138 @@ WHE' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have a
 SELECT DISTINCT mediapartner_id AS mpid
 FROM ir_api_log
 WHE' at line 2
+
+
+
+{
+  "dateUuid": "2025/10/09-15:35:20.744 90a2b288-a525-11f0-8bf1-67dbc381acce",
+  "event": {
+    "type": "conv",
+    "uuid": "90a2b288-a525-11f0-8bf1-67dbc381acce",
+    "profileId": "4645a94c-8ccd-11f0-a109-49fbe2806409",
+    "eventDate": 1760024120744,
+    "keys": [
+      "4645a94c-8ccd-11f0-a109-49fbe2806409_PRO",
+      "68981be6b6d973342fa88b988e4b3df2_FPR",
+      "4645a94c-8ccd-11f0-a109-49fbe2806409_FPC",
+      "9136356556988_CUS25209",
+      "7555e4b0d2bb0fa4a631a45ee1d41393_IPA",
+      "12039ada77f02b9a9697834a2f161a81c428d88447a7265d5ddd02fdcd175952_EMA"
+    ],
+    "campaignId": 25209,
+    "fingerprint": "68981be6b6d973342fa88b988e4b3df2",
+    "ipAddr": "AAAADKddix+3NRMdfZXMOBSRkBduxwERHEFQ1wvsWa00zMuajd1LGVtpG+aKJg==",
+    "referringUrl": "",
+    "doe": 1760024120745,
+    "geo": {
+      "country": "US",
+      "area": "513",
+      "region": "Michigan",
+      "city": "Palms",
+      "latitude": 43.6136,
+      "longitude": -82.7683,
+      "accuracy": 20000,
+      "orgName": "Air Advantage LLC"
+    },
+    "device": {
+      "platform": "DESKTOP",
+      "marketingName": "Chrome",
+      "os": {
+        "name": "Windows 10",
+        "versionMajor": "10",
+        "versionMinor": "0"
+      },
+      "userAgent": {
+        "id": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+        "name": "Chrome",
+        "versionMajor": "141",
+        "versionMinor": "0",
+        "versionPatch": "0.0",
+        "inAppWebView": false
+      }
+    },
+    "app": {},
+    "integration": {
+      "method": [
+        "BEACON"
+      ],
+      "jsVersion": "U11"
+    },
+    "passedDeviceAttributes": {
+      "os": {}
+    },
+    "trackerId": 46312,
+    "networkId": 1,
+    "orderId": "6027323015356",
+    "lastClickCookie": [
+      "Lyg6St5Rc0SYZWxmTRlSvgQsu",
+      "LSrIzlB1K2RDQW9XSHkTRIVjq",
+      "LxHe08ixjGyPISjyT9UVX2WkvQcv3lG3R3X1kyIpxp33Lvx3R",
+      "LyKjU6OROnzpw03zUzPy:8TaH"
+    ],
+    "dataPosts": [],
+    "clientSideProfileId": "4645a94c-8ccd-11f0-a109-49fbe2806409",
+    "adServer": {},
+    "enrichment": {
+      "cookieAge": "10d"
+    },
+    "order": {
+      "items": [
+        {
+          "id": "1",
+          "cat": "men-shirts",
+          "sku": "DK000574",
+          "qty": 3,
+          "amt": "USD 98.970",
+          "name": "Long Sleeve Work Shirt"
+        },
+        {
+          "id": "2",
+          "cat": "men-shirts",
+          "sku": "DK001574",
+          "qty": 4,
+          "amt": "USD 111.960",
+          "name": "Short Sleeve Work Shirt"
+        }
+      ],
+      "currency": "USD",
+      "promoCode": "Free Standard Shipping on orders over $50"
+    },
+    "metadata": {
+      "errors": [],
+      "queryString": "oid=6027323015356&custid=9136356556988&cs=not%20specified&currcd=USD&pmoc=Free%20Standard%20Shipping%20on%20orders%20over%20%2450&amt1=98.97&cat1=men-shirts&sku1=DK000574&qty1=3&nme1=Long%20Sleeve%20Work%20Shirt&amt2=111.96&cat2=men-shirts&sku2=DK001574&qty2=4&nme2=Short%20Sleeve%20Work%20Shirt&fqd=eyJ1IjoiaHR0cHM6Ly93d3cuZGlja2llcy5jb20vd2ViLXBpeGVsc0AzNWIwMWJlNHdjMmU4YWJjZXA4NTA5ZjhjMW0zMThhODlhNi9jdXN0b20vd2ViLXBpeGVsLTEyNTY2NTQ2OEAxL3NhbmRib3gvbW9kZXJuL2NoZWNrb3V0cy9jbi9oV04zdDlrY0VkbzhrWUFwZkI5aWphU28vZW4tdXMiLCJjbCI6MTkwNzQsImh0YSI6ZmFsc2UsImlzYyI6ZmFsc2UsImlpaSI6dHJ1ZSwicGlkIjoyNCwicGlyIjoxLCJ0eiI6IkFtZXJpY2EvTmV3X1lvcmsiLCJ0em8iOjMwMCwidHpuIjoyNDB9&_ir=U11%7C4645a94c-8ccd-11f0-a109-49fbe2806409%7C1760023979906%7C29f23686",
+      "debug": false
+    },
+    "advertiserParameters": {},
+    "crm": {
+      "id": "9136356556988",
+      "email": "12039ada77f02b9a9697834a2f161a81c428d88447a7265d5ddd02fdcd175952",
+      "status": "not specified"
+    },
+    "headers": {},
+    "redirect": {},
+    "session": {
+      "id": "4645a94c-8ccd-11f0-a109-49fbe2806409.1760023979906"
+    },
+    "scoringResponse": {
+      "riskScore": 0,
+      "riskLevel": "SUSPECT",
+      "reasonCodes": {
+        "CONVERSION_SPOOFING": true
+      },
+      "debugValues": [
+        "csp-url"
+      ]
+    },
+    "advertiserId": 5449922
+  },
+  "eventDate": "2025/10/09-15:35:20.744",
+  "campaign": "Dickies",
+  "campaignUrl": "https://www.dickies.com/",
+  "geoLat": 43.6136,
+  "geoLon": -82.7683,
+  "geoAcc": 20000,
+  "correlation": "",
+  "actionTracker": "Online Sale",
+  "showJson": 1
+}
