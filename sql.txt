@@ -13,6 +13,9 @@ LEFT JOIN ircm_insertionorder io
 WHERE it.ircm_campaign_id = 4318
 ORDER BY it.active_start_date DESC;
 
+Unknown column 'it.ircm_campaign_id' in 'where clause'
+Unknown column 'it.ircm_campaign_id' in 'where clause'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'it.ircm_campaign_id' in 'where clause'
+
 
 
 -- Who (partners) had signed/active contracts during the CPC-public window?
@@ -26,6 +29,9 @@ FROM ircm_signedcontract sc
 WHERE sc.ircm_campaign_id = 4318
   AND sc.date_contract_begin < '2025-10-03'  -- end of window (adjust)
   AND (sc.date_contract_end IS NULL OR sc.date_contract_end >= '2025-10-02');
+
+  Unknown column 'sc.date_contract_begin' in 'field list'
+Unknown column 'sc.date_contract_begin' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'sc.date_contract_begin' in 'field list'
 
 
 
