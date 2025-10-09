@@ -1,1 +1,22 @@
-^https?://((?:www\.)?dickies\.com|[a-z0-9-]+\.myshopify\.com)/(?:checkouts/./thank[-_]?you|.web-pixels@[^/]+/checkouts/.)(?:\?.)?$
+/* Marine Layer Podcast on Creator (33961): contracts + which trackers are on each term */
+SELECT
+  sc.id                              AS signed_contract_id,
+  sc.iram_publisher_id               AS mpid,
+  sc.ircm_campaign_id                AS campaign_id,
+  sc.date_contract_start,
+  sc.date_contract_end,
+  iot.id                             AS ioterms_id,
+  iot.timezone,
+  oat.action_tracker_id,
+  atr.name                           AS action_tracker_name
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot
+       ON iot.id = sc.ircm_ioterms_id
+LEFT JOIN ircm_onlineactionterms oat
+       ON oat.ircm_ioterms_id = iot.id
+LEFT JOIN ircm_actiontracker atr
+       ON atr.ircm_campaign_id = sc.ircm_campaign_id
+      AND atr.id = oat.action_tracker_id
+WHERE sc.iram_publisher_id = 6569947            -- Marine Layer Podcast
+  AND sc.ircm_campaign_id = 33961               -- Creator program
+ORDER BY sc.date_contract_start DESC, oat.action_tracker_id;
