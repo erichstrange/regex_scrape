@@ -1,48 +1,26 @@
-select * from ircm_signedcontract
-where ircm_campaign_id = 4318;
-
-
-select it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
-from ircm_ioterms AS it
-LEFT JOIN ircm_insertionorder AS io
-ON it.iram_advertiser_id=io.iram_advertiser_id
-where ircm_campaign_id=4318
-
-
 SELECT
-ins.name AS template_term_name
-,st.name AS scheduled_term_name
-,st.start_date
-,st.end_Date
-#,st.payout_json
-,atr1.name AS tracker_name_1
-,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
-,atr2.name AS tracker_name_2
-,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[1].actionTracker')) AS payout_tracker_2
-,atr3.name AS tracker_name_3
-,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[2].actionTracker')) AS payout_tracker_3
-,atr4.name AS tracker_name_4
-,JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[3].actionTracker')) AS payout_tracker_4
-,st.archived
-,st.doe
-,st.uoe
-,st.dlu
-,st.ulu
-FROM ircm_scheduled_terms st
-INNER JOIN ircm_insertionorder ins
-on ins.id=st.ircm_insertionorder_id
-    LEFT JOIN ircm_actiontracker AS atr1
-        ON atr1.ircm_campaign_id = st.ircm_campaign_id
-        AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
-    LEFT JOIN ircm_actiontracker AS atr2
-        ON atr2.ircm_campaign_id = st.ircm_campaign_id
-        AND atr2.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[1].actionTracker'))
-    LEFT JOIN ircm_actiontracker AS atr3
-        ON atr3.ircm_campaign_id = st.ircm_campaign_id
-        AND atr3.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[2].actionTracker'))
-    LEFT JOIN ircm_actiontracker AS atr4
-        ON atr4.ircm_campaign_id = st.ircm_campaign_id
-        AND atr4.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[3].actionTracker'))
-WHERE st.ircm_Campaign_id=4318
-AND start_date >=now()
-ORDER BY start_date DESC
+  cf.campaign_id
+ ,cf.event_datetime
+ ,JSON_EXTRACT_STRING(cf.json, 'inboundLink') tracking_link
+ ,cf.click_id
+ ,cf.profile_id
+ ,ad.ad_id
+ ,ad.name ad_name
+ ,cf.landing_page_url
+ ,cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4
+ ,cf.method
+ ,cf.classification
+ ,cf.cpc_contract_id
+ ,cf.cpc_adv_raw_payout
+ ,cf.cpc_error_code
+ ,cf.cpc_payout_trace
+ ,cf.cpc_payable
+FROM click_fact cf
+LEFT JOIN ad_dim ad
+  ON cf.ad_dim_id = ad.id
+WHERE cf.advertiser_id = 230603
+  AND cf.campaign_id   = 4318
+  AND cf.publisher_id IN (10078, 10098, 10132, 10451, 10534, 10557, 10563, 10579, 10621, 10810, 10879, 10915, 11949, 12117, 12135, 12455, 12866, 12869, 13350, 13609, 15808, 17466, 17948, 22108, 22144, 22788, 23137, 27795, 29332, 30656, 30982, 32285, 33477, 34844, 34874, 36345, 37467, 39125, 40052, 40766, 42472, 44964, 48619, 49764, 50942, 55700, 55869, 59002, 59486, 65113, 66252, 68273, 73030, 75421, 76736, 78381, 79042, 87485, 95368, 101044, 101154, 105841, 118767, 121977, 123201, 123412, 137710, 158101, 159047, 160060, 204240, 205287, 208774, 224019, 227340, 232303, 245060, 246443, 249354, 251322, 254781, 261759, 265068, 300828, 314144, 316876, 332250, 338213, 348166, 352960, 353102, 357605, 365723, 367971, 385086, 394417, 513927, 1127352, 1198606, 1199413, 1207810, 1209588, 1210531, 1223830, 1230694, 1231467, 1330756, 1348319, 1418359, 1445725, 1815208, 1999373, 2003851, 2053114, 2252455, 2334778, 2488080, 2586162, 2625896, 2637018, 3037610, 3091058, 3170757, 3426829, 3430295, 3587309, 3619307, 3672155, 3849870, 3934845, 3952899, 4028486, 4195797, 4891224, 4981157, 5373903, 5407238, 5650861, 6060178)
+  AND cf.event_datetime >= '2025-10-02'
+  AND cf.event_datetime <  '2025-10-03'
+ORDER BY cf.event_datetime DESC;
