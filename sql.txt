@@ -1,21 +1,25 @@
--- Auto-reversed (and other reversed) actions for OurRitual since Sep 1, 2025
+-- Reversed actions for OurRitual since Sep 1, 2025 (Protect decisions)
+-- [r_ds_singlestore] radius_path_event_fact  (vetted table; filtered form)
 SELECT
-  action_id,
-  oid,
+  conversion_event_datetime,
   campaign_id,
-  publisher_id,
-  adj_reason,
-  new_status,
-  adj_date,
-  batch_id
+  conversion_event_id,
+  conversion_status,         -- should be 'REVERSED'
+  conversion_oid             -- order id
+FROM radius_path_event_fact
+WHERE campaign_id = 24744
+  AND conversion_event_datetime >= '2025-09-01'
+  AND conversion_status = 'REVERSED'
+ORDER BY conversion_event_datetime DESC;
+
+
+-- Manual adjustments/reversals since Sep 1, 2025 (post-decision actions)
+-- [iraction_sharded] irac_action2 (vetted)
+SELECT
+  action_id, oid, campaign_id, publisher_id,
+  adj_reason, new_status, adj_date, batch_id
 FROM irac_action2
 WHERE campaign_id = 24744
-  AND new_status = 'REVERSED'
   AND adj_date >= '2025-09-01'
+  AND new_status = 'REVERSED'
 ORDER BY adj_date DESC;
-
-
-+-----------+-----+-------------+--------------+------------+------------+----------+----------+
-| action_id | oid | campaign_id | publisher_id | adj_reason | new_status | adj_date | batch_id |
-+-----------+-----+-------------+--------------+------------+------------+----------+----------+
-+-----------+-----+-------------+--------------+------------+------------+----------+----------+
