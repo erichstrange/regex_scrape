@@ -6,6 +6,60 @@ GROUP BY 1,2
 ORDER BY 1,2;
 
 
++------------+----+--------+
+| d          |  h | clicks |
++------------+----+--------+
+| 2025-09-29 |  0 |     39 |
+| 2025-09-29 |  1 |     45 |
+| 2025-09-29 |  2 |     43 |
+| 2025-09-29 |  3 |     43 |
+| 2025-09-29 |  4 |     43 |
+| 2025-09-29 |  5 |     45 |
+| 2025-09-29 |  6 |     47 |
+| 2025-09-29 |  7 |     81 |
+| 2025-09-29 |  8 |     72 |
+| 2025-09-29 |  9 |     73 |
+| 2025-09-29 | 10 |     69 |
+| 2025-09-29 | 11 |     75 |
+| 2025-09-29 | 12 |     93 |
+| 2025-09-29 | 13 |    107 |
+| 2025-09-29 | 14 |     58 |
+| 2025-09-29 | 15 |     48 |
+| 2025-09-29 | 16 |     47 |
+| 2025-09-29 | 17 |     42 |
+| 2025-09-29 | 18 |     38 |
+| 2025-09-29 | 19 |     43 |
+| 2025-09-29 | 20 |     36 |
+| 2025-09-29 | 21 |     40 |
+| 2025-09-29 | 22 |     35 |
+| 2025-09-29 | 23 |     46 |
+| 2025-09-30 |  0 |     58 |
+| 2025-09-30 |  1 |     59 |
+| 2025-09-30 |  2 |     53 |
+| 2025-09-30 |  3 |     57 |
+| 2025-09-30 |  4 |     52 |
+| 2025-09-30 |  5 |     54 |
+| 2025-09-30 |  6 |     57 |
+| 2025-09-30 |  7 |    111 |
+| 2025-09-30 |  8 |     79 |
+| 2025-09-30 |  9 |     88 |
+| 2025-09-30 | 10 |     75 |
+| 2025-09-30 | 11 |     80 |
+| 2025-09-30 | 12 |    101 |
+| 2025-09-30 | 13 |    100 |
+| 2025-09-30 | 14 |     75 |
+| 2025-09-30 | 15 |     50 |
+| 2025-09-30 | 16 |    115 |
+| 2025-09-30 | 17 |     72 |
+| 2025-09-30 | 18 |     75 |
+| 2025-09-30 | 19 |     62 |
+| 2025-09-30 | 20 |     39 |
+| 2025-09-30 | 21 |     38 |
+| 2025-09-30 | 22 |     39 |
+| 2025-09-30 | 23 |     43 |
++------------+----+--------+
+
+
 SELECT
   COALESCE(JSON_EXTRACT_STRING(json,'blockingRule'),'none') AS blocking_rule,
   classification,
@@ -18,6 +72,20 @@ GROUP BY 1,2,3
 ORDER BY clicks DESC;
 
 
++---------------+----------------+--------+--------+
+| blocking_rule | classification | method | clicks |
++---------------+----------------+--------+--------+
+| none          | U              | MOBILE |   1076 |
+| none          | U              |        |    989 |
+| none          | E              |        |    384 |
+| none          | E              | MOBILE |    329 |
+| none          | F              |        |    104 |
+| none          | D              |        |     47 |
+| none          | D              | MOBILE |     10 |
+| none          | DE             |        |      1 |
++---------------+----------------+--------+--------+
+
+
 
 SELECT COALESCE(pub_subid1,'(null)') AS subid1, COUNT(*) AS clicks
 FROM click_fact
@@ -27,6 +95,60 @@ GROUP BY 1
 ORDER BY clicks DESC
 LIMIT 50;
 
++----------------------+--------+
+| subid1               | clicks |
++----------------------+--------+
+| YEAH7c66b9bf8d3f66d7 |      2 |
+| YEAH4092bc3e9dd46437 |      2 |
+| YEAHbebc829b66119db7 |      2 |
+| YEAH3281fd735a20a42d |      2 |
+| YEAH1a20202439bb3997 |      2 |
+| YEAH035803ce06f1586a |      2 |
+| YEAH2211c921c6c1aec2 |      2 |
+| YEAH676631d9e5a7667c |      2 |
+| YEAH5465bf02523bd751 |      2 |
+| YEAH77eed07d3718f362 |      2 |
+| YEAH308b70ee8d08ebbb |      2 |
+| YEAHc6fe15156f00fd75 |      2 |
+| YEAH775a1980792da103 |      2 |
+| YEAH3e4b9df43add9346 |      2 |
+| YEAH559932d2a93e5363 |      2 |
+| YEAHe90155b4b2c5cd13 |      2 |
+| YEAHb4aa2e9dbc4569b7 |      2 |
+| YEAH31fe2bac50548ae3 |      2 |
+| YEAHbe913cba4682ed40 |      2 |
+| YEAHb1f3cf6c56878ed8 |      2 |
+| YEAH615fdd6806b0e109 |      2 |
+| YEAHe2e851acf36830c6 |      2 |
+| YEAH0f33b1e20e0c5b2d |      2 |
+| YEAHa914793913bd7ac9 |      2 |
+| YEAH0212b7ae0f3e1183 |      2 |
+| YEAH4ef79ee4aab5349b |      2 |
+| YEAHcfa1cdaa2735132c |      2 |
+| YEAHbcc759fa9f32dc62 |      2 |
+| YEAH75e6f86256fd832f |      2 |
+| YEAH4ce79d182339edaf |      2 |
+| YEAH5abb77a5c682f40b |      2 |
+| YEAHfc0f8d943671d352 |      2 |
+| YEAH8c8155ffef407392 |      2 |
+| YEAH8fc22ebd1dc8badb |      2 |
+| YEAHd8c38e820f3fe5cd |      2 |
+| YEAHacb7726f775eb3c8 |      2 |
+| YEAH35b9bd2d3fb58bab |      2 |
+| YEAH8e996637526084d2 |      2 |
+| YEAH8526a2afb0695c35 |      2 |
+| YEAHe549c79ed0a38685 |      2 |
+| YEAHabfa1f161c7d4d0f |      2 |
+| YEAHc0c95eb5f18def86 |      2 |
+| YEAH46e1d32e7a9de492 |      2 |
+| YEAHd0daf3e9ac3e1a22 |      2 |
+| YEAH3eb734edc38d4ca0 |      2 |
+| YEAHfd1a887dcb33d40d |      2 |
+| YEAHaf115d97376beab8 |      2 |
+| YEAH100ae97c294de416 |      2 |
+| YEAH32cfb6b813301e2d |      2 |
+| YEAHd0d34cb25386ca48 |      2 |
+
 
 SELECT JSON_EXTRACT_STRING(json,'ipAddress') AS ip, COUNT(*) AS clicks
 FROM click_fact
@@ -35,3 +157,9 @@ WHERE advertiser_id = 1211624 AND publisher_id = 3311071 AND campaign_id = 8119
 GROUP BY 1
 ORDER BY clicks DESC
 LIMIT 50;
+
++----+--------+
+| ip | clicks |
++----+--------+
+| ʘ  |   2940 |
++----+--------+
