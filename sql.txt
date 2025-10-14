@@ -1,40 +1,8 @@
-/* DRAFT — TS use only. Finds reversed/adjusted actions for Advertiser 5399434 in the window.
-   irac_action2 is sharded by action_id; we join to ircm_campaign to scope to the advertiser. */
++-------------+---------------+-------------------+-------------+--------+--------+--------------------+--------------------------------------------+
+| campaign_id | campaign_name | action_tracker_id | trackerType | method | state  | oid_pattern        | url_pattern                                |
++-------------+---------------+-------------------+-------------+--------+--------+--------------------+--------------------------------------------+
+|       24744 | OurRitual     |             50048 | CLICK       | PIXEL  | ACTIVE | ʘ                  | ʘ                                          |
+|       24744 | OurRitual     |             45727 | LEAD        | PIXEL  | ACTIVE |                    | .*(checkout|order|purchase|subscription).* |
+|       24744 | OurRitual     |             45729 | SALE        | PIXEL  | ACTIVE | ^[a-zA-Z0-9-]{36}$ | .*(checkout|order|purchase|subscription).* |
++-------------+---------------+-------------------+-------------+--------+--------+--------------------+--------------------------------------------+
 
-SELECT
-  a.action_date,
-  a.action_id,
-  a.action_type,
-  a.campaign_id,
-  a.oid,
-  a.batch_id,
-  a.adj_reason,
-  a.ref_domain,
-  a.ref_url
-FROM irac_action2 a
-JOIN ircm.ircm_campaign c
-  ON c.id = a.campaign_id
-WHERE c.iram_advertiser_id = 5399434
-  AND a.action_date >= '2025-09-01'
-  AND a.action_date <  '2025-10-15'
-  /* show likely auto-rejects first */
-  AND (a.adj_reason IS NOT NULL OR a.batch_id IS NOT NULL)
-ORDER BY a.action_date DESC;
-
-
-
-/* DRAFT — TS use only. Lists action trackers + regex for all programs owned by Advertiser 5399434. */
-
-SELECT
-  c.id                              AS campaign_id,
-  c.name                            AS campaign_name,
-  at.id                             AS action_tracker_id,
-  at.trackerType,
-  at.method,
-  at.state,
-  at.oid_pattern,
-  at.url_pattern
-FROM ircm.ircm_campaign        c
-JOIN ircm.ircm_actiontracker   at  ON at.ircm_campaign_id = c.id
-WHERE c.iram_advertiser_id = 5399434
-ORDER BY c.id, at.trackerType, at.id;
