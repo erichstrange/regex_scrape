@@ -1,90 +1,103 @@
--- Click detail for Crocs US + YeahPromos in Sep 2025
--- [Datasource: singlestore]  (vetted query pattern)
+SELECT DATE(event_datetime) AS d, COUNT(*) AS clicks
+FROM click_fact
+WHERE advertiser_id = 1211624
+  AND publisher_id  = 3311071
+  AND campaign_id   = 8119
+  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
+GROUP BY DATE(event_datetime)
+ORDER BY d;
+
+
 SELECT
   cf.campaign_id,
   cf.event_datetime,
-  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
-  cf.click_id, cf.profile_id,
-  ad.ad_id, ad.name AS ad_name,
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json,'ruleName')     AS rule_name,
+  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS tracking_link,
+  cf.click_id,
+  cf.profile_id,
+  ad.ad_id,
+  ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json, 'ruleName')     AS rule_name,
   cf.landing_page_url,
   cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
-  cf.method, cf.classification
+  cf.method, cf.classification,
+  cf.cpc_contract_id, cf.cpc_adv_raw_payout, cf.cpc_error_code,
+  cf.cpc_payout_trace, cf.cpc_payable
 FROM click_fact cf
 LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE advertiser_id = 1211624            -- Crocs US (adv/account id)
-  AND cf.publisher_id = 3311071           -- YeahPromos (from your screenshot)
-  AND event_datetime >= '2025-09-01'
-  AND event_datetime <  '2025-10-01'
+WHERE cf.advertiser_id = 1211624
+  AND cf.publisher_id  = 3311071
+  AND cf.campaign_id   = 8119
+  AND cf.event_datetime >= '2025-09-29' AND cf.event_datetime < '2025-10-01'
 ORDER BY cf.event_datetime DESC;
 
 
+SELECT cf.ref_domain, COUNT(*) AS clicks
+FROM click_fact cf
+WHERE cf.advertiser_id = 1211624
+  AND cf.publisher_id  = 3311071
+  AND cf.campaign_id   = 8119
+  AND cf.event_datetime >= '2025-09-01' AND cf.event_datetime < '2025-10-01'
+GROUP BY cf.ref_domain
+ORDER BY clicks DESC
+LIMIT 50;
 
--- Actions with referral context for Sep 2025
--- [Datasource: irdw_imp (singlestore path)]  (vetted query pattern)
+
 SELECT
-   af.action_datetime, af.advertiser_id, af.campaign_id, af.action_id,
-   af.publisher_id, atr.action_tracker_name, atr.action_tracker_id,
-   af.batch_id, af.oid,
-   SUBSTRING_INDEX(SUBSTRING(af.ref_landingpage_url, LOCATE('irclickid=', af.ref_landingpage_url) + 10), '&', 1) AS irclickid,
-   af.pubsubid1, af.pubsubid2, af.pubsubid3, af.pubsubid4,
-   ad.ad_id, ad.name AS ad_name,
-   af.ref_url, af.ref_domain, af.ref_landingpage_url,
-   af.ref_profile_id, af.conv_profile_id
-FROM action_fact af
-LEFT JOIN action_tracker_dim atr ON action_tracker_dim_id = atr.id
-LEFT JOIN ad_dim ad            ON ad.id = af.ref_ad_dim_id
-WHERE af.advertiser_id = 1211624
-  AND af.publisher_id  = 3311071
-  AND af.action_datetime >= '2025-09-01'
-  AND af.action_datetime <  '2025-10-01'
-ORDER BY af.action_datetime DESC;
+  COALESCE(JSON_EXTRACT_STRING(cf.json, 'blockingRule'), 'none') AS blocking_rule,
+  cf.classification,
+  COUNT(*) AS clicks
+FROM click_fact cf
+WHERE cf.advertiser_id = 1211624
+  AND cf.publisher_id  = 3311071
+  AND cf.campaign_id   = 8119
+  AND cf.event_datetime >= '2025-09-01' AND cf.event_datetime < '2025-10-01'
+GROUP BY 1,2
+ORDER BY clicks DESC;
 
 
 
--- Path for a given conversion (sample suspicious ones from #2)
--- [Datasource: r_ds_singlestore]
-SELECT event_id, event_type, event_datetime, event_media_id, event_media_dim_id,
+SELECT action_id, action_date, action_type, campaign_id, action_tracker_id, oid,
+       publisher_id, ircm_terms_id, payout_group_id, payout_trace, ref_profile_id,
+       ref_url, ref_domain, pub_subid1, pub_subid2, pub_subid3, pub_subid4, batch_id,
+       metadata, ref_user_agent, adv_note, str1, str2, adj_reason, adv_currency,
+       cart_currency, raw_currency, pub_currency, contract_currency, agency_currency,
+       adv_saleamt, cart_saleamt, pub_saleamt, sku, category, client_cost, item_json, order_json
+FROM irac_action2
+WHERE campaign_id = '8119'
+  AND action_id IN (
+    '8119.6482.952546','8119.6482.885845','8119.6482.739739','8119.6482.453952','8119.6482.152044',
+    '8119.6473.979147','8119.6468.992489','8119.6468.897481','8119.6470.401160','8119.6476.113466'
+  );
+
+
+
+-- Run for a handful of action_ids from 2A; example set from non‑yeahpromos referrers:
+SELECT * FROM ir_referrer
+WHERE action_id IN ('8119.6482.952546','8119.6482.739739','8119.6481.893533','8119.6482.453952')
+ORDER BY id;
+
+
+
+SELECT oid, action_id, platform AS device, device_family AS device_type, os_name AS OS, ua_name AS User_Agent
+FROM action_fact fact
+INNER JOIN client_dim cld ON cld.id = ref_client_dim_id
+WHERE fact.action_datetime >= '2025-09-01 00:00:00' AND fact.action_datetime < '2025-10-01 00:00:00'
+  AND advertiser_id = 1211624
+  AND campaign_id   = 8119
+  AND oid IN ('74777782CUS','74777240CUS','74776201CUS','74774194CUS','74771670CUS',
+              '74777732CUS','74777060CUS','74776918CUS','74776472CUS','74776304CUS');
+
+
+
+SELECT rpef.conversion_event_datetime,
+       rpef.conversion_oid,
+       rpef.event_id, rpef.event_type, rpef.event_datetime,
        md.media_name, md.media_type, md.media_channel_name,
-       referral_ad_type, referring_url, click_order_first_to_last,
-       referral_is_winner, referral_is_introducer, referral_is_influencer, referral_is_closer
+       rpef.referring_url, rpef.click_order_first_to_last,
+       rpef.referral_is_winner, rpef.referral_is_introducer, rpef.referral_is_influencer, rpef.referral_is_closer
 FROM radius_path_event_fact rpef
 JOIN media_dim md ON md.id = rpef.event_media_dim_id
-WHERE rpef.campaign_id = <Crocs campaign_id>
-  AND conversion_event_id = '<A-... from #2>'
-ORDER BY click_order_first_to_last;
-
-
-
--- Raw action table record(s) by action_id + campaign_id
--- [Datasource: iraction_sharded]
-select action_id, action_date, action_type, campaign_id, action_tracker_id, oid,
-       publisher_id, payout_trace, ref_profile_id, ref_url, ref_domain,
-       pub_subid1, pub_subid2, pub_subid3, pub_subid4, ref_user_agent
-from irac_action2
-where action_id in ('<one or more action_id from #2>')
-  and campaign_id = '<Crocs campaign_id>';
-
-
--- Devices & UA for specific OIDs (we’ll pivot by action_datetime)
--- [Datasource: irdw_imp / singlestore]
-SELECT oid, action_id,
-       platform AS device, device_family AS device_type,
-       os_name AS OS, ua_name AS User_Agent
-FROM action_fact
-WHERE advertiser_id = 1211624
-  AND publisher_id  = 3311071
-  AND action_datetime >= '2025-09-01'
-  AND action_datetime <  '2025-10-01';
-
-
--- Any scheduled terms that could have gone live in Sep for Crocs US
--- [Datasource: ircm]
-SELECT ins.name AS template_term_name, st.name AS scheduled_term_name,
-       st.start_date, st.end_date
-FROM ircm_scheduled_terms st
-JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
-WHERE st.ircm_campaign_id = <Crocs campaign_id>
-  AND st.start_date >= '2025-08-25' AND st.start_date < '2025-10-05'
-ORDER BY st.start_date DESC;
+WHERE rpef.campaign_id = 8119
+  AND rpef.conversion_oid IN ('74777782CUS','74776201CUS','74774194CUS')
+ORDER BY rpef.conversion_event_datetime, rpef.click_order_first_to_last;
