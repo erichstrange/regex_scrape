@@ -1,23 +1,40 @@
+/* DRAFT — TS use only. Finds reversed/adjusted actions for Advertiser 5399434 in the window.
+   irac_action2 is sharded by action_id; we join to ircm_campaign to scope to the advertiser. */
+
 SELECT
-  SUM(referral_is_closer=1) AS mp_closer_clicks,
-  SUM(referral_is_introducer=1) AS mp_introducer_clicks,
-  COUNT(*) AS total_path_events
-FROM radius_path_event_fact
-WHERE campaign_id = 8119
-  AND conversion_event_datetime >= '2025-09-29' AND conversion_event_datetime < '2025-10-01'
-  AND media_name = 'YeahPromos';  -- adjust if media name differs
+  a.action_date,
+  a.action_id,
+  a.action_type,
+  a.campaign_id,
+  a.oid,
+  a.batch_id,
+  a.adj_reason,
+  a.ref_domain,
+  a.ref_url
+FROM irac_action2 a
+JOIN ircm.ircm_campaign c
+  ON c.id = a.campaign_id
+WHERE c.iram_advertiser_id = 5399434
+  AND a.action_date >= '2025-09-01'
+  AND a.action_date <  '2025-10-15'
+  /* show likely auto-rejects first */
+  AND (a.adj_reason IS NOT NULL OR a.batch_id IS NOT NULL)
+ORDER BY a.action_date DESC;
 
 
 
-SELECT action_id, action_date, action_type, campaign_id, action_tracker_id, oid,
-       publisher_id, ircm_terms_id, payout_group_id, payout_trace, ref_profile_id,
-       ref_url, ref_domain, pub_subid1, pub_subid2, pub_subid3, pub_subid4, batch_id,
-       metadata, ref_user_agent, adv_note, str1, str2, adj_reason, adv_currency,
-       cart_currency, raw_currency, pub_currency, contract_currency, agency_currency,
-       adv_saleamt, cart_saleamt, pub_saleamt, sku, category, client_cost, item_json, order_json
-FROM irac_action2
-WHERE campaign_id = '8119'
-  AND action_id IN (
-    '8119.6482.952546','8119.6482.885845','8119.6482.739739','8119.6482.453952','8119.6482.152044',
-    '8119.6473.979147','8119.6468.992489','8119.6468.897481','8119.6470.401160','8119.6476.113466'
-  );
+/* DRAFT — TS use only. Lists action trackers + regex for all programs owned by Advertiser 5399434. */
+
+SELECT
+  c.id                              AS campaign_id,
+  c.name                            AS campaign_name,
+  at.id                             AS action_tracker_id,
+  at.trackerType,
+  at.method,
+  at.state,
+  at.oid_pattern,
+  at.url_pattern
+FROM ircm.ircm_campaign        c
+JOIN ircm.ircm_actiontracker   at  ON at.ircm_campaign_id = c.id
+WHERE c.iram_advertiser_id = 5399434
+ORDER BY c.id, at.trackerType, at.id;
