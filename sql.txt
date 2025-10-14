@@ -7,6 +7,41 @@ WHERE advertiser_id = 1211624
 GROUP BY DATE(event_datetime)
 ORDER BY d;
 
++------------+--------+
+| d          | clicks |
++------------+--------+
+| 2025-09-01 |     92 |
+| 2025-09-02 |    100 |
+| 2025-09-03 |     93 |
+| 2025-09-04 |     92 |
+| 2025-09-05 |    136 |
+| 2025-09-06 |    119 |
+| 2025-09-07 |    233 |
+| 2025-09-08 |    687 |
+| 2025-09-09 |    453 |
+| 2025-09-10 |    790 |
+| 2025-09-11 |    586 |
+| 2025-09-12 |    549 |
+| 2025-09-13 |    538 |
+| 2025-09-14 |    663 |
+| 2025-09-15 |    653 |
+| 2025-09-16 |    849 |
+| 2025-09-17 |    795 |
+| 2025-09-18 |    831 |
+| 2025-09-19 |    961 |
+| 2025-09-20 |    875 |
+| 2025-09-21 |    766 |
+| 2025-09-22 |    780 |
+| 2025-09-23 |    838 |
+| 2025-09-24 |    970 |
+| 2025-09-25 |    932 |
+| 2025-09-26 |    968 |
+| 2025-09-27 |    988 |
+| 2025-09-28 |   1062 |
+| 2025-09-29 |   1308 |
+| 2025-09-30 |   1632 |
++------------+--------+
+
 
 SELECT
   cf.campaign_id,
@@ -31,6 +66,9 @@ WHERE cf.advertiser_id = 1211624
   AND cf.event_datetime >= '2025-09-29' AND cf.event_datetime < '2025-10-01'
 ORDER BY cf.event_datetime DESC;
 
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+
 
 SELECT cf.ref_domain, COUNT(*) AS clicks
 FROM click_fact cf
@@ -41,6 +79,17 @@ WHERE cf.advertiser_id = 1211624
 GROUP BY cf.ref_domain
 ORDER BY clicks DESC
 LIMIT 50;
+
++--------------------------+--------+
+| ref_domain               | clicks |
++--------------------------+--------+
+| yeahpromos.com           |  15680 |
+| www.redboxeducation.com  |   3922 |
+| NA                       |    409 |
+| www.polarbearlife.com    |    173 |
+| www.cosmeticsconsult.com |     85 |
+| www.clothingprofile.com  |     70 |
++--------------------------+--------+
 
 
 SELECT
@@ -54,6 +103,9 @@ WHERE cf.advertiser_id = 1211624
   AND cf.event_datetime >= '2025-09-01' AND cf.event_datetime < '2025-10-01'
 GROUP BY 1,2
 ORDER BY clicks DESC;
+
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
 
 
 
@@ -70,12 +122,18 @@ WHERE campaign_id = '8119'
     '8119.6473.979147','8119.6468.992489','8119.6468.897481','8119.6470.401160','8119.6476.113466'
   );
 
+  Table 'irdwm.irac_action2' doesn't exist
+Table 'irdwm.irac_action2' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irdwm.irac_action2' doesn't exist
+
 
 
 -- Run for a handful of action_ids from 2A; example set from non‑yeahpromos referrers:
 SELECT * FROM ir_referrer
 WHERE action_id IN ('8119.6482.952546','8119.6482.739739','8119.6481.893533','8119.6482.453952')
 ORDER BY id;
+
+Table 'irdwm.ir_referrer' doesn't exist
+Table 'irdwm.ir_referrer' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irdwm.ir_referrer' doesn't exist
 
 
 
@@ -87,7 +145,20 @@ WHERE fact.action_datetime >= '2025-09-01 00:00:00' AND fact.action_datetime < '
   AND campaign_id   = 8119
   AND oid IN ('74777782CUS','74777240CUS','74776201CUS','74774194CUS','74771670CUS',
               '74777732CUS','74777060CUS','74776918CUS','74776472CUS','74776304CUS');
-
++-------------+------------------+---------+-----------------+------------+-------------------+
+| oid         | action_id        | device  | device_type     | OS         | User_Agent        |
++-------------+------------------+---------+-----------------+------------+-------------------+
+| 74774194CUS | 8119.6482.453952 | DESKTOP | Windows Machine | Windows XP | Internet Explorer |
+| 74776918CUS | 8119.6482.829968 | DESKTOP | Windows Machine | Windows 10 | Chrome            |
+| 74776304CUS | 8119.6482.743142 | DESKTOP | Windows Machine | Windows 10 | Chrome            |
+| 74777782CUS | 8119.6482.952546 | DESKTOP | Linux Machine   | Linux      | Chrome            |
+| 74776472CUS | 8119.6482.769384 | PHONE   | iPhone          | iOS        | Chrome            |
+| 74777060CUS | 8119.6482.870801 | DESKTOP | Windows Machine | Windows 10 | Chrome            |
+| 74777732CUS | 8119.6482.949336 | DESKTOP | Windows Machine | Windows 10 | Chrome            |
+| 74777240CUS | 8119.6482.885845 | DESKTOP | Linux Machine   | Linux      | Firefox           |
+| 74771670CUS | 8119.6482.152044 | DESKTOP | Linux Machine   | Linux      | Chrome            |
+| 74776201CUS | 8119.6482.739739 | DESKTOP | Windows Machine | Windows XP | Internet Explorer |
++-------------+------------------+---------+-----------------+------------+-------------------+
 
 
 SELECT rpef.conversion_event_datetime,
@@ -102,6 +173,10 @@ WHERE rpef.campaign_id = 8119
   AND rpef.conversion_oid IN ('74777782CUS','74776201CUS','74774194CUS')
 ORDER BY rpef.conversion_event_datetime, rpef.click_order_first_to_last;
 
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+
+
 
 SELECT sc.iram_publisher_id, sc.ircm_campaign_id, iot.credit_group
 FROM ircm_signedcontract sc
@@ -109,3 +184,9 @@ LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
 WHERE sc.iram_publisher_id = '3311071'
   AND sc.ircm_campaign_id = '8119'
   AND sc.date_contract_end IS NULL;
+
+  +-------------------+------------------+--------------+
+| iram_publisher_id | ircm_campaign_id | credit_group |
++-------------------+------------------+--------------+
+|           3311071 |             8119 | ʘ            |
++-------------------+------------------+--------------+
