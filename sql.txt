@@ -101,3 +101,11 @@ JOIN media_dim md ON md.id = rpef.event_media_dim_id
 WHERE rpef.campaign_id = 8119
   AND rpef.conversion_oid IN ('74777782CUS','74776201CUS','74774194CUS')
 ORDER BY rpef.conversion_event_datetime, rpef.click_order_first_to_last;
+
+
+SELECT sc.iram_publisher_id, sc.ircm_campaign_id, iot.credit_group
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.iram_publisher_id = '3311071'
+  AND sc.ircm_campaign_id = '8119'
+  AND sc.date_contract_end IS NULL;
