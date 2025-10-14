@@ -1,8 +1,15 @@
-+-------------+---------------+-------------------+-------------+--------+--------+--------------------+--------------------------------------------+
-| campaign_id | campaign_name | action_tracker_id | trackerType | method | state  | oid_pattern        | url_pattern                                |
-+-------------+---------------+-------------------+-------------+--------+--------+--------------------+--------------------------------------------+
-|       24744 | OurRitual     |             50048 | CLICK       | PIXEL  | ACTIVE | ʘ                  | ʘ                                          |
-|       24744 | OurRitual     |             45727 | LEAD        | PIXEL  | ACTIVE |                    | .*(checkout|order|purchase|subscription).* |
-|       24744 | OurRitual     |             45729 | SALE        | PIXEL  | ACTIVE | ^[a-zA-Z0-9-]{36}$ | .*(checkout|order|purchase|subscription).* |
-+-------------+---------------+-------------------+-------------+--------+--------+--------------------+--------------------------------------------+
-
+-- Auto-reversed (and other reversed) actions for OurRitual since Sep 1, 2025
+SELECT
+  action_id,
+  oid,
+  campaign_id,
+  publisher_id,
+  adj_reason,
+  new_status,
+  adj_date,
+  batch_id
+FROM irac_action2
+WHERE campaign_id = 24744
+  AND new_status = 'REVERSED'
+  AND adj_date >= '2025-09-01'
+ORDER BY adj_date DESC;
