@@ -1,25 +1,33 @@
--- Reversed actions for OurRitual since Sep 1, 2025 (Protect decisions)
--- [r_ds_singlestore] radius_path_event_fact  (vetted table; filtered form)
-SELECT
-  conversion_event_datetime,
-  campaign_id,
-  conversion_event_id,
-  conversion_status,         -- should be 'REVERSED'
-  conversion_oid             -- order id
+-- DRAFT: List all template terms for a set of campaigns (legacy 4)
+SELECT it.ircm_campaign_id AS campaign_id,
+       io.name             AS insertion_order_name,
+       it.id               AS term_id,
+       it.timezone,
+       it.active_start_date,
+       it.active_end_date
+FROM ircm_ioterms it
+LEFT JOIN ircm_insertionorder io
+       ON io.iram_advertiser_id = it.iram_advertiser_id
+WHERE it.ircm_campaign_id IN (7559, 7560, 7562, 8534);
+
+
+
+-- DRAFT: public-term overlap across 4 campaigns
+SELECT sc.iram_publisher_id AS publisher_id
+FROM ircm_signedcontract sc
+JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
+  AND iot.is_public = 1
+GROUP BY sc.iram_publisher_id
+HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
+
+
+-- DRAFT: dominant term per publisher across 4 campaigns
+SELECT conversion_referral_profile_id AS publisher_id,
+       conversion_campaign_id        AS campaign_id,
+       conversion_action_tracker_id  AS tracker_id,
+       COUNT(*)                      AS convs_12m
 FROM radius_path_event_fact
-WHERE campaign_id = 24744
-  AND conversion_event_datetime >= '2025-09-01'
-  AND conversion_status = 'REVERSED'
-ORDER BY conversion_event_datetime DESC;
-
-
--- Manual adjustments/reversals since Sep 1, 2025 (post-decision actions)
--- [iraction_sharded] irac_action2 (vetted)
-SELECT
-  action_id, oid, campaign_id, publisher_id,
-  adj_reason, new_status, adj_date, batch_id
-FROM irac_action2
-WHERE campaign_id = 24744
-  AND adj_date >= '2025-09-01'
-  AND new_status = 'REVERSED'
-ORDER BY adj_date DESC;
+WHERE conversion_event_datetime >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+  AND conversion_campaign_id IN (7559, 7560, 7562, 8534)
+GROUP BY 1,2,3;
