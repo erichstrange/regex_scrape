@@ -5,6 +5,14 @@ JOIN core_estaleauser ce ON u.account_user_id = ce.id
 WHERE u.irAccount_Id = "<advertiserId>"
 ORDER BY ce.lastlogin_date DESC;
 
++---------+------------------------------+-----------------------------+-----------+----------+--------+---------------------+---------------------+---------------------+--------------+----------------------+
+|      id | username                     | email                       | firstname | lastname | state  | lastlogin_date      | doe                 | dlu                 | uoe          | ulu                  |
++---------+------------------------------+-----------------------------+-----------+----------+--------+---------------------+---------------------+---------------------+--------------+----------------------+
+| 6860379 | tony@hollywoodsensat         | tony@hollywoodsensation.com | Anthony   | Hood     | ACTIVE | 2025-10-16 19:45:41 | 2025-09-09 23:19:00 | 2025-09-09 23:19:00 | unknown_user | tony@hollywoodsensat |
+| 6928165 | google:107740212630384692746 | ajmain.affiliate@gmail.com  | Ajmain    | Abid     | ACTIVE | 2025-10-14 21:58:09 | 2022-12-27 19:02:05 | 2022-12-27 19:02:05 | unknown_user | unknown_user         |
+| 6862377 | Barunka4142691029459765798   | bara.hlavkova@centrum.cz    | Barbora   | Hlávková | ACTIVE | ʘ                   | 2019-07-03 10:18:21 | 2025-08-21 23:28:40 | unknown_user | john.us              |
++---------+------------------------------+-----------------------------+-----------+----------+--------+---------------------+---------------------+---------------------+--------------+----------------------+
+
 
 SELECT *
 FROM ir_api_log
@@ -19,3 +27,8 @@ FROM ircm_scheduled_terms st
 JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
 WHERE st.ircm_campaign_id = <campaignId>
 ORDER BY st.start_date DESC;
+
++--------------------+---------------------+------------+----------+----------+-----+-----+-----+-----+
+| template_term_name | scheduled_term_name | start_date | end_date | archived | doe | uoe | dlu | ulu |
++--------------------+---------------------+------------+----------+----------+-----+-----+-----+-----+
++--------------------+---------------------+------------+----------+----------+-----+-----+-----+-----+
