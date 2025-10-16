@@ -10,6 +10,9 @@ LEFT JOIN ircm_insertionorder io
        ON io.iram_advertiser_id = it.iram_advertiser_id
 WHERE it.ircm_campaign_id IN (7559, 7560, 7562, 8534);
 
+Unknown column 'it.ircm_campaign_id' in 'field list'
+Unknown column 'it.ircm_campaign_id' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'it.ircm_campaign_id' in 'field list'
+
 
 
 -- DRAFT: public-term overlap across 4 campaigns
@@ -20,6 +23,9 @@ WHERE sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
   AND iot.is_public = 1
 GROUP BY sc.iram_publisher_id
 HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
+
+Unknown column 'iot.is_public' in 'where clause'
+Unknown column 'iot.is_public' in 'where clause'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'iot.is_public' in 'where clause'
 
 
 -- DRAFT: dominant term per publisher across 4 campaigns
