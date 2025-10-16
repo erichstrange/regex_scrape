@@ -1,74 +1,21 @@
--- Tab1: ALL template terms across the four legacy programs
-SELECT
-  io.ircm_campaign_id                              AS campaign_id,
-  c.name                                           AS campaign_name,
-  io.id                                            AS insertion_order_id,
-  io.name                                          AS insertion_order_name,
-  it.id                                            AS term_id,
-  it.timezone,
-  it.active_start_date,
-  it.active_end_date
-FROM ircm_ioterms it
-JOIN ircm_insertionorder io
-  ON io.id = it.ircm_insertionorder_id
-JOIN ircm_campaign c
-  ON c.id = io.ircm_campaign_id
-WHERE io.ircm_campaign_id IN (7559, 7560, 7562, 8534)
-ORDER BY io.ircm_campaign_id, io.name, it.id;
+-- Users & last logins for the advertiser account
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state, ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = "<advertiserId>"
+ORDER BY ce.lastlogin_date DESC;
 
 
-
--- DRAFT: expand Tab1 with trackers per template term (peer‑review before running)
-SELECT it.id AS term_id, io.ircm_campaign_id AS campaign_id, io.name AS insertion_order_name,
-       oat.ircm_actiontracker_id AS action_tracker_id
-FROM ircm_ioterms it
-JOIN ircm_insertionorder io  ON io.id = it.ircm_insertionorder_id
-JOIN ircm_onlineactionterms oat ON oat.ircm_ioterms_id = it.id
-WHERE io.ircm_campaign_id IN (7559, 7560, 7562, 8534)
-ORDER BY io.ircm_campaign_id, insertion_order_name, term_id;
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = <advertiserId>
+  AND doe >= "<YYYY-MM-DD>" AND doe < "<YYYY-MM-DD>";
 
 
-
--- Tab2: partners ACTIVE in all four *public* terms across all programs
--- Replace the LIKE values with the exact IO names for Ticketmaster’s four "Public" terms
-SELECT sc.iram_publisher_id AS publisher_id
-FROM ircm_signedcontract sc
-JOIN ircm_ioterms it          ON it.id = sc.ircm_ioterms_id
-JOIN ircm_insertionorder io   ON io.id = it.ircm_insertionorder_id
-WHERE sc.date_contract_end IS NULL
-  AND sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
-  AND io.name LIKE 'Public%'   -- << replace with exact IO names or a whitelist
-GROUP BY sc.iram_publisher_id
-HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
-
-
--- Use explicit whitelist of "Public" term IDs (one or more per program)
--- Example placeholders (replace with real IDs from Tab1 export):
---   7559: {1001,1002}   7560: {2001}   7562: {3001}   8534: {4001}
-WITH public_term_ids AS (
-  SELECT 7559 AS campaign_id, CAST(1001 AS BIGINT) AS term_id UNION ALL
-  SELECT 7559, 1002 UNION ALL
-  SELECT 7560, 2001 UNION ALL
-  SELECT 7562, 3001 UNION ALL
-  SELECT 8534, 4001
-)
-SELECT sc.iram_publisher_id AS publisher_id
-FROM ircm_signedcontract sc
-JOIN public_term_ids p
-  ON p.term_id = sc.ircm_ioterms_id
-WHERE sc.date_contract_end IS NULL
-  AND sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
-GROUP BY sc.iram_publisher_id
-HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
-
-
--- Tab3: partners ACTIVE in all 4 *excluding public* terms
-SELECT sc.iram_publisher_id AS publisher_id
-FROM ircm_signedcontract sc
-JOIN ircm_ioterms it        ON it.id = sc.ircm_ioterms_id
-JOIN ircm_insertionorder io ON io.id = it.ircm_insertionorder_id
-WHERE sc.date_contract_end IS NULL
-  AND sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
-  AND io.name NOT LIKE 'Public%'        -- or NOT IN (…explicit whitelist…)
-GROUP BY sc.iram_publisher_id
-HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
+-- Upcoming scheduled terms + metadata about who created/updated them
+SELECT ins.name AS template_term_name, st.name AS scheduled_term_name, st.start_date, st.end_date,
+       st.archived, st.doe, st.uoe, st.dlu, st.ulu
+FROM ircm_scheduled_terms st
+JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+WHERE st.ircm_campaign_id = <campaignId>
+ORDER BY st.start_date DESC;
