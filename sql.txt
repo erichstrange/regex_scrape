@@ -1,39 +1,74 @@
--- DRAFT: List all template terms for a set of campaigns (legacy 4)
-SELECT it.ircm_campaign_id AS campaign_id,
-       io.name             AS insertion_order_name,
-       it.id               AS term_id,
-       it.timezone,
-       it.active_start_date,
-       it.active_end_date
+-- Tab1: ALL template terms across the four legacy programs
+SELECT
+  io.ircm_campaign_id                              AS campaign_id,
+  c.name                                           AS campaign_name,
+  io.id                                            AS insertion_order_id,
+  io.name                                          AS insertion_order_name,
+  it.id                                            AS term_id,
+  it.timezone,
+  it.active_start_date,
+  it.active_end_date
 FROM ircm_ioterms it
-LEFT JOIN ircm_insertionorder io
-       ON io.iram_advertiser_id = it.iram_advertiser_id
-WHERE it.ircm_campaign_id IN (7559, 7560, 7562, 8534);
+JOIN ircm_insertionorder io
+  ON io.id = it.ircm_insertionorder_id
+JOIN ircm_campaign c
+  ON c.id = io.ircm_campaign_id
+WHERE io.ircm_campaign_id IN (7559, 7560, 7562, 8534)
+ORDER BY io.ircm_campaign_id, io.name, it.id;
 
-Unknown column 'it.ircm_campaign_id' in 'field list'
-Unknown column 'it.ircm_campaign_id' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'it.ircm_campaign_id' in 'field list'
+
+
+-- DRAFT: expand Tab1 with trackers per template term (peer‑review before running)
+SELECT it.id AS term_id, io.ircm_campaign_id AS campaign_id, io.name AS insertion_order_name,
+       oat.ircm_actiontracker_id AS action_tracker_id
+FROM ircm_ioterms it
+JOIN ircm_insertionorder io  ON io.id = it.ircm_insertionorder_id
+JOIN ircm_onlineactionterms oat ON oat.ircm_ioterms_id = it.id
+WHERE io.ircm_campaign_id IN (7559, 7560, 7562, 8534)
+ORDER BY io.ircm_campaign_id, insertion_order_name, term_id;
 
 
 
--- DRAFT: public-term overlap across 4 campaigns
+-- Tab2: partners ACTIVE in all four *public* terms across all programs
+-- Replace the LIKE values with the exact IO names for Ticketmaster’s four "Public" terms
 SELECT sc.iram_publisher_id AS publisher_id
 FROM ircm_signedcontract sc
-JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
-WHERE sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
-  AND iot.is_public = 1
+JOIN ircm_ioterms it          ON it.id = sc.ircm_ioterms_id
+JOIN ircm_insertionorder io   ON io.id = it.ircm_insertionorder_id
+WHERE sc.date_contract_end IS NULL
+  AND sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
+  AND io.name LIKE 'Public%'   -- << replace with exact IO names or a whitelist
 GROUP BY sc.iram_publisher_id
 HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
 
-Unknown column 'iot.is_public' in 'where clause'
-Unknown column 'iot.is_public' in 'where clause'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'iot.is_public' in 'where clause'
+
+-- Use explicit whitelist of "Public" term IDs (one or more per program)
+-- Example placeholders (replace with real IDs from Tab1 export):
+--   7559: {1001,1002}   7560: {2001}   7562: {3001}   8534: {4001}
+WITH public_term_ids AS (
+  SELECT 7559 AS campaign_id, CAST(1001 AS BIGINT) AS term_id UNION ALL
+  SELECT 7559, 1002 UNION ALL
+  SELECT 7560, 2001 UNION ALL
+  SELECT 7562, 3001 UNION ALL
+  SELECT 8534, 4001
+)
+SELECT sc.iram_publisher_id AS publisher_id
+FROM ircm_signedcontract sc
+JOIN public_term_ids p
+  ON p.term_id = sc.ircm_ioterms_id
+WHERE sc.date_contract_end IS NULL
+  AND sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
+GROUP BY sc.iram_publisher_id
+HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
 
 
--- DRAFT: dominant term per publisher across 4 campaigns
-SELECT conversion_referral_profile_id AS publisher_id,
-       conversion_campaign_id        AS campaign_id,
-       conversion_action_tracker_id  AS tracker_id,
-       COUNT(*)                      AS convs_12m
-FROM radius_path_event_fact
-WHERE conversion_event_datetime >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-  AND conversion_campaign_id IN (7559, 7560, 7562, 8534)
-GROUP BY 1,2,3;
+-- Tab3: partners ACTIVE in all 4 *excluding public* terms
+SELECT sc.iram_publisher_id AS publisher_id
+FROM ircm_signedcontract sc
+JOIN ircm_ioterms it        ON it.id = sc.ircm_ioterms_id
+JOIN ircm_insertionorder io ON io.id = it.ircm_insertionorder_id
+WHERE sc.date_contract_end IS NULL
+  AND sc.ircm_campaign_id IN (7559, 7560, 7562, 8534)
+  AND io.name NOT LIKE 'Public%'        -- or NOT IN (…explicit whitelist…)
+GROUP BY sc.iram_publisher_id
+HAVING COUNT(DISTINCT sc.ircm_campaign_id) = 4;
