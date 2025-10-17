@@ -1,6 +1,4 @@
-SELECT *
-FROM m_audit_log
-WHERE account_id = 6529170
-  AND username IN ('tony@hollywoodsensation.com', 'google:107740212630384692746', 'tony@hollywoodsensat')
-  AND change_date >= '2023-01-01' AND change_date < '2025-10-17'
-ORDER BY change_date DESC;
+-- Example shape from vetted queries
+select outreach_type, outreach_id, message_id, email_address, created_at, subject
+from new_email
+where email_address = 'someone@example.com';
