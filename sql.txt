@@ -1,4 +1,25 @@
 -- Example shape from vetted queries
 select outreach_type, outreach_id, message_id, email_address, created_at, subject
 from new_email
-where email_address = 'someone@example.com';
+where email_address in ('tony@hollywoodsensation.com', 'ajmain.affiliate@gmail.com');
+
+
++---------------+-------------+------------------------+-----------------------------+---------------------+------------------------------------------------+
+| outreach_type | outreach_id | message_id             | email_address               | created_at          | subject                                        |
++---------------+-------------+------------------------+-----------------------------+---------------------+------------------------------------------------+
+| NEWSLETTER    |       69218 | dp8Tr4HYR8S8Nw90CHRpeA | tony@hollywoodsensation.com | 2025-10-08 23:38:06 | Promote Jewelry That Customers Love & Earn Big |
++---------------+-------------+------------------------+-----------------------------+---------------------+------------------------------------------------+
+
++---------------+-------------+------------------------+----------------------------+---------------------+---------------------------------------------------+
+| outreach_type | outreach_id | message_id             | email_address              | created_at          | subject                                           |
++---------------+-------------+------------------------+----------------------------+---------------------+---------------------------------------------------+
+| WORKFLOW      |        4458 | bEvRPZQ7QtywqXBXVwqTHQ | ajmain.affiliate@gmail.com | 2025-02-24 21:45:28 | Your Success is Just a Click Away                 |
+| WORKFLOW      |        4461 | BgH21RtHQpelOvMIfvI9Vw | ajmain.affiliate@gmail.com | 2025-02-24 21:55:25 | Checking In: Getting Started as a SignNow Partner |
+| WORKFLOW      |        4466 | H-_rRO_kSeesagaonDER4g | ajmain.affiliate@gmail.com | 2025-02-24 21:56:39 | Ready to Boost Your Results?                      |
+| WORKFLOW      |       42602 | p9gLxbk3T3SWbkCfGhINNg | ajmain.affiliate@gmail.com | 2025-08-20 14:19:46 | Fresh start: How to earn with SignNow             |
+| WORKFLOW      |       42952 | kxkU_HpPQAWKNUi08BQ_7w | ajmain.affiliate@gmail.com | 2025-08-21 19:09:47 | One link. One post. That's all it takes to start. |
+| WORKFLOW      |       43267 | 6Is7Fo6vTwCr2P77cTTh6A | ajmain.affiliate@gmail.com | 2025-08-22 19:59:47 | Don't ghost your goals! Here's your 3-step plan   |
+| WORKFLOW      |       48558 | zaOIJjw-SE61ak3XWWa5aA | ajmain.affiliate@gmail.com | 2025-09-09 15:03:46 | Still quiet? Let's change that in 10 minutes      |
+| WORKFLOW      |       48970 | NPOMKj14TEGICS9-QhzxWQ | ajmain.affiliate@gmail.com | 2025-09-10 19:43:44 | You signed up for a reason. Let's act on it       |
+| WORKFLOW      |       51336 | 4M7W8EaXQ8e8ZAvHF_HrJw | ajmain.affiliate@gmail.com | 2025-09-17 19:38:37 | Ready-made videos. Real commissions.              |
++---------------+-------------+------------------------+----------------------------+---------------------+---------------------------------------------------+
