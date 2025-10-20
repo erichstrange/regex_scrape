@@ -1,5 +1,27 @@
+-- Vetted: Terms + IO names/timezones (datasource: ircm)
+select it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
+from ircm_ioterms AS it 
+left join ircm_insertionorder AS io
+  on it.iram_advertiser_id = io.iram_advertiser_id
+where ircm_campaign_id = 4318
+-- (optional to narrow to the minute):
+--  and it.active_start_date >= '2025-10-02 18:57:00'
+--  and it.active_start_date <  '2025-10-02 18:58:00'
+order by it.active_start_date desc;
 
 
-
-IR3gvF7BDuPo5286736ApnmjokjEezgoX1
--pFGgGADkd4CthvXTn3_fjTLTkakLXdX
+-- Vetted: Scheduled Terms + trackers (datasource: ircm)
+SELECT
+  ins.name AS template_term_name, st.name AS scheduled_term_name,
+  st.start_date, st.end_date,
+  atr1.name AS tracker_name_1,
+  JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1,
+  st.archived, st.doe, st.uoe, st.dlu, st.ulu
+FROM ircm_scheduled_terms st
+INNER JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+LEFT JOIN ircm_actiontracker atr1 ON atr1.ircm_campaign_id = st.ircm_campaign_id
+  AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
+WHERE st.ircm_campaign_id = 4318
+-- remove this to see history:
+-- AND st.start_date >= now()
+ORDER BY st.start_date DESC;
