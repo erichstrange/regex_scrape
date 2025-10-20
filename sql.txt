@@ -1,9 +1,5 @@
-select it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
-from ircm_ioterms AS it 
-left join ircm_insertionorder AS io
-  on it.iram_advertiser_id = io.iram_advertiser_id
-where ircm_campaign_id = <campaignId>;
 
 
-select * from ircm_signedcontract
-where ircm_campaign_id = <campaignId>;
+
+IR3gvF7BDuPo5286736ApnmjokjEezgoX1
+-pFGgGADkd4CthvXTn3_fjTLTkakLXdX
