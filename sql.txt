@@ -1,91 +1,13 @@
--- Vetted: Terms + IO names/timezones (datasource: ircm)
-select it.iram_advertiser_id, io.name, it.timezone, it.active_start_date, it.active_end_date, io.ulu
-from ircm_ioterms AS it 
-left join ircm_insertionorder AS io
-  on it.iram_advertiser_id = io.iram_advertiser_id
-where ircm_campaign_id = 4318
-and it.active_start_date >= '2025-10-02 18:57:00'
-and it.active_start_date <  '2025-10-02 18:58:00'
-order by it.active_start_date desc;
+select * 
+from ircm_pendingcontract pc
+inner join ircm_campaign ic on ic.id = pc.ircm_campaign_id
+where pc.iram_publisher_id = 5445454;
 
 
 
-+--------------------+--------------------------------------+---------------------+---------------------+-----------------+--------------------------------------------------------------+
-| iram_advertiser_id | name                                 | timezone            | active_start_date   | active_end_date | ulu                                                          |
-+--------------------+--------------------------------------+---------------------+---------------------+-----------------+--------------------------------------------------------------+
-|             230603 | Rakuten Give Big Week Event 5/8-5/15 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | $125 commission                      | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | Jason Cordless Media                                         |
-|             230603 | Extrabux $120 IO                     | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | Really $40 IO                        | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-0.gcp.inf-impact.net:12980] |
-|             230603 | $0 Pause IO                          | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | jackie.gaffney                                               |
-|             230603 | Top10.com $150 IO                    | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | Unlimited Actions - Test IO          | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | maxrog                                                       |
-|             230603 | RCN - $25                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Public Terms                         | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-1.gcp.inf-impact.net:12980] |
-|             230603 | Clearlink IO                         | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | RCN - $10 with TM+                   | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | FatWallet IO                         | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | jakegordon                                                   |
-|             230603 | RCN - $150                           | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | $100 commission rate                 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | $12 commission                       | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-1.gcp.inf-impact.net:12980] |
-|             230603 | BrandReward Coupons $15 IO           | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Beans Group $27                      | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-0.gcp.inf-impact.net:12980] |
-|             230603 | Astound $25                          | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-21.gcp.inf-impact.net:12980]   |
-|             230603 | Rakuten IO                           | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | Loyalty IO                           | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-0.gcp.inf-impact.net:12980] |
-|             230603 | CPA $80                              | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Capital One Shopping IO              | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | RCN - $75                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-0.gcp.inf-impact.net:12980] |
-|             230603 | MyPoints.com Inc - Affiliate         | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | RCN - $60                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Ebates IO                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | jakegordon                                                   |
-|             230603 | RCN - $100                           | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Clearlink CPC                        | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-1.gcp.inf-impact.net:12980] |
-|             230603 | Test Test                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | brieanabeltran                                               |
-|             230603 | $8                                   | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-25.gcp.inf-impact.net:12980]   |
-|             230603 | DontPayFull $25 IO                   | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | Astound $5                           | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-0.gcp.inf-impact.net:12980] |
-|             230603 | Test Template Term                   | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | jackie.gaffney                                               |
-|             230603 | DontPayFull IO                       | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | $50                                  | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-0.gcp.inf-impact.net:12980] |
-|             230603 | Bing IO                              | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | RCN - $20                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | RCN - $50                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-1.gcp.inf-impact.net:12980] |
-|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | RCN - $15                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | ShopAtHome.com                       | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | google:110648582134585799721                                 |
-|             230603 | RCN - $30                            | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
-|             230603 | $20 commission                       | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | erica__miller                                                |
+select * from ircm_signedcontract
+where ircm_campaign_id = 41029;
 
 
-
--- Vetted: Scheduled Terms + trackers (datasource: ircm)
-SELECT
-  ins.name AS template_term_name, st.name AS scheduled_term_name,
-  st.start_date, st.end_date,
-  atr1.name AS tracker_name_1,
-  JSON_UNQUOTE(JSON_EXTRACT(CAST(payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1,
-  st.archived, st.doe, st.uoe, st.dlu, st.ulu
-FROM ircm_scheduled_terms st
-INNER JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
-LEFT JOIN ircm_actiontracker atr1 ON atr1.ircm_campaign_id = st.ircm_campaign_id
-  AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
-WHERE st.ircm_campaign_id = 4318
--- remove this to see history:
--- AND st.start_date >= now()
-ORDER BY st.start_date DESC;
-
-
-+--------------------+-------------------------------------+---------------------+---------------------+----------------+------------------+----------+---------------------+---------------+---------------------+---------------+
-| template_term_name | scheduled_term_name                 | start_date          | end_date            | tracker_name_1 | payout_tracker_1 | archived | doe                 | uoe           | dlu                 | ulu           |
-+--------------------+-------------------------------------+---------------------+---------------------+----------------+------------------+----------+---------------------+---------------+---------------------+---------------+
-| RCN - $50          | Green Monday 10% (12/9)             | 2024-12-09 01:00:00 | 2024-12-10 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:48:09 | erica__miller | 2024-11-20 05:48:09 | erica__miller |
-| RCN - $50          | Cyber Tuesday 10% (12/3)            | 2024-12-03 08:00:00 | 2024-12-04 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:47:15 | erica__miller | 2024-11-20 05:47:15 | erica__miller |
-| RCN - $50          | Cyber Monday 15% (12/2)             | 2024-12-02 01:00:00 | 2024-12-03 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:46:34 | erica__miller | 2024-11-20 05:46:34 | erica__miller |
-| RCN - $50          | Black Friday 12% (11/28 - 11/29)    | 2024-11-28 01:00:00 | 2024-11-30 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:45:22 | erica__miller | 2024-11-20 05:45:22 | erica__miller |
-| RCN - $50          | Black Friday First Look 10% (11/25) | 2024-11-25 01:00:00 | 2024-11-26 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:44:33 | erica__miller | 2024-11-20 05:44:33 | erica__miller |
-| RCN - $50          | Early Black Friday 10% (11/22)      | 2024-11-22 01:00:00 | 2024-11-23 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:43:44 | erica__miller | 2024-11-20 05:43:44 | erica__miller |
-+--------------------+-------------------------------------+---------------------+---------------------+----------------+------------------+----------+---------------------+---------------+---------------------+---------------+
+select * from ircm_ioterms
+where iram_advertiser_id = 6488339;
