@@ -16,6 +16,12 @@ WHERE ircm_campaign_id = 4318
 ORDER BY it.active_start_date DESC;
 
 
++--------------------+--------------+---------------------+---------------------+-----------------+--------------------------------------------------------------+
+| iram_advertiser_id | name         | timezone            | active_start_date   | active_end_date | ulu                                                          |
++--------------------+--------------+---------------------+---------------------+-----------------+--------------------------------------------------------------+
+|             230603 | Public Terms | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | UpcomingContractProcessor[app-ap-1.gcp.inf-impact.net:12980] |
++--------------------+--------------+---------------------+---------------------+-----------------+--------------------------------------------------------------+
+
 
 -- Vetted base + filters to find the prior human actor
 SELECT
@@ -34,3 +40,8 @@ WHERE ircm_campaign_id = 4318
   AND io.ulu NOT LIKE 'UpcomingContractProcessor%'       -- exclude the system job
 ORDER BY it.active_start_date DESC
 LIMIT 1;                                                 -- the most recent human just before go-live
+
++--------------------+------+----------+-------------------+-----------------+-----+
+| iram_advertiser_id | name | timezone | active_start_date | active_end_date | ulu |
++--------------------+------+----------+-------------------+-----------------+-----+
++--------------------+------+----------+-------------------+-----------------+-----+
