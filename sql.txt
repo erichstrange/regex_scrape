@@ -1,17 +1,36 @@
-select * 
-from ircm_pendingcontract pc
-inner join ircm_campaign ic on ic.id = pc.ircm_campaign_id
-where pc.iram_publisher_id = 5445454;
+-- Vetted: Advertiser – Contract Timezones (focus on Public Terms, activation second)
+SELECT
+  it.iram_advertiser_id,
+  io.name,
+  it.timezone,
+  it.active_start_date,
+  it.active_end_date,
+  io.ulu
+FROM ircm_ioterms AS it
+LEFT JOIN ircm_insertionorder AS io
+  ON it.iram_advertiser_id = io.iram_advertiser_id
+WHERE ircm_campaign_id = 4318
+  AND io.name = 'Public Terms'
+  AND it.active_start_date >= '2025-10-02 18:57:00'
+  AND it.active_start_date <  '2025-10-02 18:58:00'
+ORDER BY it.active_start_date DESC;
 
 
 
-select * from ircm_signedcontract
-where ircm_campaign_id = 41029;
-+----+-----------------+------------------------+-------------------+------------------+---------------------------+---------------------------+------------------------+---------------------+-------------------+------------------------+-----------------------+------------------------+-----------------------+--------------------+-------------------------------+-------------------------------+------------------+----------------------------+--------------------------------------+----------+---------+-------------------+-----+-----+-----+-----+------------------------+----------------------------+---------------------------+-----+
-| id | ircm_ioterms_id | ircm_insertionorder_id | iram_publisher_id | ircm_campaign_id | ircm_proposal_contract_id | ircm_upcoming_contract_id | ircm_signedcontract_id | date_contract_start | date_contract_end | date_advertiser_signed | date_publisher_signed | name_advertiser_signer | name_publisher_signer | termination_reason | current_action_count_fraction | current_budget_spend_fraction | date_cap_reached | ircm_contract_message_uuid | ircm_contract_terminate_message_uuid | is_fraud | version | postback_consumed | doe | dlu | uoe | ulu | core_estaleanetwork_id | username_advertiser_signer | username_publisher_signer | tlu |
-+----+-----------------+------------------------+-------------------+------------------+---------------------------+---------------------------+------------------------+---------------------+-------------------+------------------------+-----------------------+------------------------+-----------------------+--------------------+-------------------------------+-------------------------------+------------------+----------------------------+--------------------------------------+----------+---------+-------------------+-----+-----+-----+-----+------------------------+----------------------------+---------------------------+-----+
-+----+-----------------+------------------------+-------------------+------------------+---------------------------+---------------------------+------------------------+---------------------+-------------------+------------------------+-----------------------+------------------------+-----------------------+--------------------+-------------------------------+-------------------------------+------------------+----------------------------+--------------------------------------+----------+---------+-------------------+-----+-----+-----+-----+------------------------+----------------------------+---------------------------+-----+
-
-
-select * from ircm_ioterms
-where iram_advertiser_id = 6488339;
+-- Vetted base + filters to find the prior human actor
+SELECT
+  it.iram_advertiser_id,
+  io.name,
+  it.timezone,
+  it.active_start_date,
+  it.active_end_date,
+  io.ulu
+FROM ircm_ioterms AS it
+LEFT JOIN ircm_insertionorder AS io
+  ON it.iram_advertiser_id = io.iram_advertiser_id
+WHERE ircm_campaign_id = 4318
+  AND io.name = 'Public Terms'
+  AND it.active_start_date <  '2025-10-02 18:57:33'      -- strictly *before* the activation moment
+  AND io.ulu NOT LIKE 'UpcomingContractProcessor%'       -- exclude the system job
+ORDER BY it.active_start_date DESC
+LIMIT 1;                                                 -- the most recent human just before go-live
