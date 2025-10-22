@@ -1,9 +1,24 @@
-select * 
-from ircm_pendingcontract pc
-inner join ircm_campaign ic on ic.id = pc.ircm_campaign_id
-where pc.iram_publisher_id = 5445454;
+SELECT
+  publisher_id,
+  COUNT(*)                        AS clicks,
+  COUNT(DISTINCT click_id)        AS unique_click_ids,
+  MIN(event_datetime)             AS first_seen,
+  MAX(event_datetime)             AS last_seen
+FROM irdwm.irdw_8900_squarespace_click_id_investigation
+GROUP BY publisher_id
+ORDER BY clicks DESC;
 
 
-select *
-from ircm_signedcontract
-where ircm_campaign_id = 41029;
+SELECT *
+FROM irdwm.irdw_8900_squarespace_click_id_investigation
+WHERE publisher_id IS NULL OR publisher_id = 0
+ORDER BY event_datetime DESC;
+
+
+SELECT
+  classification,
+  method,
+  COUNT(*) AS clicks
+FROM irdwm.irdw_8900_squarespace_click_id_investigation
+GROUP BY classification, method
+ORDER BY clicks DESC;
