@@ -1,4 +1,23 @@
-SELECT
-    *
-FROM ircm.ircm_campaign
-WHERE id = 41029;
+-- Vetted: list all terms for the advertiser; then filter by timestamp you already found.
+select * 
+from ircm_ioterms
+where iram_advertiser_id = 230603
+order by active_start_date desc;
+
+
+-- Vetted: Online Action Terms for a given ioterms id (CPC presence)
+select *
+from ircm_onlineactionterms
+where ircm_ioterms_id = <IRCM_IOTERMS_ID>;
+
+
+-- Vetted: login history for the advertiser account
+SELECT username as user, ip_addr as ipaddress, account_id,  session_id,
+MIN(if(logout=0, event_date, NULL)) logindate,
+MIN(if(logout=1, event_date, NULL)) logoutdate
+FROM rti_login_history
+WHERE account_id = 230603
+  AND event_date BETWEEN '2025-10-01' AND '2025-10-03'
+GROUP BY 1,2,3,4
+ORDER BY 5 DESC
+LIMIT 200;
