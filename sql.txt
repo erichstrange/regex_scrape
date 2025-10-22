@@ -128,3 +128,15 @@ LIMIT 200;
 
 Table 'ircm.rti_login_history' doesn't exist
 Table 'ircm.rti_login_history' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'ircm.rti_login_history' doesn't exist
+
+
+
+
+
+--------
+
+
+SELECT
+    *
+FROM ircm.ircm_campaign
+WHERE id = 41029;
