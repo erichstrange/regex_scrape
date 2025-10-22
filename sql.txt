@@ -94,6 +94,11 @@ WHERE ircm_campaign_id = 4318
 ORDER BY it.active_start_date DESC
 LIMIT 10;
 
++--------------------+------+----------+-------------------+-----------------+-----+
+| iram_advertiser_id | name | timezone | active_start_date | active_end_date | ulu |
++--------------------+------+----------+-------------------+-----------------+-----+
++--------------------+------+----------+-------------------+-----------------+-----+
+
 
 
 SELECT
@@ -109,6 +114,37 @@ WHERE ircm_campaign_id = 4318
 ORDER BY it.active_start_date DESC
 LIMIT 25;
 
++--------------------+--------------------------------------+---------------------+---------------------+---------------------+------------------------------+
+| iram_advertiser_id | name                                 | timezone            | active_start_date   | active_end_date     | ulu                          |
++--------------------+--------------------------------------+---------------------+---------------------+---------------------+------------------------------+
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-07-22 16:20:35 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-07-22 16:20:35 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-07-22 16:20:35 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-07-22 16:20:35 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-04-16 02:25:29 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-04-16 02:25:29 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-04-16 02:25:29 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-04-16 02:25:29 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-02-26 08:00:00 | 2025-10-03 07:00:00 | google:110648582134585799721 |
+|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Wave Incentive             | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO - Wave $20                 | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO RCN Incentive              | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
+|             230603 | Public IO Grande Commission Increase | America/Los_Angeles | 2025-02-26 08:00:00 | ʘ                   | google:110648582134585799721 |
++--------------------+--------------------------------------+---------------------+---------------------+---------------------+------------------------------+
+
+
 SELECT
   ins.name AS template_term_name,
   st.name  AS scheduled_term_name,
@@ -123,6 +159,17 @@ LEFT JOIN ircm_actiontracker atr1 ON atr1.ircm_campaign_id = st.ircm_campaign_id
 WHERE st.ircm_campaign_id = 4318
 -- (history view; the vetted block normally has AND start_date >= now())
 ORDER BY st.start_date DESC;
+
++--------------------+-------------------------------------+---------------------+---------------------+----------------+------------------+----------+---------------------+---------------+---------------------+---------------+
+| template_term_name | scheduled_term_name                 | start_date          | end_date            | tracker_name_1 | payout_tracker_1 | archived | doe                 | uoe           | dlu                 | ulu           |
++--------------------+-------------------------------------+---------------------+---------------------+----------------+------------------+----------+---------------------+---------------+---------------------+---------------+
+| RCN - $50          | Green Monday 10% (12/9)             | 2024-12-09 01:00:00 | 2024-12-10 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:48:09 | erica__miller | 2024-11-20 05:48:09 | erica__miller |
+| RCN - $50          | Cyber Tuesday 10% (12/3)            | 2024-12-03 08:00:00 | 2024-12-04 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:47:15 | erica__miller | 2024-11-20 05:47:15 | erica__miller |
+| RCN - $50          | Cyber Monday 15% (12/2)             | 2024-12-02 01:00:00 | 2024-12-03 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:46:34 | erica__miller | 2024-11-20 05:46:34 | erica__miller |
+| RCN - $50          | Black Friday 12% (11/28 - 11/29)    | 2024-11-28 01:00:00 | 2024-11-30 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:45:22 | erica__miller | 2024-11-20 05:45:22 | erica__miller |
+| RCN - $50          | Black Friday First Look 10% (11/25) | 2024-11-25 01:00:00 | 2024-11-26 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:44:33 | erica__miller | 2024-11-20 05:44:33 | erica__miller |
+| RCN - $50          | Early Black Friday 10% (11/22)      | 2024-11-22 01:00:00 | 2024-11-23 08:00:00 | RCN Sale       | 9734             | false    | 2024-11-20 05:43:44 | erica__miller | 2024-11-20 05:43:44 | erica__miller |
++--------------------+-------------------------------------+---------------------+---------------------+----------------+------------------+----------+---------------------+---------------+---------------------+---------------+
 
 
 SELECT username as user, ip_addr as ipaddress, account_id,  session_id,
