@@ -1,35 +1,9 @@
--- vetted: click_fact detail by campaign/publisher/ad/date
--- (see “Detailed click event data for a specific campaign, ad, and publisher”)
+/* Count partner vs media-source clicks */
 SELECT
-  cf.campaign_id,
-  cf.event_datetime,
-  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
-  cf.click_id,
-  cf.profile_id,
-  ad.ad_id,
-  ad.name AS ad_name,
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json,'ruleName') AS rule_name,
-  landing_page_url,
-  cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
-  cf.method, cf.classification
-FROM click_fact cf
-LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE advertiser_id = <advId>
-  AND cf.campaign_id IN (<campaignIds>)
+  CASE WHEN publisher_id = 0 THEN 'MEDIA_SOURCE_ORG/DIR' ELSE 'PARTNER' END AS source_type,
+  COUNT(*) AS clicks
+FROM click_fact
+WHERE advertiser_id = 5439384
+  AND campaign_id   = 25140
   AND event_datetime >= '2025-04-25' AND event_datetime < '2025-05-09'
-ORDER BY cf.event_datetime DESC;
-
-
-
-/* DRAFT – counts partner vs non‑partner clicks
-   NOTE: requires review; uses publisher_id > 0 as partner proxy */
-SELECT
-    CASE WHEN cf.publisher_id > 0 THEN 'partner' ELSE 'non_partner' END AS source_type,
-    COUNT(*) AS clicks
-FROM click_fact cf
-WHERE cf.advertiser_id = <advId>
-  AND cf.campaign_id IN (<campaignIds>)
-  AND cf.event_datetime >= '2025-04-25' AND cf.event_datetime < '2025-05-09'
-GROUP BY 1
-ORDER BY clicks DESC;
+GROUP BY 1;
