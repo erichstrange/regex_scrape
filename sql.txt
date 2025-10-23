@@ -1,49 +1,9 @@
-SELECT
-  COUNT(*) AS network_clicks_approx
+-- classification distribution for partner clicks
+SELECT classification, COUNT(*) AS clicks
 FROM click_fact
 WHERE advertiser_id = 5439384
   AND campaign_id = 25140
   AND event_datetime >= '2025-04-25' AND event_datetime < '2025-05-09'
   AND publisher_id > 0
-  AND classification NOT IN ('D','E','B');  -- drop duplicates/excluded/bot
-
-  +-----------------------+
-| network_clicks_approx |
-+-----------------------+
-|                 34335 |
-+-----------------------+
-
-
-SELECT
-  COALESCE(md.media_name, 'UNIDENTIFIED_MS') AS media_name,
-  md.media_type,
-  COUNT(*) AS clicks
-FROM radius_path_event_fact r
-LEFT JOIN media_dim md ON md.id = r.event_media_dim_id
-WHERE r.advertiser_id = 5439384
-  AND r.campaign_id  = 25140
-  AND r.event_type   = 'Click'
-  AND r.event_datetime >= '2025-04-25' AND r.event_datetime < '2025-05-09'
-GROUP BY 1,2
+GROUP BY classification
 ORDER BY clicks DESC;
-
-+--------------------------------------------------------+------------+--------+
-| media_name                                             | media_type | clicks |
-+--------------------------------------------------------+------------+--------+
-| Ebates Performance Marketing, Inc. dba Rakuten Rewards | PUBLISHER  |   6321 |
-| GoCashBack                                             | PUBLISHER  |   3838 |
-| Skimbit Ltd.                                           | PUBLISHER  |   2084 |
-| Ibotta Inc                                             | PUBLISHER  |    924 |
-| . Affirm Inc.                                          | PUBLISHER  |    818 |
-| TopCashback USA Inc                                    | PUBLISHER  |    324 |
-| Wildfire Systems                                       | PUBLISHER  |    218 |
-| Cartera Commerce, Inc.                                 | PUBLISHER  |    213 |
-| Klarna                                                 | PUBLISHER  |     69 |
-| Prodege, LLC.                                          | PUBLISHER  |     56 |
-| Honey Science Corporation.                             | PUBLISHER  |     16 |
-| BeFrugal.com                                           | PUBLISHER  |     16 |
-| Groupon, Inc                                           | PUBLISHER  |     15 |
-| People Inc. - Content                                  | PUBLISHER  |     12 |
-| Loyalize                                               | PUBLISHER  |      6 |
-| Joko USA                                               | PUBLISHER  |      5 |
-+--------------------------------------------------------+------------+--------+
