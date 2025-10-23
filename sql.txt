@@ -1,9 +1,22 @@
-/* Count partner vs media-source clicks */
 SELECT
-  CASE WHEN publisher_id = 0 THEN 'MEDIA_SOURCE_ORG/DIR' ELSE 'PARTNER' END AS source_type,
-  COUNT(*) AS clicks
+  COUNT(*) AS network_clicks_approx
 FROM click_fact
 WHERE advertiser_id = 5439384
-  AND campaign_id   = 25140
+  AND campaign_id = 25140
   AND event_datetime >= '2025-04-25' AND event_datetime < '2025-05-09'
-GROUP BY 1;
+  AND publisher_id > 0
+  AND classification NOT IN ('D','E','B');  -- drop duplicates/excluded/bot
+
+
+SELECT
+  COALESCE(md.media_name, 'UNIDENTIFIED_MS') AS media_name,
+  md.media_type,
+  COUNT(*) AS clicks
+FROM radius_path_event_fact r
+LEFT JOIN media_dim md ON md.id = r.event_media_dim_id
+WHERE r.advertiser_id = 5439384
+  AND r.campaign_id  = 25140
+  AND r.event_type   = 'Click'
+  AND r.event_datetime >= '2025-04-25' AND r.event_datetime < '2025-05-09'
+GROUP BY 1,2
+ORDER BY clicks DESC;
