@@ -7,3 +7,12 @@ WHERE advertiser_id = 5439384
   AND publisher_id > 0
 GROUP BY classification
 ORDER BY clicks DESC;
+
++----------------+--------+
+| classification | clicks |
++----------------+--------+
+| U              |  34224 |
+| E              |  10922 |
+| D              |   8969 |
+| DE             |    111 |
++----------------+--------+
