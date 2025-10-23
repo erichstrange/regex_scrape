@@ -1,16 +1,19 @@
--- DRAFT: list candidate API calls around the window to grab batch_ids
-SELECT batch_id,
-       endpoint,
-       event_datetime,
-       LENGTH(payload) AS bytes
-FROM r_ds_ods.ir_api_log
-WHERE event_datetime BETWEEN '2025-10-01 00:00:00' AND '2025-10-03 00:00:00'
-  AND (payload LIKE '%"accountId":230603%' OR payload LIKE '%"programId":4318%')
-ORDER BY event_datetime DESC
-LIMIT 500;
-
-
--- VETTED: get full API payload by batch_id
-SELECT payload
-FROM r_ds_ods.ir_api_log
-WHERE batch_id = 'A-<BATCH_ID_HERE>';
+/* DRAFT: Partner-level path durations driving Behavior APT
+   Window: 2025-10-09 to 2025-10-23 (adjust if your report window differs) */
+with per_conv as (
+  select
+    rpef.conversion_event_id,
+    min(rpef.event_datetime) as path_start,
+    max(case when rpef.event_type = 'Conversion' then rpef.event_datetime end) as conversion_time
+  from radius_path_event_fact rpef
+  where rpef.advertiser_id = 5823337
+    and rpef.event_datetime >= '2025-10-09' and rpef.event_datetime < '2025-10-23'
+    and rpef.event_media_id = 6221153  -- partner participated anywhere on the path
+  group by rpef.conversion_event_id
+)
+select
+  conversion_event_id,
+  timestampdiff(DAY, path_start, conversion_time) as path_days
+from per_conv
+order by path_days desc
+limit 100;
