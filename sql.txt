@@ -1,21 +1,82 @@
+/* DataSource: singlestore */
+select *
+from click_fact
+where advertiser_id = 5823337
+  and publisher_id = 6221153
+  and event_datetime >= '2025-09-01' and event_datetime < '2025-10-23'
+order by event_datetime desc
+limit 1000;
+
+
+/* DataSource: iraction_sharded */
+select action_id, action_date, campaign_id, oid, publisher_id, ref_profile_id, ref_url
+from irac_action2
+where campaign_id in (select distinct campaign_id from radius_path_event_fact where advertiser_id=5823337)
+  and publisher_id = 6221153
+  and action_date >= '2025-10-09' and action_date < '2025-10-23'
+order by action_date desc
+limit 500;
+
+
+/* DataSource: irdw_imp (Impala) */
+select action_datetime, advertiser_id, campaign_id, action_id, publisher_id, oid, ref_url, ref_domain
+from action_fact
+where advertiser_id = 5823337
+  and publisher_id = 6221153
+  and action_datetime >= '2025-10-09' and action_datetime < '2025-10-23'
+order by action_datetime desc
+limit 500;
+
+
+/* DataSource: r_ds_singlestore */
+with per_conv as (
+  select
+    rpef.conversion_event_id,
+    min(rpef.event_datetime) as path_start,
+    max(case when rpef.event_type = 'Conversion' then rpef.event_datetime end) as conversion_time
+  from radius_path_event_fact rpef
+  where rpef.advertiser_id = 5823337
+    and rpef.event_datetime >= '2025-10-09' and rpef.event_datetime < '2025-10-23'
+    and rpef.event_media_id = 6221153
+  group by rpef.conversion_event_id
+)
+select conversion_event_id,
+       timestampdiff(DAY, path_start, conversion_time) as path_days
+from per_conv
+order by path_days desc
+limit 100;
+
+
+/* DataSource: r_ds_singlestore */
+WITH convs AS (
+  SELECT
+    conversion_event_id,
+    MAX(CASE WHEN event_type = 'Conversion' THEN event_datetime END) AS conversion_time
+  FROM radius_path_event_fact
+  WHERE advertiser_id = 5823337
+    AND conversion_event_datetime >= '2025-10-09'
+    AND conversion_event_datetime <  '2025-10-23'
+  GROUP BY conversion_event_id
+),
+part_paths AS (
+  SELECT DISTINCT conversion_event_id
+  FROM radius_path_event_fact
+  WHERE advertiser_id = 5823337
+    AND event_media_id = 6221153
+    AND conversion_event_datetime >= '2025-10-09'
+    AND conversion_event_datetime <  '2025-10-23'
+),
+path_start AS (
+  SELECT conversion_event_id, MIN(event_datetime) AS first_event_time
+  FROM radius_path_event_fact
+  WHERE advertiser_id = 5823337
+    AND conversion_event_id IN (SELECT conversion_event_id FROM part_paths)
+  GROUP BY conversion_event_id
+)
 SELECT
   c.conversion_event_id,
-  ps.first_event_time,
-  c.conversion_time,
   TIMESTAMPDIFF(DAY, ps.first_event_time, c.conversion_time) AS path_days
 FROM convs c
 JOIN path_start ps USING (conversion_event_id)
 ORDER BY path_days DESC
-LIMIT 50;
-
-
--- Vetted skeleton from “Retrieve the sequence of events leading to a specific conversion”
--- Data source: r_ds_singlestore
-SELECT event_id, event_type, event_datetime, event_media_id, event_media_dim_id,
-       md.media_name, md.media_type, md.media_channel_name, referring_url,
-       click_order_first_to_last, referral_is_winner, referral_is_introducer,
-       referral_is_influencer, referral_is_closer
-FROM radius_path_event_fact rpef
-JOIN media_dim md ON md.id = rpef.event_media_dim_id
-WHERE rpef.conversion_event_id = '<one of the top offenders from step B>'
-ORDER BY event_datetime ASC;
+LIMIT 100;
