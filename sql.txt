@@ -1,140 +1,44 @@
--- Conversions in the UI date range
-WITH convs AS (
-  SELECT
-    conversion_event_id,
-    MAX(CASE WHEN event_type = 'Conversion' THEN event_datetime END) AS conversion_time
-  FROM radius_path_event_fact
-  WHERE advertiser_id = 5823337
-    AND conversion_event_datetime >= '2025-10-09'
-    AND conversion_event_datetime <  '2025-10-23'
-  GROUP BY conversion_event_id
-),
--- Conversions where Creative Clicks NA participated anywhere on the path
-part_paths AS (
-  SELECT DISTINCT conversion_event_id
-  FROM radius_path_event_fact
-  WHERE advertiser_id = 5823337
-    AND event_media_id = 6221153
-    AND conversion_event_datetime >= '2025-10-09'
-    AND conversion_event_datetime <  '2025-10-23'
-),
--- Earliest touch on the entire path (not just the partner)
-path_start AS (
-  SELECT conversion_event_id, MIN(event_datetime) AS first_event_time
-  FROM radius_path_event_fact
-  WHERE advertiser_id = 5823337
-    AND conversion_event_id IN (SELECT conversion_event_id FROM part_paths)
-  GROUP BY conversion_event_id
-)
-SELECT
-  c.conversion_event_id,
-  TIMESTAMPDIFF(DAY, ps.first_event_time, c.conversion_time) AS path_days
-FROM convs c
-JOIN path_start ps USING (conversion_event_id)
-ORDER BY path_days DESC
-LIMIT 100;
+-- Publisher account record
+SELECT * FROM iram_account WHERE id = 1301148;
 
-+------------------------+-----------+
-| conversion_event_id    | path_days |
-+------------------------+-----------+
-| A-M.28221.6497.49773   |         ʘ |
-| A-M.28221.6498.7387    |         ʘ |
-| A-M.28221.6491.84066   |         ʘ |
-| A-M.28221.6494.44236   |         ʘ |
-| A-M.28221.6493.27377   |         ʘ |
-| A-M.28221.6491.59493   |         ʘ |
-| A-M.28221.6493.397541  |         ʘ |
-| A-M.28221.6498.465324  |         ʘ |
-| A-M.28221.6500.144417  |         ʘ |
-| A-M.28221.6498.129826  |         ʘ |
-| A-M.28221.6492.349811  |         ʘ |
-| A-M.28221.6497.164833  |         ʘ |
-| A-M.28221.6504.752507  |         ʘ |
-| A-M.28221.6495.145498  |         ʘ |
-| A-M.28221.6500.101232  |         ʘ |
-| A-M.28221.6498.670513  |         ʘ |
-| A-M.28221.6492.358132  |         ʘ |
-| A-M.28221.6502.426950  |         ʘ |
-| A-M.28221.6503.401679  |         ʘ |
-| A-M.28221.6503.382491  |         ʘ |
-| A-M.28221.6504.65681   |         ʘ |
-| A-M.28221.6500.68662   |         ʘ |
-| A-M.28221.6500.322352  |         ʘ |
-| A-M.28221.6499.380026  |         ʘ |
-| A-M.28221.6502.419394  |         ʘ |
-| A-M.28221.6493.468847  |         ʘ |
-| A-M.28221.6494.141266  |         ʘ |
-| A-M.28221.6496.1428219 |         ʘ |
-| A-M.28221.6502.326146  |         ʘ |
-| A-M.28221.6496.27398   |         ʘ |
-| A-M.28221.6493.35343   |         ʘ |
-| A-M.28221.6494.54884   |         ʘ |
-| A-M.28221.6502.75911   |         ʘ |
-| A-M.28221.6504.295733  |         ʘ |
-| A-M.28221.6497.1069424 |         ʘ |
-| A-M.28221.6496.139580  |         ʘ |
-| A-M.28221.6494.133298  |         ʘ |
-| A-M.28221.6493.67545   |         ʘ |
-| A-M.28221.6497.69297   |         ʘ |
-| A-M.28221.6501.20388   |         ʘ |
-| A-M.28221.6499.276807  |         ʘ |
-| A-M.28221.6499.339045  |         ʘ |
-| A-M.28221.6501.669380  |         ʘ |
-| A-M.28221.6501.27281   |         ʘ |
-| A-M.28221.6504.310254  |         ʘ |
-| A-M.28221.6493.803865  |         ʘ |
-| A-M.28221.6501.864754  |         ʘ |
-| A-M.28221.6504.68361   |         ʘ |
-| A-M.28221.6503.145591  |         ʘ |
-| A-M.28221.6492.47689   |         ʘ |
-| A-M.28221.6491.1082468 |         ʘ |
-| A-M.28221.6503.51162   |         ʘ |
-| A-M.28221.6495.320245  |         ʘ |
-| A-M.28221.6503.118220  |         ʘ |
-| A-M.28221.6504.215645  |         ʘ |
-| A-M.28221.6499.63411   |         ʘ |
-| A-M.28221.6497.1147625 |         ʘ |
-| A-M.28221.6494.516515  |         ʘ |
-| A-M.28221.6493.174329  |         ʘ |
-| A-M.28221.6499.161214  |         ʘ |
-| A-M.28221.6495.220961  |         ʘ |
-| A-M.28221.6500.268775  |         ʘ |
-| A-M.28221.6501.23239   |         ʘ |
-| A-M.28221.6500.348504  |         ʘ |
-| A-M.28221.6501.852866  |         ʘ |
-| A-M.28221.6500.131175  |         ʘ |
-| A-M.28221.6493.70196   |         ʘ |
-| A-M.28221.6501.44997   |         ʘ |
-| A-M.28221.6502.681815  |         ʘ |
-| A-M.28221.6493.424112  |         ʘ |
-| A-M.28221.6493.257653  |         ʘ |
-| A-M.28221.6497.233291  |         ʘ |
-| A-M.28221.6501.48037   |         ʘ |
-| A-M.28221.6498.104545  |         ʘ |
-| A-M.28221.6492.1268909 |         ʘ |
-| A-M.28221.6495.504044  |         ʘ |
-| A-M.28221.6502.776144  |         ʘ |
-| A-M.28221.6500.453295  |         ʘ |
-| A-M.28221.6499.33918   |         ʘ |
-| A-M.28221.6502.447979  |         ʘ |
-| A-M.28221.6496.429254  |         ʘ |
-| A-M.28221.6497.123534  |         ʘ |
-| A-M.28221.6502.84570   |         ʘ |
-| A-M.28221.6504.317618  |         ʘ |
-| A-M.28221.6504.79771   |         ʘ |
-| A-M.28221.6497.577694  |         ʘ |
-| A-M.28221.6494.74680   |         ʘ |
-| A-M.28221.6491.461884  |         ʘ |
-| A-M.28221.6497.229752  |         ʘ |
-| A-M.28221.6497.492270  |         ʘ |
-| A-M.28221.6498.1198300 |         ʘ |
-| A-M.28221.6499.517260  |         ʘ |
-| A-M.28221.6495.94963   |         ʘ |
-| A-M.28221.6495.78032   |         ʘ |
-| A-M.28221.6504.718265  |         ʘ |
-| A-M.28221.6504.57638   |         ʘ |
-| A-M.28221.6500.159187  |         ʘ |
-| A-M.28221.6499.1059966 |         ʘ |
-| A-M.28221.6499.288113  |         ʘ |
-| A-M.28221.6504.673827  |         ʘ |
-+------------------------+-----------+
+
+-- Any pending contract record for this MP and program
+SELECT *
+FROM ircm_pendingcontract pc
+JOIN ircm_campaign ic ON ic.id = pc.ircm_campaign_id
+WHERE pc.iram_publisher_id = 1301148
+  AND ic.id = 34655;
+
+
+-- Signed contracts for this MP on this program
+SELECT *
+FROM ircm_signedcontract sc
+WHERE sc.ircm_campaign_id = 34655
+  AND sc.iram_publisher_id = 1301148;
+
+
+SELECT *
+FROM ircm_campaign_share_of_voice_settings
+WHERE campaign_id = 34655;
+
+
+-- DRAFT (PS/PD schema to confirm): look for MP-level blocks on a program
+-- Data source: PS/PD (confirm exact DB/schema with PD/PS)
+SELECT *
+FROM ps_publisher_access_rules
+WHERE iram_publisher_id = 1301148
+  AND ircm_campaign_id = 34655;
+
+
+-- DRAFT (PD/Discovery index): confirm the program is indexed and listable
+SELECT *
+FROM pd_marketplace_program_index
+WHERE ircm_campaign_id = 34655
+  AND is_visible = 1;
+
+-- DRAFT: check eligibility join for this MP
+SELECT *
+FROM pd_marketplace_eligibility
+WHERE ircm_campaign_id = 34655
+  AND iram_publisher_id = 1301148
+  AND eligible = 1;
