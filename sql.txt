@@ -1,54 +1,11 @@
--- IO Terms that flipped at the switch time (shows creator/updater + effective window)
-SELECT
-  io.id        AS ircm_insertionorder_id,
-  io.name      AS io_name,
-  it.id        AS ircm_ioterms_id,
-  it.timezone,
-  it.active_start_date,
-  it.active_end_date,
-  it.doe, it.uoe, it.dlu, it.ulu
-FROM ircm_ioterms it
-JOIN ircm_insertionorder io
-  ON io.iram_advertiser_id = it.iram_advertiser_id
-WHERE io.iram_advertiser_id = 230603
-  AND io.ircm_campaign_id  = 4318
-  -- Limit to the Public/CPC IOs you care about; expand if you want:
-  AND io.name IN ('Public Terms','Clearlink CPC')
-  AND it.active_start_date BETWEEN '2025-10-02 18:56:00' AND '2025-10-02 18:59:59'
-ORDER BY it.active_start_date DESC, it.dlu DESC;
-
-+------------------------+----------------+-----------------+---------------------+---------------------+-----------------+---------------------+----------------+---------------------+------------------------------+
-| ircm_insertionorder_id | io_name        | ircm_ioterms_id | timezone            | active_start_date   | active_end_date | doe                 | uoe            | dlu                 | ulu                          |
-+------------------------+----------------+-----------------+---------------------+---------------------+-----------------+---------------------+----------------+---------------------+------------------------------+
-|                 336769 | Clearlink CPC  |          720448 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | 2025-10-02 18:57:33 | brieanabeltran | 2025-10-08 19:15:11 | google:110648582134585799721 |
-|                  28787 | Public Terms   |          720448 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | 2025-10-02 18:57:33 | brieanabeltran | 2025-10-08 19:15:11 | google:110648582134585799721 |
-+------------------------+----------------+-----------------+---------------------+---------------------+-----------------+---------------------+----------------+---------------------+------------------------------+
-
-
-SELECT
-  id, entity_type, entity_id, username, change_date,
-  host, app, app_version, thread_id, ip_address,
-  audit_json
-FROM m_audit_log
-WHERE account_id   = 230603
-  AND change_date BETWEEN '2025-10-02 18:55:00' AND '2025-10-02 19:05:00'
-  AND (
-       username LIKE 'UpcomingContractProcessor%'                 -- scheduler user
-    OR audit_json LIKE '%activeStart%'                             -- common field name in before/after
-    OR audit_json LIKE '%Public Terms%'                            -- safety net if name captured
-    OR audit_json LIKE '%InsertionOrder%' OR audit_json LIKE '%Terms%'
-  )
-ORDER BY change_date DESC;
-
-Table 'iracct.m_audit_log' doesn't exist
-Table 'iracct.m_audit_log' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'iracct.m_audit_log' doesn't exist
-
-
--- System/anonymous entries around the flip
+-- [ODS] API log scan by account & window
 SELECT *
-FROM m_audit_log_entry
-WHERE core_account_id = 230603
-  AND doe BETWEEN '2025-10-02 18:55:00' AND '2025-10-02 19:05:00'
-  AND username = '';
-Table 'iracct.m_audit_log_entry' doesn't exist
-Table 'iracct.m_audit_log_entry' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'iracct.m_audit_log_entry' doesn't exist
+FROM ir_api_log
+WHERE iram_account_id = 2984864
+  AND doe >= '2025-10-24 03:00:00' AND doe < '2025-10-25 00:00:00'
+LIMIT 100;
+
+
+-- [IRAM] Webservice users for this advertiser
+SELECT * FROM irwsapi_webservice_user
+WHERE iram_account_id IN (2984864);
