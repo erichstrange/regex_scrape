@@ -17,6 +17,13 @@ WHERE io.iram_advertiser_id = 230603
   AND it.active_start_date BETWEEN '2025-10-02 18:56:00' AND '2025-10-02 18:59:59'
 ORDER BY it.active_start_date DESC, it.dlu DESC;
 
++------------------------+----------------+-----------------+---------------------+---------------------+-----------------+---------------------+----------------+---------------------+------------------------------+
+| ircm_insertionorder_id | io_name        | ircm_ioterms_id | timezone            | active_start_date   | active_end_date | doe                 | uoe            | dlu                 | ulu                          |
++------------------------+----------------+-----------------+---------------------+---------------------+-----------------+---------------------+----------------+---------------------+------------------------------+
+|                 336769 | Clearlink CPC  |          720448 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | 2025-10-02 18:57:33 | brieanabeltran | 2025-10-08 19:15:11 | google:110648582134585799721 |
+|                  28787 | Public Terms   |          720448 | America/Los_Angeles | 2025-10-02 18:57:33 | ʘ               | 2025-10-02 18:57:33 | brieanabeltran | 2025-10-08 19:15:11 | google:110648582134585799721 |
++------------------------+----------------+-----------------+---------------------+---------------------+-----------------+---------------------+----------------+---------------------+------------------------------+
+
 
 SELECT
   id, entity_type, entity_id, username, change_date,
@@ -33,6 +40,9 @@ WHERE account_id   = 230603
   )
 ORDER BY change_date DESC;
 
+Table 'iracct.m_audit_log' doesn't exist
+Table 'iracct.m_audit_log' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'iracct.m_audit_log' doesn't exist
+
 
 -- System/anonymous entries around the flip
 SELECT *
@@ -40,3 +50,5 @@ FROM m_audit_log_entry
 WHERE core_account_id = 230603
   AND doe BETWEEN '2025-10-02 18:55:00' AND '2025-10-02 19:05:00'
   AND username = '';
+Table 'iracct.m_audit_log_entry' doesn't exist
+Table 'iracct.m_audit_log_entry' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'iracct.m_audit_log_entry' doesn't exist
