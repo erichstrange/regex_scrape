@@ -1,23 +1,45 @@
+/* DRAFT — for peer review before use */
+SELECT
+    content.id                               AS ad_id,                 -- the Ad ID you need
+    content.iram_account_id                  AS account_id,
+    content.ircm_campaign_id                 AS campaign_id,
+    policy.name                              AS policy_name,
+    website.domains                          AS domain,
+    ad.ad_description,
+    ad.iram_mediapartner_id                  AS tsm_partner_id,
+    ad.partner_type,
+    content.doe
+FROM icomp.compliance_paid_search_ad              ad
+JOIN icomp.compliance_content                     content ON content.id = ad.compliance_content_id
+JOIN icomp.compliance_website                     website ON website.id = content.website_id
+JOIN icomp.compliance_paid_search_ad_policy       policy  ON policy.id = ad.compliance_paid_search_ad_policy_id
+WHERE content.ircm_campaign_id = 5644
+  AND website.domains LIKE '%discountsclubs.com%'
+  AND content.doe BETWEEN '2025-10-20' AND '2025-10-28'
+ORDER BY content.doe DESC;
 
-SELECT 
-  cf.event_datetime,
-  cf.advertiser_id,
-  cf.campaign_id,
-  cf.publisher_id,
-  cf.landing_page_url,
-  cf.referring_url,
-  cf.classification,
-  cf.method
-FROM click_fact cf
-WHERE cf.advertiser_id = 404719              -- Hanna Andersson adv id
-  AND cf.campaign_id  = 5644
-  AND cf.publisher_id = 12869
-  AND cf.event_datetime >= '2025-10-20'
-  AND cf.event_datetime <  '2025-10-29'
-  AND cf.landing_page_url LIKE '%discountsclubs.com%'
-ORDER BY cf.event_datetime DESC;
 
-+----------------+---------------+-------------+--------------+------------------+----------------+--------+
-| event_datetime | advertiser_id | campaign_id | publisher_id | landing_page_url | classification | method |
-+----------------+---------------+-------------+--------------+------------------+----------------+--------+
-+----------------+---------------+-------------+--------------+------------------+----------------+--------+
+
+select ad.compliance_content_id as ad_id
+     , content.iram_account_id as account_id
+     , content.ircm_campaign_id as campaign_id
+     , ad.ad_description
+     , case when ad.iram_mediapartner_id = 0 then 'No Partner Data' else ad.iram_mediapartner_id end as partner_id
+     , ad.partner_type
+     , policy.id as policy_id
+     , policy.name as policy_name
+     , website.domains as domain
+     , cbi.payload as third_party_provider_data   -- JSON from TSM
+     , cbi.response as processing_info
+from icomp.compliance_paid_search_ad_policy policy
+join icomp.compliance_paid_search_ad ad
+  on ad.compliance_paid_search_ad_policy_id = policy.id
+join icomp.compliance_content content
+  on content.id = ad.compliance_content_id
+join icomp.compliance_website website
+  on website.id = content.website_id
+join icomp.compliance_batch_item_content cbic
+  on cbic.compliance_content_id = content.id
+join icomp.compliance_batch_item cbi
+  on cbi.id = cbic.compliance_batch_item_id
+where ad.compliance_content_id = <Ad ID>;
