@@ -16,3 +16,8 @@ WHERE cf.advertiser_id = 404719              -- Hanna Andersson adv id
   AND cf.event_datetime <  '2025-10-29'
   AND cf.landing_page_url LIKE '%discountsclubs.com%'
 ORDER BY cf.event_datetime DESC;
+
++----------------+---------------+-------------+--------------+------------------+----------------+--------+
+| event_datetime | advertiser_id | campaign_id | publisher_id | landing_page_url | classification | method |
++----------------+---------------+-------------+--------------+------------------+----------------+--------+
++----------------+---------------+-------------+--------------+------------------+----------------+--------+
