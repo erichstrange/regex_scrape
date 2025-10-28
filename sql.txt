@@ -18,6 +18,11 @@ WHERE content.ircm_campaign_id = 5644
   AND content.doe BETWEEN '2025-10-20' AND '2025-10-28'
 ORDER BY content.doe DESC;
 
++-------+------------+-------------+-------------+--------+----------------+----------------+--------------+-----+
+| ad_id | account_id | campaign_id | policy_name | domain | ad_description | tsm_partner_id | partner_type | doe |
++-------+------------+-------------+-------------+--------+----------------+----------------+--------------+-----+
++-------+------------+-------------+-------------+--------+----------------+----------------+--------------+-----+
+
 
 
 select ad.compliance_content_id as ad_id
