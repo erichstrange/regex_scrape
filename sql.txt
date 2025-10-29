@@ -1,32 +1,53 @@
--- Shows audit entries with a blank username (system/automations)
-select *
-from m_audit_log_entry
-where core_account_id = 5475947
-  and username = '';
-+----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
-| id | objectid | objectclassname | auditedvariable | previousval | newval | meta_data | application | username | change_date | core_account_id | reference_id | ip_address | server_name | appversion | network_id |
-+----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
-+----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
-
--- DRAFT: broader sweep by date range around the suspect "Created" timestamps
-select *
-from m_audit_log_entry
-where core_account_id = 5475947
-  and change_date between '2025-10-15' and '2025-10-31'
-order by change_date desc;
-
-+----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
-| id | objectid | objectclassname | auditedvariable | previousval | newval | meta_data | application | username | change_date | core_account_id | reference_id | ip_address | server_name | appversion | network_id |
-+----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
-+----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
+-- DRAFT: resolve publisher IDs by name (adjust the list as needed)
+SELECT publisher_id, publisher_name, company_url
+FROM analytics.publisher
+WHERE publisher_name IN ('wlee','NJR Mobility','xDaytah','edl')
+ORDER BY publisher_name;
 
 
--- DRAFT: recommendations created for this brand (staff or AI)
--- Columns vary; we expect fields like created_on/created_by/source/brand_id/publisher_id
-select *
-from iop.iop_partnership_recommendation
-where brand_id = 5475947
-  and created_on between '2025-10-15' and '2025-10-31'
-order by created_on desc;
-Access denied for user 's2-operator_2'@'%' to database 'iop'
-Access denied for user 's2-operator_2'@'%' to database 'iop'; nested exception is java.sql.SQLSyntaxErrorException: Access denied for user 's2-operator_2'@'%' to database 'iop'
+-- DRAFT: how these relationships were created
+SELECT
+  brand_account_id,
+  publisher_account_id,
+  program_id,
+  initiation_source,
+  source_doe,
+  source_dlu,
+  doe
+FROM base_ods.platform_program_account_relationship
+WHERE brand_account_id = 5475947
+  AND publisher_account_id IN (<publisher_id_list>)
+ORDER BY source_doe DESC;
+
+
+-- DRAFT: cross-check marketplace application provenance
+SELECT
+  partner_id            AS publisher_id,
+  partner_name,
+  program_id,
+  program_name,
+  mkpl_status,
+  how_initiated,        -- who/what initiated the app
+  application_date,
+  accepted_date,
+  declined_date
+FROM reporting.publisher_marketplace_applications
+WHERE program_id IN (<program_id_list_if_needed>)
+  AND partner_id IN (<publisher_id_list>)
+ORDER BY application_date DESC;
+
+
+-- DRAFT: see if a recommendation preceded the add
+SELECT
+  program_id,
+  publisher_id,
+  recommendation_type,
+  csm_workflow_status,
+  pdm_workflow_status,
+  initiated_date,
+  date_joined,
+  contract_status
+FROM reporting.matchmaking_relationships
+WHERE program_id = <program_id_if_known>
+  AND publisher_id IN (<publisher_id_list>)
+ORDER BY initiated_date DESC;
