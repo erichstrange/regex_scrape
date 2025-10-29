@@ -6,15 +6,22 @@ FROM   ircm.ircm_campaign
 WHERE  iram_advertiser_id = 5475947
 AND    state IN ('ACTIVE','AWAITING_REVIEW','SETUP_COMPLETED','DELINQUENT')
 ORDER BY id;
++------------+---------+--------+
+| program_id | name    | state  |
++------------+---------+--------+
+|      25438 | MobileX | ACTIVE |
++------------+---------+--------+
 
 
 -- PSI mapping for those programs
 SELECT p.radiuscampaign_id AS program_id,
        p.psi
 FROM   icee.program p
-WHERE  p.radiuscampaign_id IN (/* paste program_id(s) from step 1 */)
+WHERE  p.radiuscampaign_id IN (25438)
 ORDER BY p.radiuscampaign_id;
 
+SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.39' for table 'program'
+SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.39' for table 'program'; nested exception is java.sql.SQLSyntaxErrorException: SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.39' for table 'program'
 
 -- ICEE relationships created for the brand (these show up as Prospects)
 SELECT r.rsi,
@@ -27,10 +34,12 @@ SELECT r.rsi,
        r.closed_date
 FROM   icee.relationship r
 WHERE  r.supply_psi IN (
-         SELECT psi FROM icee.program WHERE radiuscampaign_id IN (/* programs from step 1 */)
+         SELECT psi FROM icee.program WHERE radiuscampaign_id IN (25438)
        )
 AND    r.created_date BETWEEN '2025-10-15' AND '2025-10-31'
 ORDER  BY r.created_date DESC;
+SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.40' for table 'relationship'
+SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.40' for table 'relationship'; nested exception is java.sql.SQLSyntaxErrorException: SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.40' for table 'relationship'
 
 
 -- Matchmaking recommendations for those programs in the same window
@@ -42,7 +51,7 @@ SELECT rec.id                         AS recommendation_id,
        rec.recommended_by,            -- username if USER/… source
        rec.created_on
 FROM   iop.iop_partnership_recommendation rec
-WHERE  rec.program_id IN (/* programs from step 1 */)
+WHERE  rec.program_id IN (25438)
 AND    rec.created_on BETWEEN '2025-10-15' AND '2025-10-31'
 ORDER  BY rec.created_on DESC;
 
@@ -58,3 +67,46 @@ LEFT   JOIN iram.iram_employee  emp ON emp.contact_id = eu.contact_id
 LEFT   JOIN iram.iram_operator  op  ON op.contact_id  = eu.contact_id
 WHERE  eu.username IN (/* paste vetted_by / recommended_by from step 4 */)
 ORDER  BY eu.username;
+
+
+
+DESCRIBE iop.iop_partnership_recommendation
++------------------------------------+---------------+------+-----+---------+----------------+
+| Field                              | Type          | Null | Key | Default | Extra          |
++------------------------------------+---------------+------+-----+---------+----------------+
+| id                                 | int           | NO   | PRI | ʘ       | auto_increment |
+| iram_publisher_id                  | int           | NO   |     | ʘ       |                |
+| iram_advertiser_id                 | int           | NO   | MUL | ʘ       |                |
+| ircm_campaign_id                   | int           | NO   | MUL | ʘ       |                |
+| brand_matchmaking_score            | decimal(10,3) | YES  |     | ʘ       |                |
+| brand_last_scored                  | date          | YES  |     | ʘ       |                |
+| pub_matchmaking_score              | decimal(10,3) | YES  |     | ʘ       |                |
+| pub_last_scored                    | date          | YES  |     | ʘ       |                |
+| recommendation_source              | varchar(255)  | NO   |     | ʘ       |                |
+| recommendation_by                  | varchar(45)   | YES  |     | ʘ       |                |
+| vetted_by                          | varchar(45)   | YES  |     | ʘ       |                |
+| start_date                         | datetime      | YES  |     | ʘ       |                |
+| end_date                           | datetime      | YES  |     | ʘ       |                |
+| ended_by                           | varchar(255)  | YES  |     | ʘ       |                |
+| collection_id                      | int           | YES  | MUL | ʘ       |                |
+| bulk_upload                        | tinyint(1)    | NO   |     | 0       |                |
+| introduction_made_by               | varchar(255)  | YES  |     | ʘ       |                |
+| introduction_made_on               | datetime      | YES  |     | ʘ       |                |
+| interest_sent_by                   | varchar(255)  | YES  |     | ʘ       |                |
+| interest_sent_on                   | datetime      | YES  |     | ʘ       |                |
+| impala_how_initiated               | varchar(255)  | YES  |     | ʘ       |                |
+| impala_initiated_by                | varchar(255)  | YES  |     | ʘ       |                |
+| impala_first_date_initiated        | date          | YES  |     | ʘ       |                |
+| impala_first_date_joined           | date          | YES  |     | ʘ       |                |
+| impala_first_click_date            | date          | YES  | MUL | ʘ       |                |
+| impala_first_action_payout_date    | date          | YES  |     | ʘ       |                |
+| impala_first_nonaction_payout_date | date          | YES  |     | ʘ       |                |
+| impala_action_payout               | decimal(30,4) | YES  |     | ʘ       |                |
+| impala_nonaction_payout            | decimal(30,4) | YES  |     | ʘ       |                |
+| doe                                | datetime      | NO   |     | ʘ       |                |
+| dlu                                | datetime      | NO   |     | ʘ       |                |
+| uoe                                | varchar(45)   | NO   |     | ʘ       |                |
+| ulu                                | varchar(45)   | NO   |     | ʘ       |                |
+| archived                           | tinyint(1)    | NO   |     | 0       |                |
+| version                            | int           | YES  |     | 0       |                |
++------------------------------------+---------------+------+-----+---------+----------------+
