@@ -1,112 +1,72 @@
--- PROGRAMS for Advertiser 5475947
-SELECT id            AS program_id,
-       name,
-       state
-FROM   ircm.ircm_campaign
-WHERE  iram_advertiser_id = 5475947
-AND    state IN ('ACTIVE','AWAITING_REVIEW','SETUP_COMPLETED','DELINQUENT')
-ORDER BY id;
-+------------+---------+--------+
-| program_id | name    | state  |
-+------------+---------+--------+
-|      25438 | MobileX | ACTIVE |
-+------------+---------+--------+
+-- If you’re unsure of the exact table name, run the introspection first (below).
+SELECT p.psi, p.radiuscampaign_id
+FROM icee_snapshot.program p
+WHERE p.radiuscampaign_id = 25438;
 
 
--- PSI mapping for those programs
-SELECT p.radiuscampaign_id AS program_id,
-       p.psi
-FROM   icee.program p
-WHERE  p.radiuscampaign_id IN (25438)
-ORDER BY p.radiuscampaign_id;
+-- What ICEE tables exist here?
+SHOW TABLES FROM icee_snapshot;
 
-SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.39' for table 'program'
-SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.39' for table 'program'; nested exception is java.sql.SQLSyntaxErrorException: SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.39' for table 'program'
-
--- ICEE relationships created for the brand (these show up as Prospects)
-SELECT r.rsi,
-       r.supply_psi,
-       r.demand_psi,
-       r.state,
-       r.source,              -- Often surfaces as "Other" in Prospects UI
-       r.created_date,        -- try created_on if needed
-       r.closed,
-       r.closed_date
-FROM   icee.relationship r
-WHERE  r.supply_psi IN (
-         SELECT psi FROM icee.program WHERE radiuscampaign_id IN (25438)
-       )
-AND    r.created_date BETWEEN '2025-10-15' AND '2025-10-31'
-ORDER  BY r.created_date DESC;
-SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.40' for table 'relationship'
-SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.40' for table 'relationship'; nested exception is java.sql.SQLSyntaxErrorException: SELECT command denied to user 'psql-platform-operator-ro'@'10.54.16.40' for table 'relationship'
+-- What columns does the program table have?
+SHOW COLUMNS FROM icee_snapshot.program;
 
 
--- Matchmaking recommendations for those programs in the same window
-SELECT rec.id                         AS recommendation_id,
-       rec.program_id,                -- or rec.brand_id in some schemas
-       rec.iram_publisher_id          AS publisher_id,
-       rec.recommendation_source,     -- ALGORITHM / USER / PUBLISHER / BRAND / AGENCY
-       rec.vetted_by,                 -- username who vetted AI recs (ties to a person)
-       rec.recommended_by,            -- username if USER/… source
-       rec.created_on
-FROM   iop.iop_partnership_recommendation rec
-WHERE  rec.program_id IN (25438)
-AND    rec.created_on BETWEEN '2025-10-15' AND '2025-10-31'
-ORDER  BY rec.created_on DESC;
+/* DRAFT: ICEE relationships for MobileX around the creation dates.
+   These rows back the Prospects grid. We pull raw `source` and creator stamps. */
+SELECT
+  r.rsi,
+  r.supply_psi,
+  r.demand_psi,
+  r.state,
+  r.source,           -- raw source that the UI maps to "Other"
+  r.doe,              -- created timestamp (date of entry)
+  r.dlu,              -- last update timestamp
+  r.uoe,              -- created by (often a service or username)
+  r.ulu               -- last updated by
+FROM icee_snapshot.relationship r
+WHERE r.supply_psi = (:SUPPLY_PSI)             -- paste the PSI from step 1
+  AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
+ORDER BY r.doe DESC;
 
 
--- Map Operator usernames to a person (name/email)
+/* DRAFT: Any partnership recommendations tied to MobileX’s program near the dates?
+   Includes fields that identify WHO recommended/vetted and HOW (bulk_upload). */
+SELECT
+  rec.id                                AS recommendation_id,
+  rec.iram_advertiser_id,
+  rec.ircm_campaign_id,
+  rec.iram_publisher_id                 AS publisher_id,
+  rec.recommendation_source,            -- ALGORITHM / USER / PUBLISHER / BRAND / AGENCY ...
+  rec.recommendation_by,                -- user if USER-sourced
+  rec.vetted_by,                        -- user who vetted AI picks
+  rec.bulk_upload,                      -- 1 indicates batch import
+  rec.introduction_made_by,
+  rec.interest_sent_by,
+  rec.doe,                              -- created timestamp
+  rec.uoe,                              -- created by (user/service)
+  rec.ulu                               -- last updated by
+FROM iop.iop_partnership_recommendation rec
+WHERE rec.iram_advertiser_id = 5475947
+  AND rec.ircm_campaign_id   = 25438
+  AND rec.doe >= '2025-10-15' AND rec.doe < '2025-11-01'
+ORDER BY rec.doe DESC;
+
+
+/* DRAFT: map usernames to people (name/email). */
 SELECT eu.username,
-       emp.first_name,
-       emp.last_name,
-       eu.email_address,
-       op.id AS operator_id
+       eu.email         AS email_address,
+       eu.firstname     AS first_name,
+       eu.lastname      AS last_name
 FROM   iram.core_estaleauser eu
-LEFT   JOIN iram.iram_employee  emp ON emp.contact_id = eu.contact_id
-LEFT   JOIN iram.iram_operator  op  ON op.contact_id  = eu.contact_id
-WHERE  eu.username IN (/* paste vetted_by / recommended_by from step 4 */)
-ORDER  BY eu.username;
+WHERE  eu.username IN (
+  -- paste distinct usernames from r.uoe / r.ulu / rec.recommendation_by / rec.vetted_by
+);
 
 
-
-DESCRIBE iop.iop_partnership_recommendation
-+------------------------------------+---------------+------+-----+---------+----------------+
-| Field                              | Type          | Null | Key | Default | Extra          |
-+------------------------------------+---------------+------+-----+---------+----------------+
-| id                                 | int           | NO   | PRI | ʘ       | auto_increment |
-| iram_publisher_id                  | int           | NO   |     | ʘ       |                |
-| iram_advertiser_id                 | int           | NO   | MUL | ʘ       |                |
-| ircm_campaign_id                   | int           | NO   | MUL | ʘ       |                |
-| brand_matchmaking_score            | decimal(10,3) | YES  |     | ʘ       |                |
-| brand_last_scored                  | date          | YES  |     | ʘ       |                |
-| pub_matchmaking_score              | decimal(10,3) | YES  |     | ʘ       |                |
-| pub_last_scored                    | date          | YES  |     | ʘ       |                |
-| recommendation_source              | varchar(255)  | NO   |     | ʘ       |                |
-| recommendation_by                  | varchar(45)   | YES  |     | ʘ       |                |
-| vetted_by                          | varchar(45)   | YES  |     | ʘ       |                |
-| start_date                         | datetime      | YES  |     | ʘ       |                |
-| end_date                           | datetime      | YES  |     | ʘ       |                |
-| ended_by                           | varchar(255)  | YES  |     | ʘ       |                |
-| collection_id                      | int           | YES  | MUL | ʘ       |                |
-| bulk_upload                        | tinyint(1)    | NO   |     | 0       |                |
-| introduction_made_by               | varchar(255)  | YES  |     | ʘ       |                |
-| introduction_made_on               | datetime      | YES  |     | ʘ       |                |
-| interest_sent_by                   | varchar(255)  | YES  |     | ʘ       |                |
-| interest_sent_on                   | datetime      | YES  |     | ʘ       |                |
-| impala_how_initiated               | varchar(255)  | YES  |     | ʘ       |                |
-| impala_initiated_by                | varchar(255)  | YES  |     | ʘ       |                |
-| impala_first_date_initiated        | date          | YES  |     | ʘ       |                |
-| impala_first_date_joined           | date          | YES  |     | ʘ       |                |
-| impala_first_click_date            | date          | YES  | MUL | ʘ       |                |
-| impala_first_action_payout_date    | date          | YES  |     | ʘ       |                |
-| impala_first_nonaction_payout_date | date          | YES  |     | ʘ       |                |
-| impala_action_payout               | decimal(30,4) | YES  |     | ʘ       |                |
-| impala_nonaction_payout            | decimal(30,4) | YES  |     | ʘ       |                |
-| doe                                | datetime      | NO   |     | ʘ       |                |
-| dlu                                | datetime      | NO   |     | ʘ       |                |
-| uoe                                | varchar(45)   | NO   |     | ʘ       |                |
-| ulu                                | varchar(45)   | NO   |     | ʘ       |                |
-| archived                           | tinyint(1)    | NO   |     | 0       |                |
-| version                            | int           | YES  |     | 0       |                |
-+------------------------------------+---------------+------+-----+---------+----------------+
+-- Introspection: find likely tables that log prospect/relationship events.
+SELECT table_schema, table_name
+FROM information_schema.columns
+WHERE table_schema = 'partnerships'
+  AND column_name IN ('relationship_id','prospect_id','source','created_by','doe','uoe','ulu')
+GROUP BY table_schema, table_name
+ORDER BY table_name;
