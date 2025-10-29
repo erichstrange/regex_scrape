@@ -2,13 +2,18 @@
 SELECT p.psi, p.radiuscampaign_id
 FROM icee_snapshot.program p
 WHERE p.radiuscampaign_id = 25438;
-
+SELECT command denied to user 'psql-icee-operator-ro'@'10.54.16.40' for table 'program'
+SELECT command denied to user 'psql-icee-operator-ro'@'10.54.16.40' for table 'program'; nested exception is java.sql.SQLSyntaxErrorException: SELECT command denied to user 'psql-icee-operator-ro'@'10.54.16.40' for table 'program'
 
 -- What ICEE tables exist here?
 SHOW TABLES FROM icee_snapshot;
+Unknown database 'icee_snapshot'
+Unknown database 'icee_snapshot'; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'icee_snapshot'
 
 -- What columns does the program table have?
 SHOW COLUMNS FROM icee_snapshot.program;
+Unknown database 'icee_snapshot'
+Unknown database 'icee_snapshot'; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'icee_snapshot'
 
 
 /* DRAFT: ICEE relationships for MobileX around the creation dates.
@@ -27,6 +32,14 @@ FROM icee_snapshot.relationship r
 WHERE r.supply_psi = (:SUPPLY_PSI)             -- paste the PSI from step 1
   AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
 ORDER BY r.doe DESC;
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':SUPPLY_PSI)
+AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
+O' at line 13
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':SUPPLY_PSI)
+AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
+O' at line 13; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':SUPPLY_PSI)
+AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
+O' at line 13
 
 
 /* DRAFT: Any partnership recommendations tied to MobileX’s program near the dates?
@@ -50,7 +63,10 @@ WHERE rec.iram_advertiser_id = 5475947
   AND rec.ircm_campaign_id   = 25438
   AND rec.doe >= '2025-10-15' AND rec.doe < '2025-11-01'
 ORDER BY rec.doe DESC;
-
++-------------------+--------------------+------------------+--------------+-----------------------+-------------------+-----------+-------------+----------------------+------------------+-----+-----+-----+
+| recommendation_id | iram_advertiser_id | ircm_campaign_id | publisher_id | recommendation_source | recommendation_by | vetted_by | bulk_upload | introduction_made_by | interest_sent_by | doe | uoe | ulu |
++-------------------+--------------------+------------------+--------------+-----------------------+-------------------+-----------+-------------+----------------------+------------------+-----+-----+-----+
++-------------------+--------------------+------------------+--------------+-----------------------+-------------------+-----------+-------------+----------------------+------------------+-----+-----+-----+
 
 /* DRAFT: map usernames to people (name/email). */
 SELECT eu.username,
@@ -70,3 +86,7 @@ WHERE table_schema = 'partnerships'
   AND column_name IN ('relationship_id','prospect_id','source','created_by','doe','uoe','ulu')
 GROUP BY table_schema, table_name
 ORDER BY table_name;
++--------------+------------+
+| TABLE_SCHEMA | TABLE_NAME |
++--------------+------------+
++--------------+------------+
