@@ -1,53 +1,60 @@
--- DRAFT: resolve publisher IDs by name (adjust the list as needed)
-SELECT publisher_id, publisher_name, company_url
-FROM analytics.publisher
-WHERE publisher_name IN ('wlee','NJR Mobility','xDaytah','edl')
-ORDER BY publisher_name;
+-- PROGRAMS for Advertiser 5475947
+SELECT id            AS program_id,
+       name,
+       state
+FROM   ircm.ircm_campaign
+WHERE  iram_advertiser_id = 5475947
+AND    state IN ('ACTIVE','AWAITING_REVIEW','SETUP_COMPLETED','DELINQUENT')
+ORDER BY id;
 
 
--- DRAFT: how these relationships were created
-SELECT
-  brand_account_id,
-  publisher_account_id,
-  program_id,
-  initiation_source,
-  source_doe,
-  source_dlu,
-  doe
-FROM base_ods.platform_program_account_relationship
-WHERE brand_account_id = 5475947
-  AND publisher_account_id IN (<publisher_id_list>)
-ORDER BY source_doe DESC;
+-- PSI mapping for those programs
+SELECT p.radiuscampaign_id AS program_id,
+       p.psi
+FROM   icee.program p
+WHERE  p.radiuscampaign_id IN (/* paste program_id(s) from step 1 */)
+ORDER BY p.radiuscampaign_id;
 
 
--- DRAFT: cross-check marketplace application provenance
-SELECT
-  partner_id            AS publisher_id,
-  partner_name,
-  program_id,
-  program_name,
-  mkpl_status,
-  how_initiated,        -- who/what initiated the app
-  application_date,
-  accepted_date,
-  declined_date
-FROM reporting.publisher_marketplace_applications
-WHERE program_id IN (<program_id_list_if_needed>)
-  AND partner_id IN (<publisher_id_list>)
-ORDER BY application_date DESC;
+-- ICEE relationships created for the brand (these show up as Prospects)
+SELECT r.rsi,
+       r.supply_psi,
+       r.demand_psi,
+       r.state,
+       r.source,              -- Often surfaces as "Other" in Prospects UI
+       r.created_date,        -- try created_on if needed
+       r.closed,
+       r.closed_date
+FROM   icee.relationship r
+WHERE  r.supply_psi IN (
+         SELECT psi FROM icee.program WHERE radiuscampaign_id IN (/* programs from step 1 */)
+       )
+AND    r.created_date BETWEEN '2025-10-15' AND '2025-10-31'
+ORDER  BY r.created_date DESC;
 
 
--- DRAFT: see if a recommendation preceded the add
-SELECT
-  program_id,
-  publisher_id,
-  recommendation_type,
-  csm_workflow_status,
-  pdm_workflow_status,
-  initiated_date,
-  date_joined,
-  contract_status
-FROM reporting.matchmaking_relationships
-WHERE program_id = <program_id_if_known>
-  AND publisher_id IN (<publisher_id_list>)
-ORDER BY initiated_date DESC;
+-- Matchmaking recommendations for those programs in the same window
+SELECT rec.id                         AS recommendation_id,
+       rec.program_id,                -- or rec.brand_id in some schemas
+       rec.iram_publisher_id          AS publisher_id,
+       rec.recommendation_source,     -- ALGORITHM / USER / PUBLISHER / BRAND / AGENCY
+       rec.vetted_by,                 -- username who vetted AI recs (ties to a person)
+       rec.recommended_by,            -- username if USER/… source
+       rec.created_on
+FROM   iop.iop_partnership_recommendation rec
+WHERE  rec.program_id IN (/* programs from step 1 */)
+AND    rec.created_on BETWEEN '2025-10-15' AND '2025-10-31'
+ORDER  BY rec.created_on DESC;
+
+
+-- Map Operator usernames to a person (name/email)
+SELECT eu.username,
+       emp.first_name,
+       emp.last_name,
+       eu.email_address,
+       op.id AS operator_id
+FROM   iram.core_estaleauser eu
+LEFT   JOIN iram.iram_employee  emp ON emp.contact_id = eu.contact_id
+LEFT   JOIN iram.iram_operator  op  ON op.contact_id  = eu.contact_id
+WHERE  eu.username IN (/* paste vetted_by / recommended_by from step 4 */)
+ORDER  BY eu.username;
