@@ -3,7 +3,10 @@ select *
 from m_audit_log_entry
 where core_account_id = 5475947
   and username = '';
-
++----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
+| id | objectid | objectclassname | auditedvariable | previousval | newval | meta_data | application | username | change_date | core_account_id | reference_id | ip_address | server_name | appversion | network_id |
++----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
++----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
 
 -- DRAFT: broader sweep by date range around the suspect "Created" timestamps
 select *
@@ -11,6 +14,11 @@ from m_audit_log_entry
 where core_account_id = 5475947
   and change_date between '2025-10-15' and '2025-10-31'
 order by change_date desc;
+
++----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
+| id | objectid | objectclassname | auditedvariable | previousval | newval | meta_data | application | username | change_date | core_account_id | reference_id | ip_address | server_name | appversion | network_id |
++----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
++----+----------+-----------------+-----------------+-------------+--------+-----------+-------------+----------+-------------+-----------------+--------------+------------+-------------+------------+------------+
 
 
 -- DRAFT: recommendations created for this brand (staff or AI)
@@ -20,3 +28,5 @@ from iop.iop_partnership_recommendation
 where brand_id = 5475947
   and created_on between '2025-10-15' and '2025-10-31'
 order by created_on desc;
+Access denied for user 's2-operator_2'@'%' to database 'iop'
+Access denied for user 's2-operator_2'@'%' to database 'iop'; nested exception is java.sql.SQLSyntaxErrorException: Access denied for user 's2-operator_2'@'%' to database 'iop'
