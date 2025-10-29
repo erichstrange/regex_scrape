@@ -1,92 +1,54 @@
--- If you’re unsure of the exact table name, run the introspection first (below).
-SELECT p.psi, p.radiuscampaign_id
-FROM icee_snapshot.program p
-WHERE p.radiuscampaign_id = 25438;
-SELECT command denied to user 'psql-icee-operator-ro'@'10.54.16.40' for table 'program'
-SELECT command denied to user 'psql-icee-operator-ro'@'10.54.16.40' for table 'program'; nested exception is java.sql.SQLSyntaxErrorException: SELECT command denied to user 'psql-icee-operator-ro'@'10.54.16.40' for table 'program'
+-- Data Source: r_ds_icee_snapshot
 
--- What ICEE tables exist here?
-SHOW TABLES FROM icee_snapshot;
-Unknown database 'icee_snapshot'
-Unknown database 'icee_snapshot'; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'icee_snapshot'
+-- What database is this data source pointing at?
+SELECT DATABASE() AS current_db;
 
--- What columns does the program table have?
-SHOW COLUMNS FROM icee_snapshot.program;
-Unknown database 'icee_snapshot'
-Unknown database 'icee_snapshot'; nested exception is java.sql.SQLSyntaxErrorException: Unknown database 'icee_snapshot'
+-- List tables so we see the actual names (e.g., program, relationship)
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = DATABASE()
+ORDER BY table_name;
+
+-- Find which table has PSI + radiuscampaign_id
+SELECT table_name, column_name
+FROM information_schema.columns
+WHERE table_schema = DATABASE()
+  AND column_name IN ('psi','radiuscampaign_id')
+ORDER BY table_name, column_name;
+
+-- Once you identify the correct program table (often named exactly `program`)
+-- pull the PSI for MobileX (25438):
+SELECT psi, radiuscampaign_id
+FROM program
+WHERE radiuscampaign_id = 25438;
+-- Copy the PSI value for the next step (call it 'PSI_MobileX')
 
 
-/* DRAFT: ICEE relationships for MobileX around the creation dates.
-   These rows back the Prospects grid. We pull raw `source` and creator stamps. */
+
+2)
+-- Data Source: r_ds_icee_snapshot
+-- Replace 'PSI_MobileX' with the value from step 1 (in quotes)
+
 SELECT
   r.rsi,
   r.supply_psi,
   r.demand_psi,
   r.state,
-  r.source,           -- raw source that the UI maps to "Other"
-  r.doe,              -- created timestamp (date of entry)
-  r.dlu,              -- last update timestamp
-  r.uoe,              -- created by (often a service or username)
-  r.ulu               -- last updated by
-FROM icee_snapshot.relationship r
-WHERE r.supply_psi = (:SUPPLY_PSI)             -- paste the PSI from step 1
+  r.source,    -- raw source string (UI maps to "Other")
+  r.doe,       -- created timestamp
+  r.dlu,       -- last update timestamp
+  r.uoe,       -- created by (user or service)
+  r.ulu        -- last updated by
+FROM relationship r
+WHERE r.supply_psi = 'PSI_MobileX'
   AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
 ORDER BY r.doe DESC;
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':SUPPLY_PSI)
-AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
-O' at line 13
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':SUPPLY_PSI)
-AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
-O' at line 13; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':SUPPLY_PSI)
-AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
-O' at line 13
 
 
-/* DRAFT: Any partnership recommendations tied to MobileX’s program near the dates?
-   Includes fields that identify WHO recommended/vetted and HOW (bulk_upload). */
-SELECT
-  rec.id                                AS recommendation_id,
-  rec.iram_advertiser_id,
-  rec.ircm_campaign_id,
-  rec.iram_publisher_id                 AS publisher_id,
-  rec.recommendation_source,            -- ALGORITHM / USER / PUBLISHER / BRAND / AGENCY ...
-  rec.recommendation_by,                -- user if USER-sourced
-  rec.vetted_by,                        -- user who vetted AI picks
-  rec.bulk_upload,                      -- 1 indicates batch import
-  rec.introduction_made_by,
-  rec.interest_sent_by,
-  rec.doe,                              -- created timestamp
-  rec.uoe,                              -- created by (user/service)
-  rec.ulu                               -- last updated by
-FROM iop.iop_partnership_recommendation rec
-WHERE rec.iram_advertiser_id = 5475947
-  AND rec.ircm_campaign_id   = 25438
-  AND rec.doe >= '2025-10-15' AND rec.doe < '2025-11-01'
-ORDER BY rec.doe DESC;
-+-------------------+--------------------+------------------+--------------+-----------------------+-------------------+-----------+-------------+----------------------+------------------+-----+-----+-----+
-| recommendation_id | iram_advertiser_id | ircm_campaign_id | publisher_id | recommendation_source | recommendation_by | vetted_by | bulk_upload | introduction_made_by | interest_sent_by | doe | uoe | ulu |
-+-------------------+--------------------+------------------+--------------+-----------------------+-------------------+-----------+-------------+----------------------+------------------+-----+-----+-----+
-+-------------------+--------------------+------------------+--------------+-----------------------+-------------------+-----------+-------------+----------------------+------------------+-----+-----+-----+
-
-/* DRAFT: map usernames to people (name/email). */
-SELECT eu.username,
-       eu.email         AS email_address,
-       eu.firstname     AS first_name,
-       eu.lastname      AS last_name
-FROM   iram.core_estaleauser eu
-WHERE  eu.username IN (
-  -- paste distinct usernames from r.uoe / r.ulu / rec.recommendation_by / rec.vetted_by
-);
-
-
--- Introspection: find likely tables that log prospect/relationship events.
-SELECT table_schema, table_name
-FROM information_schema.columns
-WHERE table_schema = 'partnerships'
-  AND column_name IN ('relationship_id','prospect_id','source','created_by','doe','uoe','ulu')
-GROUP BY table_schema, table_name
-ORDER BY table_name;
-+--------------+------------+
-| TABLE_SCHEMA | TABLE_NAME |
-+--------------+------------+
-+--------------+------------+
+3)
+-- Data Source: r_ds_iram
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state, ce.lastlogin_date
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE ce.username IN ('paste','distinct','usernames','here')
+ORDER BY ce.lastlogin_date DESC;
