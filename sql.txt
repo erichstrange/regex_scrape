@@ -1,11 +1,21 @@
 -- DRAFT: list recommendations created for MobileX program
-SELECT iram_advertiser_id     AS advertiser_id,
-       ircm_campaign_id       AS campaign_id,
-       iram_publisher_id      AS partner_id,
-       source,                -- e.g., USER / ALGORITHM / etc. (field names may differ)
-       created_by_user_id,    -- link to core_estaleauser.id
-       doe
+SELECT  id,
+iram_publisher_id, iram_advertiser_id, ircm_campaign_id,
+recommendation_source, recommendation_by,
+vetted_by,  start_date, end_date, ended_by, collection_id, bulk_upload,
+doe, dlu,  uoe, ulu, archived, version
 FROM iop.iop_partnership_recommendation
 WHERE iram_advertiser_id = 5475947
   AND ircm_campaign_id   = 25438
 ORDER BY doe DESC;
+
++--------+-------------------+--------------------+------------------+-----------------------+-------------------------+-----------+---------------------+---------------------+-------------------------+---------------+-------------+---------------------+---------------------+-------------------------+-------------------------+----------+---------+
+|     id | iram_publisher_id | iram_advertiser_id | ircm_campaign_id | recommendation_source | recommendation_by       | vetted_by | start_date          | end_date            | ended_by                | collection_id | bulk_upload | doe                 | dlu                 | uoe                     | ulu                     | archived | version |
++--------+-------------------+--------------------+------------------+-----------------------+-------------------------+-----------+---------------------+---------------------+-------------------------+---------------+-------------+---------------------+---------------------+-------------------------+-------------------------+----------+---------+
+| 323976 |            101044 |            5475947 |            25438 | USER                  | yitza.mendez-candelario | ʘ         | 2025-07-28 23:43:44 | ʘ                   | ʘ                       |             ʘ | true        | 2025-07-28 23:43:44 | 2025-07-28 23:43:44 | yitza.mendez-candelario | yitza.mendez-candelario | false    |       0 |
+| 320333 |            196318 |            5475947 |            25438 | USER                  | natasha.palma           | ʘ         | 2025-07-14 21:04:37 | ʘ                   | ʘ                       |             ʘ | false       | 2025-07-14 21:04:37 | 2025-07-14 21:04:37 | natasha.palma           | natasha.palma           | false    |       0 |
+| 276467 |           3256132 |            5475947 |            25438 | USER                  | dominyka.bucelyte       | ʘ         | 2024-10-30 10:08:15 | 2025-05-04 23:50:15 | matchmakingWeeklyWorker |             ʘ | true        | 2024-10-30 10:08:15 | 2025-05-04 23:50:15 | dominyka.bucelyte       | matchmakingWeeklyWorker | true     |       1 |
+| 271726 |           4050834 |            5475947 |            25438 | USER                  | dominyka.bucelyte       | ʘ         | 2024-10-29 16:23:55 | 2025-05-04 23:26:50 | matchmakingWeeklyWorker |             ʘ | true        | 2024-10-29 16:23:55 | 2025-05-04 23:26:50 | dominyka.bucelyte       | matchmakingWeeklyWorker | true     |       1 |
+| 213166 |           2229206 |            5475947 |            25438 | USER                  | natasha.palma           | ʘ         | 2024-09-19 20:27:49 | 2025-03-19 10:50:53 | matchmakingWeeklyWorker |             ʘ | false       | 2024-09-19 20:27:49 | 2025-03-19 10:50:53 | natasha.palma           | matchmakingWeeklyWorker | true     |       1 |
+| 192399 |           5056027 |            5475947 |            25438 | USER                  | elena.machetti          | ʘ         | 2024-06-26 17:57:31 | 2025-01-14 12:13:42 | matchmakingWeeklyWorker |             ʘ | true        | 2024-06-26 17:57:31 | 2025-01-14 12:13:42 | rochellenathan.us       | matchmakingWeeklyWorker | true     |       1 |
++--------+-------------------+--------------------+------------------+-----------------------+-------------------------+-----------+---------------------+---------------------+-------------------------+---------------+-------------+---------------------+---------------------+-------------------------+-------------------------+----------+---------+
