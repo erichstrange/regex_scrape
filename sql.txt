@@ -7,6 +7,9 @@ JOIN platform pl ON pl.id = pp.platform_id
 WHERE pp.legacy_id = 25438
 LIMIT 5;
 
+Unknown column 'pp.legacy_id' in 'field list'
+Unknown column 'pp.legacy_id' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'pp.legacy_id' in 'field list'
+
 
 SELECT
   BIN_TO_UUID(pp.psi, 1) AS program_psi,
@@ -16,6 +19,9 @@ FROM program_platform pp
 JOIN platform pl ON pl.id = pp.platform_id
 WHERE pp.ircm_campaign_id = 25438
 LIMIT 5;
+
+Unknown column 'pp.ircm_campaign_id' in 'field list'
+Unknown column 'pp.ircm_campaign_id' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'pp.ircm_campaign_id' in 'field list'
 
 
 /* DRAFT – Prospects created for MobileX (25438) Oct 15–31, 2025 */
@@ -47,6 +53,9 @@ LEFT JOIN company  c ON c.psi = r.demand_psi
 LEFT JOIN program  p ON p.psi = r.demand_psi
 WHERE r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
 ORDER BY r.doe DESC;
+
+Unknown column 'rst.name' in 'field list'
+Unknown column 'rst.name' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'rst.name' in 'field list'
 
 
 SELECT
