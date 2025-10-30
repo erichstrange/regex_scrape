@@ -1,23 +1,11 @@
--- Query Runner (r_ds_ods → ir_api_log)
-SELECT doe, submit_date, type, event_code, mediapartner_id, ircm_campaign_id,
-       uoe, batch_id, LEFT(payload, 1000) AS payload_sample
-FROM ir_api_log
-WHERE iram_account_id = 5475947
-  AND doe >= '2025-09-01' AND doe < '2025-11-01'
-  AND (
-       LOWER(type)       LIKE '%prospect%' OR
-       LOWER(event_code) LIKE '%prospect%' OR
-       LOWER(payload)    LIKE '%prospect%' OR
-       LOWER(payload)    LIKE '%proposal%' OR
-       LOWER(payload)    LIKE '%recruit%'  OR
-       LOWER(payload)    LIKE '%discover%'
-  )
-ORDER BY doe DESC
-LIMIT 1000;
-+-----+-------------+------+------------+-----------------+------------------+-----+----------+----------------+
-| doe | submit_date | type | event_code | mediapartner_id | ircm_campaign_id | uoe | batch_id | payload_sample |
-+-----+-------------+------+------------+-----------------+------------------+-----+----------+----------------+
-+-----+-------------+------+------------+-----------------+------------------+-----+----------+----------------+
-
-
-SELECT payload FROM ir_api_log WHERE batch_id = 'A-...';
+-- DRAFT: list recommendations created for MobileX program
+SELECT iram_advertiser_id     AS advertiser_id,
+       ircm_campaign_id       AS campaign_id,
+       iram_publisher_id      AS partner_id,
+       source,                -- e.g., USER / ALGORITHM / etc. (field names may differ)
+       created_by_user_id,    -- link to core_estaleauser.id
+       doe
+FROM iop.iop_partnership_recommendation
+WHERE iram_advertiser_id = 5475947
+  AND ircm_campaign_id   = 25438
+ORDER BY doe DESC;
