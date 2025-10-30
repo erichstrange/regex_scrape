@@ -1,35 +1,24 @@
--- [DataSource: ircm] Technical integration and site definition (VETTED)
-SELECT ircm_campaign_id,
-       global_url_params,
-       permitted_deeplink_domains,
-       base_site_domain
-FROM ircm_technicalintegration
-WHERE ircm_campaign_id = 15100;
-+------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------------------------+
-| ircm_campaign_id | global_url_params                                                                                           | permitted_deeplink_domains                              | base_site_domain                                                      |
-+------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------------------------+
-|            15100 | utm_channel=affiliate&utm_source=impact&utm_medium=affiliate&utm_campaign={irmptype}&utm_partner={irmpname} | montblanc.com,*.montblanc.com,montblanc-s01.yooxbox.com | montblanc.com,montblanc-preview.yooxbox.com,montblanc-s01.yooxbox.com |
-+------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------------------------+
+-- [irps] Vetted
+SELECT id,name,campaign_id,catalog_status,ulu,dlu
+FROM irps_catalog
+WHERE id IN (23747, 28214);
+``` :contentReference[oaicite:2]{index=2}
 
 
-
--- [DataSource: ircm] Audit changes to TechnicalIntegration (VETTED)
-SELECT change_date, username, auditedvariable, previousval, newval
-FROM m_audit_log_entry
-WHERE objectclassname = 'estalea.ir.cm.campaign.domain.TechnicalIntegration'
-  AND objectid = 15100
-  AND newval != previousval
-ORDER BY 1
-LIMIT 400;
-Table 'ircm.m_audit_log_entry' doesn't exist
-Table 'ircm.m_audit_log_entry' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'ircm.m_audit_log_entry' doesn't exist
+-- [irps] Vetted
+SELECT *
+FROM irps_catalog_upload_summary
+WHERE catalog_id = 28214
+ORDER BY doe DESC
+LIMIT 200;
+``` :contentReference[oaicite:3]{index=3}
 
 
-
-
-select * from irbase_postback_config
-where ircm_campaign_id = 15100
-+-----------+-------+-----------+-----------------+------------------+-----------------+-------------+--------------------+----------------+-------+------------+-----+------------------+--------------------+----------------------+--------------------+-----------------+--------+-----------+---------------+-------------+------------------+----------------+-----------------+-----------------+---------------------+--------------+-----+-----+-----+-----+------------------------+---------+----------+
-| unique_id | event | sub_event | iram_account_id | ircm_campaign_id | ircm_tracker_id | integration | template_vars_json | user_vals_json | state | lookup_key | url | payload_template | file_name_template | http_header_template | http_header_custom | exclude_filters | method | mime_type | min_delay_sec | max_req_sec | response_success | response_error | oauth_token_url | oauth_client_id | oauth_client_secret | oauth_scopes | doe | dlu | uoe | ulu | core_estaleanetwork_id | version | archived |
-+-----------+-------+-----------+-----------------+------------------+-----------------+-------------+--------------------+----------------+-------+------------+-----+------------------+--------------------+----------------------+--------------------+-----------------+--------+-----------+---------------+-------------+------------------+----------------+-----------------+-----------------+---------------------+--------------+-----+-----+-----+-----+------------------------+---------+----------+
-+-----------+-------+-----------+-----------------+------------------+-----------------+-------------+--------------------+----------------+-------+------------+-----+------------------+--------------------+----------------------+--------------------+-----------------+--------+-----------+---------------+-------------+------------------+----------------+-----------------+-----------------+---------------------+--------------+-----+-----+-----+-----+------------------------+---------+----------+
+-- [irad] Vetted
+SELECT id,iram_advertiser_id,ircm_campaign_id,irad_ad_id,name,filename,format,
+       type,upload_method,state,file_process_start,file_process_end,last_updated,
+       doe,dlu,uoe,ulu,version
+FROM irad_product_catalog
+WHERE ircm_campaign_id = 33840
+  AND iram_advertiser_id = 1398261;
+``` :contentReference[oaicite:4]{index=4}
