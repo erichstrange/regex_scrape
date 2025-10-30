@@ -1,323 +1,35 @@
--- Data Source: r_ds_icee_snapshot
-
--- What database is this data source pointing at?
-SELECT DATABASE() AS current_db;
-
--- List tables so we see the actual names (e.g., program, relationship)
-SELECT table_name
-FROM information_schema.tables
-WHERE table_schema = DATABASE()
-ORDER BY table_name;
---- +----------------------------------------------------+
-| TABLE_NAME                                         |
-+----------------------------------------------------+
-| address                                            |
-| advertiser                                         |
-| advertiser_platform                                |
-| advertiser_program                                 |
-| category                                           |
-| communication_type                                 |
-| company                                            |
-| company_address                                    |
-| company_contact                                    |
-| company_platform                                   |
-| contact_communication                              |
-| contact_platform                                   |
-| contact_type                                       |
-| country                                            |
-| country_subdivision                                |
-| flyway_schema_history                              |
-| gender                                             |
-| ingest_sync_queue                                  |
-| integrity_processing                               |
-| io_name_sync_test                                  |
-| iram_publishergroup_backup                         |
-| iram_publishergroup_publisher_backup               |
-| iram_publishergroup_publisher_backup_to_be_deleted |
-| job_execution_history                              |
-| language                                           |
-| link_type                                          |
-| listings_export_617                                |
-| listings_export_723                                |
-| marketplace_contact_fix                            |
-| marketplace_publisher_blocklist                    |
-| marketplace_publisher_blocklist_backup             |
-| media_property                                     |
-| media_property_audience_metric                     |
-| media_property_audience_metric_division            |
-| media_property_audience_metric_type                |
-| media_property_social                              |
-| media_property_type                                |
-| media_property_website                             |
-| person                                             |
-| platform                                           |
-| program                                            |
-| program_address                                    |
-| program_attribute                                  |
-| program_attribute_type                             |
-| program_audience                                   |
-| program_category                                   |
-| program_contact_platform                           |
-| program_custom_field                               |
-| program_custom_field_enumeration                   |
-| program_insertion_order                            |
-| program_ioterm                                     |
-| program_ioterm_tracked_action                      |
-| program_language                                   |
-| program_link                                       |
-| program_media_property                             |
-| program_platform                                   |
-| program_promotional_method                         |
-| program_promotional_method_allowed                 |
-| program_relationship_attribute                     |
-| program_relationship_attribute_type                |
-| program_relationship_contact_platform              |
-| program_relationship_custom_field                  |
-| program_relationship_custom_field_backup_241118    |
-| program_relationship_custom_field_backup_250114    |
-| program_subtype                                    |
-| program_subtype_type                               |
-| program_tracked_action                             |
-| program_tracked_action_payable_event               |
-| program_type                                       |
-| program_user_platform                              |
-| promotional_method_type                            |
-| relationship                                       |
-| relationship_contract                              |
-| relationship_contract_state_type                   |
-| relationship_counter                               |
-| relationship_history                               |
-| relationship_recalculation                         |
-| relationship_source_type                           |
-| relationship_state_mismatch_pending_contract       |
-| relationship_state_mismatch_signed_contract        |
-| relationship_state_type                            |
-| resync_checkpoint                                  |
-| segment                                            |
-| segment_assignment                                 |
-| segment_audit                                      |
-| sync_iracct_legal_entity                           |
-| sync_iram_base_applied_tag                         |
-| sync_iram_base_tag                                 |
-| sync_iram_core_account                             |
-| sync_iram_core_account_attribute                   |
-| sync_iram_core_address                             |
-| sync_iram_core_authorization_principal             |
-| sync_iram_core_entity_metadata                     |
-| sync_iram_core_estaleauser                         |
-| sync_iram_core_user_type                           |
-| sync_iram_iram_account                             |
-| sync_iram_iram_account_partner_contact             |
-| sync_iram_iram_account_partner_contact_account     |
-| sync_iram_iram_advertiser                          |
-| sync_iram_iram_advertiser_mediapartner_contact     |
-| sync_iram_iram_advertiser_publisher                |
-| sync_iram_iram_contact                             |
-| sync_iram_iram_marketing_media_pdf                 |
-| sync_iram_iram_media_property                      |
-| sync_iram_iram_member                              |
-| sync_iram_iram_publisher                           |
-| sync_iram_iram_publisher_directory_members         |
-| sync_iram_iram_publisher_external_link             |
-| sync_iram_iram_publisher_persona                   |
-| sync_iram_iram_publisher_personal_info             |
-| sync_iram_iram_publishergroup                      |
-| sync_iram_iram_publishergroup_publisher            |
-| sync_iram_iram_solution_provider_directory_members |
-| sync_iram_iram_usership                            |
-| sync_iram_user_holding_cell                        |
-| sync_ircm_base_applied_tag                         |
-| sync_ircm_base_tag                                 |
-| sync_ircm_ircm_actiontracker                       |
-| sync_ircm_ircm_campaign                            |
-| sync_ircm_ircm_campaign_categories                 |
-| sync_ircm_ircm_campaign_category                   |
-| sync_ircm_ircm_campaign_dir_contacts               |
-| sync_ircm_ircm_campaign_marketplace_info           |
-| sync_ircm_ircm_campaign_related_link               |
-| sync_ircm_ircm_campaign_service_areas              |
-| sync_ircm_ircm_campaign_sp_dir_contacts            |
-| sync_ircm_ircm_insertionorder                      |
-| sync_ircm_ircm_ioterms                             |
-| sync_ircm_ircm_mobileapp_actionterms               |
-| sync_ircm_ircm_mobileapp_actiontracker             |
-| sync_ircm_ircm_onlineactionterms                   |
-| sync_ircm_ircm_onlineactiontracker                 |
-| sync_ircm_ircm_payable_event                       |
-| sync_ircm_ircm_pendingcontract                     |
-| sync_ircm_ircm_phoneactionterms                    |
-| sync_ircm_ircm_phoneactiontracker                  |
-| sync_ircm_ircm_signedcontract                      |
-| sync_ircm_ircm_technicalintegration                |
-| temp_account_manager_contact_relationship_archive  |
-| temp_deactivated_but_not_deleted                   |
-| temp_failed_enhancement_media_property             |
-| temp_iram_iram_publisher_personal_info             |
-| temp_ircm_pendingcontract                          |
-| temp_ircm_signedcontract                           |
-| temp_publisher_group_comparison                    |
-| temp_sync_personal_info_comparison_table           |
-| temp_timezone_attribute_data                       |
-| tmp_application_2                                  |
-| tmp_application_export                             |
-| tmp_bad_program_platform_psis                      |
-| tmp_brett_ircm_campaign_tags                       |
-| tmp_campaign_service_areas_load                    |
-| tmp_custom_field_owner_fix                         |
-| tmp_hide_partner_list_mts_109                      |
-| tmp_insertion_orders                               |
-| tmp_io_data_fix_job_o                              |
-| tmp_ojd_backup                                     |
-| tmp_pending_contract_analysis                      |
-| tmp_relationship_history_reindex                   |
-| tmp_relationship_state_recalc                      |
-| tmp_rsi_re_broadcast                               |
-| tmp_sync_ircm_ircm_pendingcontract                 |
-| tmp_sync_ircm_ircm_signedcontract                  |
-| tracked_action_classification                      |
-| tracked_action_type                                |
-| user_history                                       |
-| user_job                                           |
-| user_job_error                                     |
-| user_job_error_code                                |
-| user_job_result                                    |
-| user_platform                                      |
-+----------------------------------------------------+
-
--- Find which table has PSI + radiuscampaign_id
-SELECT table_name, column_name
-FROM information_schema.columns
-WHERE table_schema = DATABASE()
-  AND column_name IN ('psi','radiuscampaign_id')
-ORDER BY table_name, column_name;
-
-+-------------------------------------------------+-------------+
-| TABLE_NAME                                      | COLUMN_NAME |
-+-------------------------------------------------+-------------+
-| advertiser_program                              | psi         |
-| io_name_sync_test                               | psi         |
-| media_property_audience_metric                  | psi         |
-| program                                         | psi         |
-| program_address                                 | psi         |
-| program_attribute                               | psi         |
-| program_audience                                | psi         |
-| program_category                                | psi         |
-| program_contact_platform                        | psi         |
-| program_custom_field                            | psi         |
-| program_insertion_order                         | psi         |
-| program_language                                | psi         |
-| program_link                                    | psi         |
-| program_media_property                          | psi         |
-| program_platform                                | psi         |
-| program_promotional_method                      | psi         |
-| program_promotional_method_allowed              | psi         |
-| program_relationship_attribute                  | psi         |
-| program_relationship_contact_platform           | psi         |
-| program_relationship_custom_field               | psi         |
-| program_relationship_custom_field_backup_241118 | psi         |
-| program_relationship_custom_field_backup_250114 | psi         |
-| program_subtype                                 | psi         |
-| program_tracked_action                          | psi         |
-| program_user_platform                           | psi         |
-| segment                                         | psi         |
-| segment_assignment                              | psi         |
-| sync_iram_iram_publisher                        | psi         |
-| temp_timezone_attribute_data                    | psi         |
-| tmp_bad_program_platform_psis                   | psi         |
-| tmp_brett_ircm_campaign_tags                    | psi         |
-| tmp_campaign_service_areas_load                 | psi         |
-| tmp_insertion_orders                            | psi         |
-| tmp_io_data_fix_job_o                           | psi         |
-+-------------------------------------------------+-------------+
-
-DESCRIBE program
-+------------------------------+-----------------+------+-----+-------------------+-------------------+
-| Field                        | Type            | Null | Key | Default           | Extra             |
-+------------------------------+-----------------+------+-----+-------------------+-------------------+
-| psi                          | binary(16)      | NO   | PRI | ʘ                 |                   |
-| csi                          | binary(16)      | YES  | MUL | ʘ                 |                   |
-| program_type_id              | smallint        | NO   | MUL | ʘ                 |                   |
-| name                         | varchar(191)    | YES  |     | ʘ                 |                   |
-| description                  | text            | YES  |     | ʘ                 |                   |
-| short_description            | text            | YES  |     | ʘ                 |                   |
-| marketplace_state            | varchar(30)     | YES  |     | ʘ                 |                   |
-| marketplace_launch_date      | datetime        | YES  |     | ʘ                 |                   |
-| logo_image_url               | varchar(500)    | YES  |     | ʘ                 |                   |
-| total_audience_size          | bigint unsigned | YES  |     | ʘ                 |                   |
-| proposal_accept_rate_7_day   | decimal(3,3)    | YES  |     | ʘ                 |                   |
-| proposal_response_rate_7_day | decimal(3,3)    | YES  |     | ʘ                 |                   |
-| do_not_pay                   | tinyint(1)      | NO   |     | 0                 |                   |
-| ideal_partner_description    | text            | YES  |     | ʘ                 |                   |
-| doe                          | timestamp       | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-| uoe                          | varchar(64)     | NO   |     | ʘ                 |                   |
-| dlu                          | timestamp       | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-| ulu                          | varchar(64)     | YES  |     | ʘ                 |                   |
-| dod                          | timestamp       | YES  |     | ʘ                 |                   |
-| deleted                      | tinyint(1)      | NO   |     | 0                 |                   |
-+------------------------------+-----------------+------+-----+-------------------+-------------------+
-
--- Once you identify the correct program table (often named exactly `program`)
--- pull the PSI for MobileX (25438):
-SELECT psi, radiuscampaign_id
-FROM program
-WHERE radiuscampaign_id = 25438;
--- Copy the PSI value for the next step (call it 'PSI_MobileX')
+-- r_ds_icee_snapshot
+SHOW COLUMNS FROM sync_ircm_ircm_campaign LIKE '%psi%';
 
 
+-- r_ds_icee_snapshot
+SELECT id AS ircm_campaign_id, program_psi
+FROM sync_ircm_ircm_campaign
+WHERE id = 25438;
+-- Expect exactly 1 row. We'll call that value supply_psi for the next step.
 
-2)
--- Data Source: r_ds_icee_snapshot
--- Replace 'PSI_MobileX' with the value from step 1 (in quotes)
 
+-- r_ds_icee_snapshot  (DRAFT)
+-- Replace r.doe bounds if you need a wider window.
 SELECT
-  r.rsi,
-  r.supply_psi,
-  r.demand_psi,
-  r.state,
-  r.source,    -- raw source string (UI maps to "Other")
-  r.doe,       -- created timestamp
-  r.dlu,       -- last update timestamp
-  r.uoe,       -- created by (user or service)
-  r.ulu        -- last updated by
+  BIN_TO_UUID(r.rsi, 1)                 AS relationship_id,
+  BIN_TO_UUID(r.supply_psi, 1)          AS brand_supply_psi,
+  BIN_TO_UUID(r.demand_psi, 1)          AS partner_demand_psi,
+  rst.name                               AS source_type,             -- this is what UI maps to "Source"
+  rstat.name                             AS relationship_state,      -- (open/prospect/closed/etc.)
+  r.doe                                  AS created_utc,             -- created timestamp
+  r.uoe                                  AS created_by_username,     -- who inserted (user/service)
+  r.ulu                                  AS last_updated_by_username
 FROM relationship r
-WHERE r.supply_psi = 'PSI_MobileX'
-  AND r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
+JOIN relationship_source_type rst
+  ON rst.id = r.relationship_source_type_id
+JOIN relationship_state_type rstat
+  ON rstat.id = r.relationship_state_type_id
+JOIN (
+  SELECT program_psi
+  FROM sync_ircm_ircm_campaign
+  WHERE id = 25438
+) x
+  ON r.supply_psi = x.program_psi
+WHERE r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
 ORDER BY r.doe DESC;
-Unknown column 'r.state' in 'field list'
-Unknown column 'r.state' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'r.state' in 'field list'
-
-
-DESCRIBE relationship
-+-----------------------------+-------------------+------+-----+-------------------+-------------------+
-| Field                       | Type              | Null | Key | Default           | Extra             |
-+-----------------------------+-------------------+------+-----+-------------------+-------------------+
-| rsi                         | binary(16)        | NO   | PRI | ʘ                 |                   |
-| demand_psi                  | binary(16)        | NO   | MUL | ʘ                 |                   |
-| supply_psi                  | binary(16)        | NO   | MUL | ʘ                 |                   |
-| relationship_state_type_id  | tinyint unsigned  | YES  | MUL | 1                 |                   |
-| relationship_source_type_id | smallint unsigned | NO   | MUL | ʘ                 |                   |
-| original_join_date          | datetime          | YES  |     | ʘ                 |                   |
-| doe                         | timestamp         | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-| uoe                         | varchar(64)       | NO   |     | ʘ                 |                   |
-| dlu                         | timestamp         | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-| ulu                         | varchar(64)       | YES  |     | ʘ                 |                   |
-| dod                         | timestamp         | YES  |     | ʘ                 |                   |
-| deleted                     | tinyint(1)        | NO   |     | 0                 |                   |
-| contract_id                 | int               | YES  | MUL | ʘ                 |                   |
-| closed_date                 | timestamp         | YES  |     | ʘ                 |                   |
-+-----------------------------+-------------------+------+-----+-------------------+-------------------+
-
-
-3)
--- Data Source: r_ds_iram
-SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state, ce.lastlogin_date
-FROM iram_usership u
-JOIN core_estaleauser ce ON u.account_user_id = ce.id
-WHERE ce.username IN ('paste','distinct','usernames','here')
-ORDER BY ce.lastlogin_date DESC;
-+---------+-----------+----------------------------+--------------+----------+--------+---------------------+
-|      id | username  | email                      | firstname    | lastname | state  | lastlogin_date      |
-+---------+-----------+----------------------------+--------------+----------+--------+---------------------+
-| 3747261 | usernames | mono0147@gmail.com         | Sean         | Jin      | ACTIVE | 2025-10-15 02:47:13 |
-|  302324 | distinct  | distinctprojects@gmail.com | korie rogers |          | ACTIVE | ʘ                   |
-+---------+-----------+----------------------------+--------------+----------+--------+---------------------+
