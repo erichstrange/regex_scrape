@@ -23,7 +23,36 @@ WHERE iram_account_id = 5475947
   -- AND http_method IN ('POST','PUT','PATCH')
 ORDER BY doe DESC
 LIMIT 2000;
+Unknown column 'http_method' in 'field list'
+Unknown column 'http_method' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'http_method' in 'field list'
+same with endpoint
 
+
+Describe ir_api_log
+
++-------------------------+-----------------+------+-----+---------+----------------+
+| Field                   | Type            | Null | Key | Default | Extra          |
++-------------------------+-----------------+------+-----+---------+----------------+
+| id                      | bigint unsigned | NO   | PRI | ʘ       | auto_increment |
+| batch_id                | varchar(50)     | NO   | MUL | ʘ       |                |
+| iram_account_id         | int unsigned    | NO   | MUL | ʘ       |                |
+| ircm_campaign_id        | int unsigned    | YES  | MUL | ʘ       |                |
+| ircm_tracker_id         | int unsigned    | YES  |     | ʘ       |                |
+| mediapartner_id         | int unsigned    | YES  |     | ʘ       |                |
+| procoessing_server_name | varchar(255)    | NO   |     | ʘ       |                |
+| submit_date             | datetime        | NO   |     | ʘ       |                |
+| type                    | varchar(50)     | NO   |     | ʘ       |                |
+| completed_date          | datetime        | YES  |     | ʘ       |                |
+| oid                     | varchar(255)    | YES  | MUL | ʘ       |                |
+| event_code              | varchar(255)    | YES  |     | ʘ       |                |
+| payload                 | text            | YES  |     | ʘ       |                |
+| reference_date          | datetime        | YES  |     | ʘ       |                |
+| action_id               | varchar(100)    | YES  |     | ʘ       |                |
+| error_json              | mediumtext      | YES  |     | ʘ       |                |
+| uoe                     | varchar(255)    | YES  |     | ʘ       |                |
+| doe                     | datetime        | NO   | PRI | ʘ       |                |
+| dlu                     | datetime        | YES  |     | ʘ       |                |
++-------------------------+-----------------+------+-----+---------+----------------+
 
 
 -- r_ds_ods
@@ -51,9 +80,45 @@ JOIN core_estaleauser ce ON u.account_user_id = ce.id
 WHERE u.irAccount_Id = '5475947'
 ORDER BY ce.lastlogin_date DESC;
 
++---------+------------------------------+----------------------------------+-------------+------------+-------------+---------------------+---------------------+---------------------+--------------+------------------------------+
+|      id | username                     | email                            | firstname   | lastname   | state       | lastlogin_date      | doe                 | dlu                 | uoe          | ulu                          |
++---------+------------------------------+----------------------------------+-------------+------------+-------------+---------------------+---------------------+---------------------+--------------+------------------------------+
+| 5777483 | ToothAndNail                 | jeff@justslidemedia.com          | Jeff        | Gordon     | ACTIVE      | 2025-10-30 16:40:56 | 2022-04-26 05:14:43 | 2025-07-25 16:54:38 | unknown_user | ToothAndNail                 |
+| 5791829 | hamishjsm                    | hamish@justslidemedia.com        | Hamish      | Aris       | ACTIVE      | 2025-10-30 14:39:24 | 2022-05-12 22:34:26 | 2023-01-20 23:44:24 | unknown_user | unknown_user                 |
+| 6664956 | leyna.member                 | leyna.letran@impact.com          | Leyna       | Letran     | ACTIVE      | 2025-10-29 23:29:37 | 2022-03-01 23:06:22 | 2025-06-11 06:41:59 | unknown_user | leyna.member                 |
+| 5777501 | lewesamantha22               | samantha@justslidemedia.com      | samantha    | lewe       | ACTIVE      | 2025-10-29 23:08:02 | 2024-05-28 16:39:13 | 2024-05-29 20:26:20 | unknown_user | unknown_user                 |
+| 6374155 | shannabenmoshe               | shanna@justslidemedia.com        | Shanna      | Ben-Moshe  | ACTIVE      | 2025-10-29 18:30:06 | 2022-09-01 22:07:14 | 2024-02-06 03:19:56 | unknown_user | unknown_user                 |
+| 6586004 | andyalvarez                  | andy.alvarez@mymobilex.com       | Andy        | Alvarez    | ACTIVE      | 2025-10-29 16:45:16 | 2025-05-29 16:16:00 | 2025-06-24 20:10:39 | unknown_user | unknown_user                 |
+| 5849717 | JasonJSM                     | jason@justslidemedia.com         | Jason       | Bendat     | ACTIVE      | 2025-10-27 19:29:43 | 2022-04-25 21:33:24 | 2024-05-31 19:26:29 | unknown_user | unknown_user                 |
+| 5778920 | dale@jsm                     | dale@justslidemedia.com          | Dale        | Garrett    | ACTIVE      | 2025-10-22 18:43:14 | 2024-05-28 22:42:17 | 2025-10-22 18:43:02 | unknown_user | unknown_user                 |
+| 6395784 | google:105279727201256977620 | tea@justslidemedia.com           | Tea         | Asatiani   | ACTIVE      | 2025-10-17 20:59:16 | 2025-02-10 21:48:19 | 2025-06-11 00:55:27 | unknown_user | google:105279727201256977620 |
+| 6726246 | flaviom                      | flavio.martinez@mymobilex.com    | Flavio      | Martinez   | ACTIVE      | 2025-10-16 17:29:35 | 2025-07-15 21:51:36 | 2025-07-15 21:52:01 | unknown_user | unknown_user                 |
+| 6647164 | Sienaward23                  | siena@mymobilex.com              | Siena       | Ward       | ACTIVE      | 2025-10-03 17:04:17 | 2025-05-29 17:30:53 | 2025-05-29 19:37:51 | unknown_user | unknown_user                 |
+| 6665485 | google:105203058622261398546 | khegelich@mymobilex.com          | Kolja       | Hegelich   | ACTIVE      | 2025-09-12 13:44:29 | 2025-06-26 06:13:57 | 2025-06-26 06:13:58 | unknown_user | unknown_user                 |
+| 6467503 | timbrandon                   | tim@timbrandon.com               | Tim         | Brandon    | ACTIVE      | 2025-08-27 22:45:08 | 2025-04-02 22:52:58 | 2025-07-17 00:43:14 | unknown_user | unknown_user                 |
+| 6650560 | PeterBorrell                 | peterb@mymobilex.com             | Peter       | Borrell    | ACTIVE      | 2025-08-06 19:45:35 | 2025-06-20 14:40:51 | 2025-06-20 14:41:31 | unknown_user | unknown_user                 |
+| 6602428 | daymirs                      | daymir.sepulveda@mymobilex.com   | Daymir      | Sepulveda  | ACTIVE      | 2025-07-23 20:30:39 | 2025-06-04 16:20:22 | 2025-06-04 16:21:34 | unknown_user | unknown_user                 |
+| 6664249 | google:109617766425078589518 | john@justslidemedia.com          | John-Austin | Gilchrist  | ACTIVE      | 2025-07-15 17:34:32 | 2025-01-06 21:36:59 | 2025-01-06 21:36:59 | unknown_user | unknown_user                 |
+| 6663591 | MichaelLanzon                | michael@mymobilex.com            | Michael     | Lanzon     | ACTIVE      | 2025-06-26 14:41:04 | 2025-06-25 15:50:13 | 2025-06-25 15:50:13 | unknown_user | MichaelLanzon                |
+| 6650924 | mikacon                      | mikaella.contreras@mymobilex.com | Mikaella    | Contreras  | ACTIVE      | 2025-06-20 17:24:16 | 2025-06-20 17:23:42 | 2025-06-20 17:24:00 | unknown_user | unknown_user                 |
+| 5782535 | aroskill18                   | ally@justslidemedia.com          | Alexandra   | Roskill    | DEACTIVATED | 2025-01-31 17:14:08 | 2022-11-08 21:51:19 | 2022-11-08 21:52:34 | unknown_user | unknown_user                 |
+| 5859524 | jsm_mobilex                  | k.maddireddy@mymobilex.com       | Krishna     | Maddireddy | ACTIVE      | 2024-12-02 19:59:02 | 2024-07-01 20:28:00 | 2024-07-01 20:28:27 | unknown_user | unknown_user                 |
+| 5791843 | google:103170282931485951346 | visaj@justslidemedia.com         | Visaj       | Kapadia    | ACTIVE      | 2024-06-14 06:22:14 | 2024-05-31 23:52:45 | 2024-05-31 23:52:45 | unknown_user | unknown_user                 |
+| 5784655 | jodymymobilex                | jody@mymobilex.com               | Jody        | Kapadia    | ACTIVE      | 2024-06-11 18:00:32 | 2024-05-30 03:30:59 | 2024-05-30 03:31:31 | unknown_user | unknown_user                 |
+| 5756994 | mymobileX                    | marketing@mymobilex.com          | Jennifer    | Evano      | ACTIVE      | 2024-05-28 15:51:14 | 2024-05-21 22:40:56 | 2024-05-21 22:40:57 | unknown_user | mymobileX                    |
+| 6664954 | testmp                       | sruthi@impactradius.com          | testmp      | testmp     | ACTIVE      | 2023-05-25 06:01:59 | 2009-08-21 02:20:24 | 2009-12-04 01:01:06 | unknown_user | ʘ                            |
+| 5819907 | Barunka4142691029459765798   | bara.hlavkova@centrum.cz         | Barbora     | Hlávková   | ACTIVE      | ʘ                   | 2019-07-03 10:18:21 | 2025-08-21 23:28:40 | unknown_user | john.us                      |
++---------+------------------------------+----------------------------------+-------------+------------+-------------+---------------------+---------------------+---------------------+--------------+------------------------------+
+
 
 
 -- iram (Query Runner)
 SELECT *
 FROM irwsapi_webservice_user
 WHERE iram_account_id IN (5475947);
++---------+-----------------+-------------+-------------------+--------------------------+--------------------------+--------------------------+--------------------------+------------------------------------+------------------------------------+-------------+----------------+-----------------+-----------------------+--------------------------+---------------------------+--------------+------------------------------+--------------------------------------+---------------------+---------------------+---------------------+--------------+------------------------------+------------------------+----------+---------+
+|      id | iram_account_id | api_version | api_version_label | api_version_upgrade_date | api_version_upgrade_user | last_password_reset_date | last_password_reset_user | last_read_only_password_reset_date | last_read_only_password_reset_user | account_sid | auth_token_enc | auth_token_hash | read_only_account_sid | read_only_auth_token_enc | read_only_auth_token_hash | account_type | maximum_api_credential_count | kong_uuid                            | dlss                | doe                 | dlu                 | uoe          | ulu                          | core_estaleanetwork_id | archived | version |
++---------+-----------------+-------------+-------------------+--------------------------+--------------------------+--------------------------+--------------------------+------------------------------------+------------------------------------+-------------+----------------+-----------------+-----------------------+--------------------------+---------------------------+--------------+------------------------------+--------------------------------------+---------------------+---------------------+---------------------+--------------+------------------------------+------------------------+----------+---------+
+| 6721724 |         5475947 |           ʘ | ʘ                 | ʘ                        | ʘ                        | ʘ                        | ʘ                        | ʘ                                  | ʘ                                  | ʘ           | ʘ              | ʘ               | ʘ                     | ʘ                        | ʘ                         | MOBILE_SDK   |                            0 | 0b56bcc5-fb04-3b32-9514-96fcda5101eb | 2025-05-16 22:50:47 | 2025-03-14 21:38:24 | 2025-05-16 22:50:47 | ToothAndNail | google:105279727201256977620 |                      1 | false    |       5 |
+| 5964712 |         5475947 |           ʘ | ʘ                 | ʘ                        | ʘ                        | ʘ                        | ʘ                        | ʘ                                  | ʘ                                  | ʘ           | ʘ              | ʘ               | ʘ                     | ʘ                        | ʘ                         | REST         |                            0 | 0b56bcc5-fb04-3b32-9514-96fcda5101eb | 2025-06-04 21:53:14 | 2024-05-21 22:41:02 | 2025-06-04 21:53:14 | mymobileX    | timbrandon                   |                      1 | false    |       2 |
++---------+-----------------+-------------+-------------------+--------------------------+--------------------------+--------------------------+--------------------------+------------------------------------+------------------------------------+-------------+----------------+-----------------+-----------------------+--------------------------+---------------------------+--------------+------------------------------+--------------------------------------+---------------------+---------------------+---------------------+--------------+------------------------------+------------------------+----------+---------+
