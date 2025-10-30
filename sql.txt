@@ -1,72 +1,36 @@
-SELECT 
-  BIN_TO_UUID(pp.psi, 1) AS program_psi,
-  pp.legacy_id,
-  pl.name AS platform_name
-FROM program_platform pp
-JOIN platform pl ON pl.id = pp.platform_id
-WHERE pp.legacy_id = 25438
-LIMIT 5;
-
-Unknown column 'pp.legacy_id' in 'field list'
-Unknown column 'pp.legacy_id' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'pp.legacy_id' in 'field list'
-
-
+-- Prospects/Relationships created for this brand/program with initiation_source details
 SELECT
-  BIN_TO_UUID(pp.psi, 1) AS program_psi,
-  pp.ircm_campaign_id,
-  pl.name AS platform_name
-FROM program_platform pp
-JOIN platform pl ON pl.id = pp.platform_id
-WHERE pp.ircm_campaign_id = 25438
-LIMIT 5;
+  brand_account_id        AS advertiser_id,
+  program_id              AS campaign_id,
+  publisher_account_id    AS partner_id,
+  initiation_source,
+  source_doe,  -- when the source attribution was set
+  doe, dlu     -- first/last seen in ODS
+FROM platform_program_account_relationship
+WHERE brand_account_id = 5475947
+  AND program_id = 25438            -- from your earlier check
+  AND initiation_source IS NOT NULL
+  -- Optional: filter to specific partner IDs you saw in the UI
+ORDER BY COALESCE(source_doe, doe) DESC;
 
-Unknown column 'pp.ircm_campaign_id' in 'field list'
-Unknown column 'pp.ircm_campaign_id' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'pp.ircm_campaign_id' in 'field list'
 
-
-/* DRAFT – Prospects created for MobileX (25438) Oct 15–31, 2025 */
-SELECT
-  BIN_TO_UUID(r.rsi, 1)                        AS relationship_id,
-  BIN_TO_UUID(r.supply_psi, 1)                 AS brand_supply_psi,
-  BIN_TO_UUID(r.demand_psi, 1)                 AS partner_demand_psi,
-  rst.name                                     AS source_type,          -- precise source label behind UI's "Other"
-  rstat.name                                   AS relationship_state,   -- e.g., PROSPECT/OPEN/CLOSED
-  r.doe                                        AS created_utc,
-  r.uoe                                        AS created_by_username,  -- who inserted (user/service)
-  r.ulu                                        AS last_updated_by_username
-  /* Optional: pull a partner name if available */
-, COALESCE(c.name, p.name)                      AS partner_name
-FROM relationship r
-JOIN relationship_source_type rst
-  ON rst.id = r.relationship_source_type_id
-JOIN relationship_state_type rstat
-  ON rstat.id = r.relationship_state_type_id
-/* Anchor to MobileX’s program via program_platform → campaign id (no UUID juggling needed) */
-JOIN program_platform pp
-  ON pp.psi = r.supply_psi
+-- VETTED PATTERN (adapted) + endpoint filter  <-- keep the LIKEs flexible initially
+SELECT doe, iram_account_id, http_method, endpoint, payload
+FROM ir_api_log
+WHERE iram_account_id = 5475947
+  AND doe >= DATEADD(day, -30, NOW())
   AND (
-        pp.legacy_id = 25438         /* use this */
-        /* OR pp.ircm_campaign_id = 25438  -- uncomment if A in step 1 failed and B worked */
-      )
-/* Partner name (best‑effort: company or program) */
-LEFT JOIN company  c ON c.psi = r.demand_psi
-LEFT JOIN program  p ON p.psi = r.demand_psi
-WHERE r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
-ORDER BY r.doe DESC;
-
-Unknown column 'rst.name' in 'field list'
-Unknown column 'rst.name' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'rst.name' in 'field list'
+       LOWER(endpoint) LIKE '%prospect%'
+    OR LOWER(endpoint) LIKE '%/recruitment%'
+    OR LOWER(endpoint) LIKE '%/partners%'    -- safety net; narrow once we see matches
+  )
+ORDER BY doe DESC
+LIMIT 500;
 
 
-SELECT
-  ce.username,
-  ce.email,
-  ce.firstname,
-  ce.lastname,
-  u.state,
-  ce.lastlogin_date
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname,
+       u.state, ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
 FROM iram_usership u
-JOIN core_estaleauser ce
-  ON u.account_user_id = ce.id
-WHERE ce.username IN ('paste','usernames','from','step2')
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = '5475947'
 ORDER BY ce.lastlogin_date DESC;
