@@ -1,33 +1,59 @@
--- r_ds_ods (SingleStore/MySQL dialect)
--- Purpose: find API/UI calls that created prospects/proposals for adv 5475947 (last 45 days)
+-- r_ds_ods
+-- DRAFT (peer review welcome): initial wide-net search over API/Kong logs.
+-- Looks for any calls touching Prospects/Proposals/Recruit/Discover.
 SELECT
   doe,
   iram_account_id,
   http_method,
   endpoint,
-  -- payload is JSON text; extract common fields if present in your environment:
-  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.programId'))     AS program_id_json,
-  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.publisherId'))   AS publisher_id_json,
-  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.proposalId'))    AS proposal_id_json,
-  batch_id
+  response_code,
+  -- Try to pull common fields if payload is JSON:
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.source'))                         AS json_source,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.addedBy.username'))               AS json_added_by_username,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.addedBy.userId'))                 AS json_added_by_user_id,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.createdBy'))                      AS json_created_by,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.prospectId'))                     AS json_prospect_id,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.partnerId'))                      AS json_partner_id,
+  payload
 FROM ir_api_log
 WHERE iram_account_id = 5475947
-  AND doe >= DATE_SUB(NOW(), INTERVAL 45 DAY)
-  AND http_method IN ('POST','PUT')
-  AND (
-       LOWER(endpoint) LIKE '%/prospects%' OR
-       LOWER(endpoint) LIKE '%/proposals%' OR
-       LOWER(endpoint) LIKE '%/applications%'
-  )
+  AND doe >= '2025-09-01' AND doe < '2025-11-01'
+  AND LOWER(endpoint) REGEXP 'prospect|proposal|recruit|discover'
+  -- Optional: focus on create/assign/mark-as-prospect actions
+  -- AND http_method IN ('POST','PUT','PATCH')
+ORDER BY doe DESC
+LIMIT 2000;
+
+
+
+-- r_ds_ods
+-- DRAFT (peer review welcome): look for “source":"other” in the payload
+SELECT
+  doe, iram_account_id, http_method, endpoint, response_code,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.source')) AS json_source,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.addedBy.username')) AS json_added_by_username,
+  JSON_UNQUOTE(JSON_EXTRACT(payload, '$.partnerId')) AS json_partner_id,
+  payload
+FROM ir_api_log
+WHERE iram_account_id = 5475947
+  AND doe >= '2025-10-27' AND doe < '2025-10-31'
+  AND (LOWER(endpoint) LIKE '%prospect%' OR LOWER(endpoint) LIKE '%proposal%')
+  AND LOWER(payload) LIKE '%"source":"other"%'
 ORDER BY doe DESC
 LIMIT 1000;
 
 
--- r_ds_iram (vetted pattern)
-SELECT * FROM irwsapi_webservice_user WHERE iram_account_id IN (5475947);
-+---------+-----------------+-------------+-------------------+--------------------------+--------------------------+--------------------------+--------------------------+------------------------------------+------------------------------------+-------------+----------------+-----------------+-----------------------+--------------------------+---------------------------+--------------+------------------------------+--------------------------------------+---------------------+---------------------+---------------------+--------------+------------------------------+------------------------+----------+---------+
-|      id | iram_account_id | api_version | api_version_label | api_version_upgrade_date | api_version_upgrade_user | last_password_reset_date | last_password_reset_user | last_read_only_password_reset_date | last_read_only_password_reset_user | account_sid | auth_token_enc | auth_token_hash | read_only_account_sid | read_only_auth_token_enc | read_only_auth_token_hash | account_type | maximum_api_credential_count | kong_uuid                            | dlss                | doe                 | dlu                 | uoe          | ulu                          | core_estaleanetwork_id | archived | version |
-+---------+-----------------+-------------+-------------------+--------------------------+--------------------------+--------------------------+--------------------------+------------------------------------+------------------------------------+-------------+----------------+-----------------+-----------------------+--------------------------+---------------------------+--------------+------------------------------+--------------------------------------+---------------------+---------------------+---------------------+--------------+------------------------------+------------------------+----------+---------+
-| 6721724 |         5475947 |           ʘ | ʘ                 | ʘ                        | ʘ                        | ʘ                        | ʘ                        | ʘ                                  | ʘ                                  | ʘ           | ʘ              | ʘ               | ʘ                     | ʘ                        | ʘ                         | MOBILE_SDK   |                            0 | 0b56bcc5-fb04-3b32-9514-96fcda5101eb | 2025-05-16 22:50:47 | 2025-03-14 21:38:24 | 2025-05-16 22:50:47 | ToothAndNail | google:105279727201256977620 |                      1 | false    |       5 |
-| 5964712 |         5475947 |           ʘ | ʘ                 | ʘ                        | ʘ                        | ʘ                        | ʘ                        | ʘ                                  | ʘ                                  | ʘ           | ʘ              | ʘ               | ʘ                     | ʘ                        | ʘ                         | REST         |                            0 | 0b56bcc5-fb04-3b32-9514-96fcda5101eb | 2025-06-04 21:53:14 | 2024-05-21 22:41:02 | 2025-06-04 21:53:14 | mymobileX    | timbrandon                   |                      1 | false    |       2 |
-+---------+-----------------+-------------+-------------------+--------------------------+--------------------------+--------------------------+--------------------------+------------------------------------+------------------------------------+-------------+----------------+-----------------+-----------------------+--------------------------+---------------------------+--------------+------------------------------+--------------------------------------+---------------------+---------------------+---------------------+--------------+------------------------------+------------------------+----------+---------+
+-- iram (Query Runner)
+SELECT u.id, ce.username, ce.email, ce.firstname, ce.lastname, u.state,
+       ce.lastlogin_date, ce.doe, ce.dlu, ce.uoe, ce.ulu
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = '5475947'
+ORDER BY ce.lastlogin_date DESC;
+
+
+
+-- iram (Query Runner)
+SELECT *
+FROM irwsapi_webservice_user
+WHERE iram_account_id IN (5475947);
