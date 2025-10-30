@@ -1,5 +1,89 @@
 -- r_ds_icee_snapshot
-SHOW COLUMNS FROM sync_ircm_ircm_campaign LIKE '%psi%';
+SHOW COLUMNS FROM sync_ircm_ircm_campaign
++-----------------------------------------+------------------+------+-----+---------+----------------+
+| Field                                   | Type             | Null | Key | Default | Extra          |
++-----------------------------------------+------------------+------+-----+---------+----------------+
+| id                                      | int unsigned     | NO   | PRI | ʘ       | auto_increment |
+| name                                    | varchar(255)     | YES  |     | ʘ       |                |
+| description_short                       | varchar(255)     | YES  |     | ʘ       |                |
+| description                             | varchar(4095)    | YES  |     | ʘ       |                |
+| state                                   | varchar(255)     | YES  |     | ʘ       |                |
+| platform_approval_state                 | varchar(255)     | YES  |     | ʘ       |                |
+| owner_agency_id                         | int unsigned     | YES  |     | ʘ       |                |
+| iram_advertiser_id                      | int unsigned     | YES  | MUL | ʘ       |                |
+| used_for_foundation                     | tinyint(1)       | YES  |     | ʘ       |                |
+| company_homepage_url                    | varchar(255)     | YES  |     | ʘ       |                |
+| campaigninfo_url                        | varchar(255)     | YES  |     | ʘ       |                |
+| sample_landing_url                      | varchar(1024)    | YES  |     | ʘ       |                |
+| iram_promotional_package_id             | int unsigned     | YES  |     | ʘ       |                |
+| ircm_insertionorder_id                  | int unsigned     | YES  |     | ʘ       |                |
+| is_tracked_by_us                        | tinyint(1)       | YES  |     | ʘ       |                |
+| cpanetwork                              | varchar(255)     | YES  |     | ʘ       |                |
+| min_ir_rating_negotiation               | tinyint          | YES  |     | ʘ       |                |
+| show_assoc_entity                       | tinyint(1)       | YES  |     | ʘ       |                |
+| hide_in_directory                       | tinyint(1)       | YES  |     | ʘ       |                |
+| vat_enabled_country                     | varchar(255)     | YES  |     | ʘ       |                |
+| skip_vat                                | tinyint(1)       | YES  |     | ʘ       |                |
+| start_day_of_week                       | tinyint unsigned | YES  |     | ʘ       |                |
+| request_activation_date                 | datetime         | YES  |     | ʘ       |                |
+| activation_date                         | datetime         | YES  |     | ʘ       |                |
+| marketplace_launch_date                 | datetime         | YES  |     | ʘ       |                |
+| setup_complete_date                     | datetime         | YES  |     | ʘ       |                |
+| rejected_date                           | datetime         | YES  |     | ʘ       |                |
+| delinquent_date                         | datetime         | YES  |     | ʘ       |                |
+| deactivation_date                       | datetime         | YES  |     | ʘ       |                |
+| closed_date                             | datetime         | YES  |     | ʘ       |                |
+| rejection_type                          | varchar(255)     | YES  |     | ʘ       |                |
+| rejection_reason                        | varchar(512)     | YES  |     | ʘ       |                |
+| ir_rating                               | tinyint          | YES  |     | ʘ       |                |
+| phone_line_fee_rec_last_month_processed | varchar(255)     | YES  |     | ʘ       |                |
+| core_content_id_logo                    | int unsigned     | YES  |     | ʘ       |                |
+| core_content_id_landing_thumb           | int unsigned     | YES  |     | ʘ       |                |
+| seo_alias                               | varchar(255)     | YES  | MUL | ʘ       |                |
+| minimum_initial_deposit                 | decimal(10,2)    | YES  |     | ʘ       |                |
+| minimum_initial_deposit_currency        | varchar(5)       | YES  |     | ʘ       |                |
+| iram_branded_signup_agency_id           | int unsigned     | YES  |     | ʘ       |                |
+| iram_branded_signup_media_partner_id    | int unsigned     | YES  |     | ʘ       |                |
+| ircm_branded_signup_ioterms_version_id  | int unsigned     | YES  |     | ʘ       |                |
+| irps_ps_user_id                         | int unsigned     | YES  |     | ʘ       |                |
+| has_product_catalog                     | tinyint(1)       | YES  |     | ʘ       |                |
+| iram_mediaplan_id                       | int unsigned     | YES  |     | ʘ       |                |
+| custom_1                                | varchar(255)     | YES  |     | ʘ       |                |
+| custom_2                                | varchar(255)     | YES  |     | ʘ       |                |
+| custom_3                                | varchar(255)     | YES  |     | ʘ       |                |
+| promo_countries                         | varchar(255)     | YES  |     | ʘ       |                |
+| support_xml_syndication                 | tinyint(1)       | YES  |     | ʘ       |                |
+| support_promocode_tracking              | tinyint(1)       | YES  |     | ʘ       |                |
+| support_promocode_requests              | tinyint(1)       | YES  |     | ʘ       |                |
+| support_online_tracking_link            | tinyint(1)       | YES  |     | ʘ       |                |
+| support_product_catalogs                | tinyint(1)       | YES  |     | ʘ       |                |
+| landing_page_mobile_ready               | tinyint(1)       | YES  |     | ʘ       |                |
+| third_party_impression_pixel            | text             | YES  |     | ʘ       |                |
+| support_show_future_ads                 | tinyint(1)       | YES  |     | ʘ       |                |
+| support_viewable_impressions            | tinyint(1)       | YES  |     | ʘ       |                |
+| giftcard_payouts                        | tinyint(1)       | YES  |     | ʘ       |                |
+| trademark_bidding                       | tinyint(1)       | YES  |     | ʘ       |                |
+| forensiq_org_id                         | varchar(70)      | YES  |     | ʘ       |                |
+| forensiq_api_key                        | varchar(70)      | YES  |     | ʘ       |                |
+| primary_category                        | int unsigned     | YES  |     | ʘ       |                |
+| marketplace_info_json                   | json             | YES  |     | ʘ       |                |
+| doe                                     | datetime         | YES  |     | ʘ       |                |
+| dlu                                     | datetime         | YES  | MUL | ʘ       |                |
+| uoe                                     | varchar(255)     | YES  |     | ʘ       |                |
+| ulu                                     | varchar(255)     | YES  |     | ʘ       |                |
+| core_estaleanetwork_id                  | int unsigned     | YES  |     | ʘ       |                |
+| archived                                | tinyint(1)       | YES  |     | ʘ       |                |
+| version                                 | int unsigned     | YES  |     | ʘ       |                |
+| isprimary                               | tinyint unsigned | YES  |     | ʘ       |                |
+| itp_compliant                           | tinyint(1)       | YES  |     | ʘ       |                |
+| program_type                            | varchar(255)     | YES  |     | ʘ       |                |
+| type                                    | varchar(30)      | YES  |     | ʘ       |                |
+| kafka_insert_source_topic               | varchar(191)     | YES  |     | ʘ       |                |
+| kafka_insert_partition                  | int              | YES  |     | ʘ       |                |
+| kafka_insert_offset                     | bigint           | YES  |     | ʘ       |                |
+| kafka_last_update_partition             | int              | YES  |     | ʘ       |                |
+| kafka_last_update_offset                | bigint           | YES  |     | ʘ       |                |
++-----------------------------------------+------------------+------+-----+---------+----------------+
 
 
 -- r_ds_icee_snapshot
@@ -7,7 +91,8 @@ SELECT id AS ircm_campaign_id, program_psi
 FROM sync_ircm_ircm_campaign
 WHERE id = 25438;
 -- Expect exactly 1 row. We'll call that value supply_psi for the next step.
-
+Unknown column 'program_psi' in 'field list'
+Unknown column 'program_psi' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'program_psi' in 'field list'
 
 -- r_ds_icee_snapshot  (DRAFT)
 -- Replace r.doe bounds if you need a wider window.
@@ -33,3 +118,5 @@ JOIN (
   ON r.supply_psi = x.program_psi
 WHERE r.doe >= '2025-10-15' AND r.doe < '2025-11-01'
 ORDER BY r.doe DESC;
+Unknown column 'program_psi' in 'field list'
+Unknown column 'program_psi' in 'field list'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'program_psi' in 'field list'
