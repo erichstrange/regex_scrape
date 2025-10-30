@@ -4,23 +4,22 @@ SELECT ircm_campaign_id,
        permitted_deeplink_domains,
        base_site_domain
 FROM ircm_technicalintegration
-WHERE ircm_campaign_id = <campaignId>;
+WHERE ircm_campaign_id = 15100;
++------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------------------------+
+| ircm_campaign_id | global_url_params                                                                                           | permitted_deeplink_domains                              | base_site_domain                                                      |
++------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------------------------+
+|            15100 | utm_channel=affiliate&utm_source=impact&utm_medium=affiliate&utm_campaign={irmptype}&utm_partner={irmpname} | montblanc.com,*.montblanc.com,montblanc-s01.yooxbox.com | montblanc.com,montblanc-preview.yooxbox.com,montblanc-s01.yooxbox.com |
++------------------+-------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+-----------------------------------------------------------------------+
 
-
--- [DataSource: ircm] Technical integration and site definition (VETTED)
-SELECT ircm_campaign_id,
-       global_url_params,
-       permitted_deeplink_domains,
-       base_site_domain
-FROM ircm_technicalintegration
-WHERE ircm_campaign_id = <campaignId>;
 
 
 -- [DataSource: ircm] Audit changes to TechnicalIntegration (VETTED)
 SELECT change_date, username, auditedvariable, previousval, newval
 FROM m_audit_log_entry
 WHERE objectclassname = 'estalea.ir.cm.campaign.domain.TechnicalIntegration'
-  AND objectid = <campaignId>
+  AND objectid = 15100
   AND newval != previousval
 ORDER BY 1
 LIMIT 400;
+Table 'ircm.m_audit_log_entry' doesn't exist
+Table 'ircm.m_audit_log_entry' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'ircm.m_audit_log_entry' doesn't exist
