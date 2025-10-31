@@ -1,3 +1,20 @@
-Mediapartners/{SID}/Jobs/918d462e-d6cd-48e0-9a43-6efa15f77e48/Download
+-- BigQuery: who/what created the relationship
+SELECT brand_account_id AS advertiser_id, program_id AS campaign_id,
+       publisher_account_id AS partner_id, initiation_source,
+       source_doe, doe, dlu
+FROM prod-data-enablement.base_ods.platform_program_account_relationship
+WHERE brand_account_id = 5475947
+  AND program_id       = 25438
+  AND initiation_source IS NOT NULL
+ORDER BY COALESCE(source_doe, doe) DESC;
 
-GET https://api.impact.com/Mediapartners/<AccountSID>/Jobs/<JobId>/Download
+
+-- DRAFT (Operator DB): list recommendations created for MobileX program
+SELECT id, iram_publisher_id, iram_advertiser_id, ircm_campaign_id,
+       recommendation_source, recommendation_by, vetted_by, start_date,
+       end_date, ended_by, collection_id, bulk_upload, doe, dlu, uoe, ulu,
+       archived, version
+FROM iop.iop_partnership_recommendation
+WHERE iram_advertiser_id = 5475947
+  AND ircm_campaign_id   = 25438
+ORDER BY doe DESC;
