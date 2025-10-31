@@ -1,48 +1,104 @@
-SELECT *
-FROM iram_publishergroup
-WHERE ircm_campaign_id = 5553
-ORDER BY dlu DESC;
-+-------+------------------+-----------------------------------+---------------------+---------------------+-----------------+-----------------------------------------------------------------------------------------------+------------------------+----------+---------+
-|    id | ircm_campaign_id | group_name                        | doe                 | dlu                 | uoe             | ulu                                                                                           | core_estaleanetwork_id | archived | version |
-+-------+------------------+-----------------------------------+---------------------+---------------------+-----------------+-----------------------------------------------------------------------------------------------+------------------------+----------+---------+
-| 38354 |             5553 | Loyalty                           | 2022-12-08 19:38:33 | 2025-10-30 00:28:29 | JoeOak          | estalea.ir.am.relationship.job.IoUpdatesRelationshipSynchJob[app-22.gcp.inf-impact.net:13680] |                      1 | false    |     351 |
-| 38353 |             5553 | Coupon                            | 2022-12-08 19:38:15 | 2025-10-22 20:36:48 | JoeOak          | estalea.ir.am.relationship.job.IoUpdatesRelationshipSynchJob[app-22.gcp.inf-impact.net:13680] |                      1 | false    |     640 |
-| 38355 |             5553 | Content                           | 2022-12-08 19:38:50 | 2025-10-21 08:24:01 | JoeOak          | estalea.ir.am.relationship.job.IoUpdatesRelationshipSynchJob[app-22.gcp.inf-impact.net:13680] |                      1 | false    |     884 |
-| 36645 |             5553 | Coupon High LTV                   | 2022-10-05 16:46:41 | 2025-10-08 03:56:23 | bschmidt32      | UpcomingContractProcessor[app-ap-6.gcp.inf-impact.net:12980]                                  |                      1 | true     |     267 |
-| 36659 |             5553 | High LTV Coupon - 3%              | 2022-10-05 20:45:40 | 2025-10-08 03:56:23 | bschmidt32      | UpcomingContractProcessor[app-ap-6.gcp.inf-impact.net:12980]                                  |                      1 | true     |       5 |
-| 82550 |             5553 | Rakuten                           | 2024-11-13 18:19:31 | 2025-04-03 20:53:20 | srobbins2023    | srobbins2023                                                                                  |                      1 | false    |       2 |
-| 82549 |             5553 | LTK                               | 2024-11-13 18:19:23 | 2025-04-03 20:50:21 | srobbins2023    | srobbins2023                                                                                  |                      1 | false    |       2 |
-| 70454 |             5553 | INFLUENCER_24'                    | 2024-06-18 15:58:02 | 2025-04-03 20:47:31 | HenningsenTessa | srobbins2023                                                                                  |                      1 | true     |       2 |
-| 70455 |             5553 | EDITORIAL_24'                     | 2024-06-18 15:58:13 | 2025-04-03 20:47:24 | HenningsenTessa | srobbins2023                                                                                  |                      1 | true     |       3 |
-| 46301 |             5553 | Partner Removal - Terms Violation | 2023-07-19 18:23:45 | 2025-04-03 20:46:45 | katiewong       | srobbins2023                                                                                  |                      1 | true     |       4 |
-| 45993 |             5553 | Shorts Test                       | 2023-07-12 19:49:15 | 2025-04-03 20:46:37 | katiewong       | srobbins2023                                                                                  |                      1 | true     |      79 |
-| 45007 |             5553 | DAILY DEAL                        | 2023-06-19 17:10:12 | 2025-04-03 20:46:29 | bschmidt32      | srobbins2023                                                                                  |                      1 | true     |      11 |
-| 44213 |             5553 | VIP                               | 2023-05-26 15:42:09 | 2025-04-03 20:46:22 | HenningsenTessa | srobbins2023                                                                                  |                      1 | true     |       3 |
-| 41571 |             5553 | FMTC EXCLUDED                     | 2023-03-22 15:57:16 | 2025-04-03 20:46:13 | JoeOak          | srobbins2023                                                                                  |                      1 | true     |       1 |
-| 35714 |             5553 | Partner Removal 9.8               | 2022-09-08 20:44:02 | 2025-04-03 20:45:44 | bschmidt32      | srobbins2023                                                                                  |                      1 | true     |     201 |
-| 16518 |             5553 | TM+                               | 2020-03-16 16:16:27 | 2025-04-03 20:45:36 | evelekei        | srobbins2023                                                                                  |                      1 | true     |      11 |
-| 14261 |             5553 | Content OLD                       | 2019-08-28 02:35:51 | 2025-04-03 20:45:30 | APGapTeam       | srobbins2023                                                                                  |                      1 | true     |     276 |
-| 14260 |             5553 | Loyalty OLD                       | 2019-08-28 02:35:39 | 2025-04-03 20:45:23 | APGapTeam       | srobbins2023                                                                                  |                      1 | true     |     125 |
-| 14259 |             5553 | Coupon/Deal OLD                   | 2019-08-28 02:35:28 | 2025-04-03 20:45:17 | APGapTeam       | srobbins2023                                                                                  |                      1 | true     |     273 |
-| 41678 |             5553 | Test Account                      | 2023-03-24 21:48:43 | 2023-05-26 15:40:20 | katiewong       | HenningsenTessa                                                                               |                      1 | true     |       5 |
-| 29942 |             5553 | Coupon Initiative                 | 2022-03-15 17:14:07 | 2023-05-26 15:37:43 | skyewitt_gap    | HenningsenTessa                                                                               |                      1 | true     |       4 |
-| 19945 |             5553 | Instore                           | 2020-11-10 16:56:37 | 2023-05-26 15:37:38 | HbrownAP1       | HenningsenTessa                                                                               |                      1 | true     |       4 |
-| 40545 |             5553 | LabelTEST                         | 2023-02-20 20:31:31 | 2023-02-20 20:32:22 | mgrabher        | mgrabher                                                                                      |                      1 | true     |       1 |
-| 21618 |             5553 | Full Legal Restrictions           | 2021-02-22 21:50:11 | 2023-02-06 19:32:45 | SherryLin24     | sydgen3                                                                                       |                      1 | true     |      18 |
-| 15388 |             5553 | Tech/App                          | 2019-12-07 01:34:58 | 2023-02-06 19:31:37 | APGapTeam       | sydgen3                                                                                       |                      1 | true     |      11 |
-| 14262 |             5553 | Sub-Affiliate                     | 2019-08-28 02:36:01 | 2023-02-06 19:31:19 | APGapTeam       | sydgen3                                                                                       |                      1 | true     |      15 |
-| 36664 |             5553 | High LTV Coupon - 12%             | 2022-10-05 20:47:10 | 2023-01-25 22:26:27 | bschmidt32      | JoeOak                                                                                        |                      1 | true     |       2 |
-| 36663 |             5553 | High LTV Coupon - 5%              | 2022-10-05 20:46:53 | 2023-01-25 22:26:19 | bschmidt32      | JoeOak                                                                                        |                      1 | true     |       6 |
-| 36662 |             5553 | High LTV Coupon - 4%/2%           | 2022-10-05 20:46:28 | 2023-01-25 22:26:13 | bschmidt32      | JoeOak                                                                                        |                      1 | true     |     105 |
-| 36661 |             5553 | High LTV Coupon - 2%/1%           | 2022-10-05 20:46:12 | 2023-01-25 22:26:06 | bschmidt32      | JoeOak                                                                                        |                      1 | true     |      25 |
-| 36660 |             5553 | High LTV Coupon - 6%              | 2022-10-05 20:45:55 | 2023-01-25 22:25:59 | bschmidt32      | JoeOak                                                                                        |                      1 | true     |       9 |
-| 20491 |             5553 | Dec 2020 Coupon Campaign          | 2020-12-04 16:14:53 | 2023-01-25 22:25:11 | kshipp          | JoeOak                                                                                        |                      1 | true     |      20 |
-| 19914 |             5553 | Archived Account                  | 2020-11-06 19:11:29 | 2023-01-25 22:24:58 | HbrownAP1       | JoeOak                                                                                        |                      1 | true     |       4 |
-| 18475 |             5553 | JP recruit                        | 2020-08-13 17:23:28 | 2023-01-25 21:21:05 | Janellpando     | JoeOak                                                                                        |                      1 | true     |       1 |
-| 17322 |             5553 | Aquisition                        | 2020-05-11 21:48:25 | 2023-01-25 21:20:57 | APGapTeam       | JoeOak                                                                                        |                      1 | true     |      16 |
-| 17304 |             5553 | Q2 Activation                     | 2020-05-11 19:15:36 | 2023-01-25 21:20:31 | APGapTeam       | JoeOak                                                                                        |                      1 | true     |      38 |
-| 17321 |             5553 | Conversion                        | 2020-05-11 21:48:19 | 2021-04-30 23:23:51 | APGapTeam       | SherryLin24                                                                                   |                      1 | true     |       5 |
-| 21617 |             5553 | Full Legal Restrictions           | 2021-02-22 21:49:01 | 2021-02-22 21:49:58 | SherryLin24     | SherryLin24                                                                                   |                      1 | true     |       1 |
-| 16902 |             5553 | Registry                          | 2020-04-10 16:38:27 | 2020-11-10 16:56:13 | HbrownAP1       | HbrownAP1                                                                                     |                      1 | true     |       2 |
-| 14438 |             5553 | VIP                               | 2019-09-16 21:55:19 | 2020-04-30 15:02:10 | APGapTeam       | evelekei                                                                                      |                      1 | true     |      16 |
-+-------+------------------+-----------------------------------+---------------------+---------------------+-----------------+-----------------------------------------------------------------------------------------------+------------------------+----------+---------+
+API Scopes
+Clear All
+Configure API Scopes
+Select the scopes you would like to allow on your access token.
+
+Accounts
+This endpoint contains metadata about your company, such as the name, your website, individual contacts, and more. You can use this endpoint to retrieve current information about your company or update it with new information.
+
+Action Inquiries
+Action Inquiries are formal requests to investigate the attribution and/or payout of an action. This endpoint allows you to view action inquiries, retrieve a specific action inquiry, and update an action inquiry with a resolution.
+
+Objective	API Path	Method
+Retrieve action inquiries	
+/Mediapartners/<AccountSID>/ActionInquiries
+Get
+Create action inquiry	
+/Mediapartners/<AccountSID>/ActionInquiries
+Post
+Retrieve action inquiry	
+/Mediapartners/<AccountSid>/ActionInquiries/<Id>
+Get
+Update action inquiries	
+/Mediapartners/<AccountSID>/ActionInquiries
+Put
+Actions
+Actions represent conversion events that has been credited and is eligible for payout. These endpoints are used to perform functions relating to conversion events (actions), action items and action updates. These endpoints are used to retrieve conversion information.
+
+Objective	API Path	Method
+Retrieve action	
+/Mediapartners/<AccountSID>/Actions/<ActionID>
+Get
+Retrieve action update	
+/Mediapartners/<AccountSID>/ActionUpdates/<ID>
+Get
+Retrieve action items	
+/Mediapartners/<AccountSID>/Actions/<ActionID>/Items
+Get
+Retrieve action item	
+/Mediapartners/<AccountSID>/Actions/<ActionID>/Items/<Sku>
+Get
+Retrieve actions	
+/Mediapartners/<AccountSID>/Actions
+Get
+Retrieve action updates	
+/Mediapartners/<AccountSID>/ActionUpdates
+Get
+Ads
+Ads are the brand advertisements used to drive actions for a brand and earn payouts. Ads can be purely text (such as just a link), or can consist of some type of creative (e.g, a banner image, video, audio, etc.) with an embedded tracking link. This endpoint allows you to retrieve an ad or an ad code or an ad's iframe code or an ad's tracking link or retrieve a list of ads.
+
+Campaigns
+Campaigns API resource paths
+
+Catalogs
+Catalogs API resource paths
+
+Clicks
+Clicks API resource paths
+
+Contracts
+Contacts help you maintain a contact list of all the people associated with the partner accounts in your program. You can use this endpoint to manage your contacts list and to add contacts for partner accounts, even if that person doesn’t have an account. Expanding your contacts with more people can help improve your partner communications.
+
+Deals
+Deals API resource paths
+
+Exception List
+Exception list API resource paths
+
+Invoices
+Invoices API resource paths
+
+Jobs Management
+Jobs management API resource paths
+
+Media Properties
+Media properties API resource paths
+
+Promotions
+Promotions API resource paths
+
+Reports
+Reports API resource paths
+
+Objective	API Path	Method
+Export report	
+/Mediapartners/<AccountSID>/ReportExport/<ID>
+Get
+List reports	
+/Mediapartners/<AccountSID>/Reports
+Get
+Generate report	
+/Mediapartners/<AccountSID>/Reports/<ID>
+Get
+Retrieve report meta data	
+/Mediapartners/<AccountSID>/Reports/<ID>/MetaData
+Get
+Tracking Links
+Tracking links API resource paths
+
+Users
+Users API resource paths
+
+Withdrawal Settings
+Withdrawal settings API resource paths
+
