@@ -1,20 +1,22 @@
--- BigQuery: who/what created the relationship
-SELECT brand_account_id AS advertiser_id, program_id AS campaign_id,
-       publisher_account_id AS partner_id, initiation_source,
-       source_doe, doe, dlu
-FROM prod-data-enablement.base_ods.platform_program_account_relationship
-WHERE brand_account_id = 5475947
-  AND program_id       = 25438
-  AND initiation_source IS NOT NULL
-ORDER BY COALESCE(source_doe, doe) DESC;
+-- Event trackers in this program
+SELECT id AS action_tracker_id, name, archived
+FROM ircm_actiontracker
+WHERE ircm_campaign_id = 5683
+ORDER BY id;
 
 
--- DRAFT (Operator DB): list recommendations created for MobileX program
-SELECT id, iram_publisher_id, iram_advertiser_id, ircm_campaign_id,
-       recommendation_source, recommendation_by, vetted_by, start_date,
-       end_date, ended_by, collection_id, bulk_upload, doe, dlu, uoe, ulu,
-       archived, version
-FROM iop.iop_partnership_recommendation
-WHERE iram_advertiser_id = 5475947
-  AND ircm_campaign_id   = 25438
-ORDER BY doe DESC;
+json.campaign:5683
+
+
+json.campaign:5683 AND error
+json.campaign:5683 AND "oid: missing"
+
+
+-- Click/referrer trail for a single conversion
+SELECT *
+FROM ir_referrer
+WHERE campaign_id = 5683
+  AND action_tracker_id = <TRACKER_ID>
+  AND oid = "<OID>"
+ORDER BY ref_date DESC
+LIMIT 10;
