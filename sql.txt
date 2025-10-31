@@ -4,13 +4,30 @@ FROM ircm_actiontracker
 WHERE ircm_campaign_id = 5683
 ORDER BY id;
 
++-------------------+-------------------------------+----------+
+| action_tracker_id | name                          | archived |
++-------------------+-------------------------------+----------+
+|             12723 | Account Registration          | false    |
+|             12724 | DIY Purchase                  | false    |
+|             12725 | Software Download Purchase    | false    |
+|             12726 | Assisted In-Store Purchase    | false    |
+|             16308 | Tax Pro Go                    | false    |
+|             21326 | iOS                           | false    |
+|             21327 | Android                       | false    |
+|             23262 | Assisted In-Store Appointment | false    |
+|             24236 | Expat Registration            | false    |
+|             43677 | CLO - Assisted                | false    |
+|             51884 | CLO - DIY                     | false    |
++-------------------+-------------------------------+----------+
+
 
 json.campaign:5683
+results in loggly_events_2025-10-31 23_38_45.083885.json
 
 
 json.campaign:5683 AND error
 json.campaign:5683 AND "oid: missing"
-
+--empty results
 
 -- Click/referrer trail for a single conversion
 SELECT *
