@@ -13,6 +13,9 @@ WHERE campaign_id = 24744             -- OurRitual campaign
   AND new_status = 'REVERSED'
   AND adj_date >= '2025-09-01'
 ORDER BY adj_date DESC;
+Table 'irac_general.irac_action2' doesn't exist
+Table 'irac_general.irac_action2' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irac_general.irac_action2' doesn't exist
+
 
 
 -- DRAFT: OurRitual actions with Event Risk indicators or reversed since Sep 1, 2025
@@ -33,3 +36,4 @@ WHERE advertiser_id = 5399434        -- OurRitual account
   AND action_datetime >= TIMESTAMP('2025-09-01')
   AND (approval_status = 'REVERSED' OR fraud_spoofing = TRUE)
 ORDER BY action_datetime DESC;
+---wtf is datalake-irdwm? I dont see that in query runner?????
