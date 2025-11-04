@@ -1,9 +1,9 @@
--- DRAFT based on vetted SELECT-65 pattern (irer_click_v3)
-SELECT doe, publisher_id, ad_id, campaign_id, method, landing_page_url, ref_url, user_agent
-FROM irer_click_v3
-WHERE campaign_id = 5335
-  AND ad_id = 1063662
-  AND publisher_id IN (3019504, 2197213)
-  AND doe >= NOW() - INTERVAL '3 days'
-ORDER BY doe DESC
-LIMIT 500;
+-- Base: vetted query from conversion_fact (all methods: JS, API, FTP)
+-- DATERANGE: narrow to test window
+SELECT event_datetime, method, campaign_id, action_tracker_id,
+       oid, currency, amount, items, json
+FROM conversion_fact
+WHERE oid IN ('80002205368323')
+  AND action_tracker_id IN (60393)
+  AND event_datetime >= '2025-10-23' AND event_datetime < '2025-10-24'
+LIMIT 1000;
