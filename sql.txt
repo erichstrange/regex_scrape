@@ -11,6 +11,20 @@ WHERE campaign_id = 24744
 GROUP BY period, conversion_status
 ORDER BY period, conversion_status;
 
++-----------------+-------------------+---------+
+| period          | conversion_status | actions |
++-----------------+-------------------+---------+
+| Post-2025-09-16 | ʘ                 |   57611 |
+| Post-2025-09-16 | APPROVED          |       3 |
+| Post-2025-09-16 | DEFAULT           |    1921 |
+| Post-2025-09-16 | FRAUD             |       3 |
+| Post-2025-09-16 | REJECTED          |       6 |
+| Pre-2025-09-16  | ʘ                 |   14833 |
+| Pre-2025-09-16  | APPROVED          |      17 |
+| Pre-2025-09-16  | DEFAULT           |     517 |
+| Pre-2025-09-16  | FRAUD             |      24 |
++-----------------+-------------------+---------+
+
 
 -- [r_ds_singlestore] Reversed actions, PRE Sep 16 window
 SELECT
@@ -27,6 +41,11 @@ WHERE campaign_id = 24744
   AND conversion_status = 'REVERSED'
 ORDER BY action_datetime DESC;
 
++-----------------+-----------+-----+-------------------+------------------------------+-----------+
+| action_datetime | action_id | oid | conversion_status | conversion_action_tracker_id | event_url |
++-----------------+-----------+-----+-------------------+------------------------------+-----------+
++-----------------+-----------+-----+-------------------+------------------------------+-----------+
+
 
 -- [r_ds_singlestore] Reversed actions, POST Sep 16 window
 SELECT
@@ -42,7 +61,10 @@ WHERE campaign_id = 24744
   AND conversion_event_datetime <  '2025-11-05'
   AND conversion_status = 'REVERSED'
 ORDER BY action_datetime DESC;
-
++-----------------+-----------+-----+-------------------+------------------------------+-----------+
+| action_datetime | action_id | oid | conversion_status | conversion_action_tracker_id | event_url |
++-----------------+-----------+-----+-------------------+------------------------------+-----------+
++-----------------+-----------+-----+-------------------+------------------------------+-----------+
 
 -- [r_ds_singlestore] All actions (any status), Oct 1 -> Nov 4 for current view
 SELECT
@@ -58,6 +80,7 @@ WHERE campaign_id = 24744
   AND conversion_event_datetime <  '2025-11-05'
 ORDER BY action_datetime DESC
 LIMIT 1000;
+--result in query - 2025-11-04T102801.063.csv
 
 
 -- [iraction_sharded] OurRitual actions (all statuses), Sep 1 -> Nov 4
@@ -78,29 +101,11 @@ WHERE campaign_id = 24744
   AND action_date <  '2025-11-05'
 ORDER BY action_date DESC
 LIMIT 2000;
+--result in query - 2025-11-04T102913.527.csv
 
 
--- [r_ds_iraction_general] Same pull if 'iraction_sharded' isn't available
-SELECT
-  action_date,
-  doe,
-  action_id,
-  action_tracker_id,
-  oid,
-  new_status,
-  adj_reason,
-  batch_id,
-  ref_url,
-  ref_domain
-FROM irac_action2
-WHERE campaign_id = 24744
-  AND action_date >= '2025-09-01'
-  AND action_date <  '2025-11-05'
-ORDER BY action_date DESC
-LIMIT 2000;
 
-
--- [actionlogging_sharded] No-referrer events for OurRitual (sanity check)
+-- No-referrer events for OurRitual
 SELECT *
 FROM ir_noreferrer_event
 WHERE campaign_id = 24744
@@ -108,3 +113,4 @@ WHERE campaign_id = 24744
   AND doe <  '2025-11-05'
 ORDER BY doe DESC
 LIMIT 200;
+-- result in query - 2025-11-04T103026.194.csv
