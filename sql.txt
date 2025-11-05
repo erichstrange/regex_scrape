@@ -19,6 +19,7 @@ WHERE cf.advertiser_id = 256602   -- Uber Rides Global
   AND cf.publisher_id IN (3019504,2197213)
   AND cf.event_datetime >= '2025-10-23' AND cf.event_datetime < '2025-10-26'
 ORDER BY cf.event_datetime DESC;
+--result in query - 2025-11-05T085257.903.csv
 
 
 SELECT
@@ -36,14 +37,33 @@ WHERE cf.advertiser_id = 256602
   AND cf.event_datetime >= '2025-10-23' AND cf.event_datetime < '2025-10-26'
 GROUP BY 1
 ORDER BY total_clicks DESC;
++--------------+--------------+---------------------+----------------+---------------+
+| publisher_id | total_clicks | interstitial_clicks | install_clicks | mobile_clicks |
++--------------+--------------+---------------------+----------------+---------------+
+|      2197213 |         4592 |                   0 |           4557 |          4587 |
+|      3019504 |            7 |                   0 |              7 |             7 |
++--------------+--------------+---------------------+----------------+---------------+
 
 
-SELECT *
+SELECT id, iram_advertiser_id, ircm_campaign_id, irad_ad_id, iram_task_id, origin_type, name, rule_json, 'action', interstitial_require_input
+redirect_url, archived, interstitial_acknowledge, interstitial_deep_linking_auto_redirect, doe, dlu, uoe, paused, start_date, end_date
 FROM ircm_blockredirect
 WHERE ircm_campaign_id = 5335
-  AND state = 'ACTIVE';
-
++-------+--------------------+------------------+------------+--------------+-------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+--------------+----------+--------------------------+-----------------------------------------+---------------------+---------------------+-----------+--------+------------+----------+
+|    id | iram_advertiser_id | ircm_campaign_id | irad_ad_id | iram_task_id | origin_type | name                         | rule_json                                                                                                                                                                                                                                             | action | redirect_url | archived | interstitial_acknowledge | interstitial_deep_linking_auto_redirect | doe                 | dlu                 | uoe       | paused | start_date | end_date |
++-------+--------------------+------------------+------------+--------------+-------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+--------------+----------+--------------------------+-----------------------------------------+---------------------+---------------------+-----------+--------+------------+----------+
+| 15385 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Desktop Redirect             | [[{"variable":"DEVICE_TYPE","operator":"EQUALS","value":"DESKTOP"}]]                                                                                                                                                                                  | action | false        | true     | false                    | false                                   | 2018-06-27 22:14:20 | 2018-07-18 21:04:28 | rosswood  | true   | ʘ          | ʘ        |
+| 47181 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Lemmonet                     | [[{"variable":"MP_ID","operator":"EQUALS","value":"1142279"}],[{"variable":"MP_ID","operator":"EQUALS","value":"1349626"}],[{"variable":"MP_ID","operator":"EQUALS","value":"2206617"}],[{"variable":"MP_ID","operator":"EQUALS","value":"1321913"}]] | action | false        | false    | false                    | false                                   | 2020-05-20 17:52:34 | 2020-05-20 17:52:34 | apeyrazat | false  | ʘ          | ʘ        |
+| 47182 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Trooperads                   | [[{"variable":"MP_ID","operator":"EQUALS","value":"1317642"}],[{"variable":"MP_ID","operator":"EQUALS","value":"1454360"}],[{"variable":"MP_ID","operator":"EQUALS","value":"2074662"}]]                                                              | action | false        | false    | false                    | false                                   | 2020-05-20 17:53:25 | 2020-05-20 17:53:25 | apeyrazat | false  | ʘ          | ʘ        |
+| 47183 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Kickads/Ravasa               | [[{"variable":"MP_ID","operator":"EQUALS","value":"1192585"}],[{"variable":"MP_ID","operator":"EQUALS","value":"1443983"}],[{"variable":"MP_ID","operator":"EQUALS","value":"2220126"}],[{"variable":"MP_ID","operator":"EQUALS","value":"2226652"}]] | action | false        | false    | false                    | false                                   | 2020-05-20 17:54:33 | 2020-05-20 17:54:33 | apeyrazat | false  | ʘ          | ʘ        |
+| 47184 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Lead ID                      | [[{"variable":"MP_ID","operator":"EQUALS","value":"1260760"}],[{"variable":"MP_ID","operator":"EQUALS","value":"1362176"}]]                                                                                                                           | action | false        | false    | false                    | false                                   | 2020-05-20 17:55:20 | 2020-05-20 17:55:20 | apeyrazat | false  | ʘ          | ʘ        |
+| 47185 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Clicxy                       | [[{"variable":"MP_ID","operator":"EQUALS","value":"1723157"}],[{"variable":"MP_ID","operator":"EQUALS","value":"2300965"}],[{"variable":"MP_ID","operator":"EQUALS","value":"2302677"}]]                                                              | action | false        | false    | false                    | false                                   | 2020-05-20 17:56:07 | 2020-05-20 17:56:07 | apeyrazat | false  | ʘ          | ʘ        |
+| 47186 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | EMX                          | [[{"variable":"MP_ID","operator":"EQUALS","value":"1233212"}],[{"variable":"MP_ID","operator":"EQUALS","value":"1436130"}]]                                                                                                                           | action | false        | false    | false                    | false                                   | 2020-05-20 18:08:03 | 2020-05-20 18:08:03 | apeyrazat | false  | ʘ          | ʘ        |
+| 62036 |             256602 |             5335 |          ʘ |            ʘ | GENERIC     | Ad Synthetic Block - ADX_Pro | [[{"variable":"MP_ID","operator":"EQUALS","value":"2219154"}]]                                                                                                                                                                                        | action | false        | false    | false                    | false                                   | 2021-10-22 16:38:49 | 2021-10-22 16:38:49 | mhughson  | false  | ʘ          | ʘ        |
++-------+--------------------+------------------+------------+--------------+-------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------+--------------+----------+--------------------------+-----------------------------------------+---------------------+---------------------+-----------+--------+------------+----------+
 
 -- Global click filter examples (datasource: multiDb)
 SELECT * FROM trkcfg_global_click_filter_config
 WHERE publisher_id IN (3019504,2197213);
+Table 'iram.trkcfg_global_click_filter_config' doesn't exist
+Table 'iram.trkcfg_global_click_filter_config' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'iram.trkcfg_global_click_filter_config' doesn't exis
