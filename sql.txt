@@ -1,17 +1,25 @@
--- Is the tracker there and which program owns it?
-SELECT id, name, ircm_campaign_id /* + any status fields available */
-FROM ircm_actiontracker
-WHERE id = 60393;
+-- Tracker definition
+SELECT * FROM ircm_actiontracker WHERE id = 60393;
 
--- Are payable events configured for it (e.g., purchase)?
-SELECT *
-FROM ircm_payable_event
-WHERE ircm_actiontracker_id = 60393;
-+------+------------------+-----------------------+-----------------------+--------------+--------+-------------------+---------------+------------------+----------+---------------------+---------------------+---------------+------------------------------+------------------------+----------+
-|   id | ircm_campaign_id | ircm_actiontracker_id | name                  | code         | state  | tracking_verified | dedupe_window | attribution_mode | referrer | doe                 | dlu                 | uoe           | ulu                          | core_estaleanetwork_id | archived |
-+------+------------------+-----------------------+-----------------------+--------------+--------+-------------------+---------------+------------------+----------+---------------------+---------------------+---------------+------------------------------+------------------------+----------+
-| 9001 |            19183 |                 60393 | Install               | INSTALL      | ACTIVE | false             |             ʘ | FIRST            | true     | 2025-08-06 02:00:25 | 2025-08-06 02:00:25 | Annisaa Rahim | Annisaa Rahim                |                      1 | false    |
-| 9144 |            19183 |                 60393 | 10 Minutes Video Chat | match_10min  | ACTIVE | false             |             ʘ | FIRST            | false    | 2025-09-03 07:27:32 | 2025-09-08 02:16:50 | Annisaa Rahim | google:112052513225683624676 |                      1 | false    |
-| 9145 |            19183 |                 60393 | Sale                  | purchase     | ACTIVE | false             |             ʘ | FIRST            | false    | 2025-09-03 07:27:32 | 2025-09-08 02:16:58 | Annisaa Rahim | google:112052513225683624676 |                      1 | false    |
-| 9146 |            19183 |                 60393 | Registration          | registration | ACTIVE | false             |             ʘ | FIRST            | false    | 2025-09-03 07:27:32 | 2025-09-08 02:17:03 | Annisaa Rahim | google:112052513225683624676 |                      1 | false    |
-+------+------------------+-----------------------+-----------------------+--------------+--------+-------------------+---------------+------------------+----------+---------------------+---------------------+---------------+------------------------------+------------------------+----------+
+-- If this is a mobile app tracker, check mobile app-specific config
+SELECT
+  at.ircm_campaign_id, c.name AS campaign_name,
+  at.name AS tracker_name, m.platform, m.download_url
+FROM ircm_mobileapp_actiontracker m
+JOIN ircm_actiontracker at ON m.id = at.id
+JOIN ircm_campaign c ON c.id = at.ircm_campaign_id
+WHERE at.id = 60393;
+
+
+SELECT * FROM ircm_technicalintegration WHERE ircm_campaign_id = 19183;
+
+
+-- Signed contracts (active = current IOs)
+SELECT * FROM ircm_signedcontract WHERE ircm_campaign_id = 19183;
+
+-- If you need credit group / IO term detail
+SELECT sc.iram_publisher_id, sc.ircm_campaign_id, iot.credit_group
+FROM ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot ON iot.id = sc.ircm_ioterms_id
+WHERE sc.ircm_campaign_id = 19183
+  AND sc.date_contract_end IS NULL;
