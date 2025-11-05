@@ -1,24 +1,6 @@
--- SELECT-35: Grandchild Action Attribution (adapt for this OID)
-select action_date,doe,uoe,campaign_id,oid,action_id,action_tracker_id,ref_type,
-       adv_saleamt,adv_commission,batch_id,adj_reason,new_status,adv_cust_status,
-       sku,quantity,payout_trace
-from irac_action2
-where oid = '15432204CGB';
-Table 'irac_general.irac_action2' doesn't exist
-Table 'irac_general.irac_action2' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irac_general.irac_action2' doesn't exist
-
-
--- SELECT-2: detailed click data by campaign/tracker/oid
-select *
-from ir_referrer
-where campaign_id = 8089
-  and oid = '15432204CGB'
-order by ref_date desc
-limit 10;
---there is no data source called ir-referrer or anythign really close to it
-
--- SELECT-1 / Query 3: payload by batch_id (use the A-... value from your screenshot)
-select payload
-from ir_api_log
-where batch_id = 'A-<from-screenshot>';
---please fill this in yourself
+-- Conversion Logs (All Types) — vetted
+SELECT event_datetime, advertiser_id, campaign_id, action_tracker_id, method, batch_id, oid, items, currency, gross_amount, json
+FROM conversion_fact
+WHERE campaign_id IN (19183)
+  AND action_tracker_id IN (60393)
+  AND event_datetime >= '2025-10-23' AND event_datetime < '2025-10-24';
