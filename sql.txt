@@ -27,19 +27,7 @@ limit 200;
 +-------------+-----+-----+-------------+-----+-----------+-------------------+----------+-------------+----------------+----------+------------+------------+-----------------+-----+----------+--------------+
 
 -- DS: r_ds_actionlogging_sharded
-select *
-from ir_referrer
-where action_id = '<paste action_id from step 1>'
-order by ref_date desc;
+select * from ir_correlated_event  where oid = '15432204CGB' and campaign_id = 8089;
+select * from ir_noreferrer_event   where oid = '15432204CGB' and campaign_id = 8089;
+select * from ir_failure_event      where oid = '15432204CGB' and campaign_id = 8089;
 
-
--- DS: r_ds_ods
--- payload body of the submission
-select payload
-from ir_api_log
-where batch_id = 'A-<your batch id>';
-
--- (optional) see server-side error details for that batch
-select error_json
-from ir_api_log
-where batch_id = 'A-<your batch id>';
