@@ -4,6 +4,8 @@ select action_date,doe,uoe,campaign_id,oid,action_id,action_tracker_id,ref_type,
        sku,quantity,payout_trace
 from irac_action2
 where oid = '15432204CGB';
+Table 'irac_general.irac_action2' doesn't exist
+Table 'irac_general.irac_action2' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irac_general.irac_action2' doesn't exist
 
 
 -- SELECT-2: detailed click data by campaign/tracker/oid
@@ -13,9 +15,10 @@ where campaign_id = 8089
   and oid = '15432204CGB'
 order by ref_date desc
 limit 10;
-
+--there is no data source called ir-referrer or anythign really close to it
 
 -- SELECT-1 / Query 3: payload by batch_id (use the A-... value from your screenshot)
 select payload
 from ir_api_log
 where batch_id = 'A-<from-screenshot>';
+--please fill this in yourself
