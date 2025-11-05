@@ -16,3 +16,34 @@ where oid in (
 | 2025-10-07 04:59:59 | 2025-11-04 20:03:12 | ac749c69ddcb1410c1500e0e07e89d7aaa3e3bb6aa855df985a884cd96c5a46b | 9099.6488.3368008 |             46121 | DATAPOST |        0.00 |       250.0000 | F-a60a5671-4e41-499c-9f87-e3b1cc7548ba |            | DEFAULT    | ʘ               | 104 |        1 | {"ContractId":"S-25413619","EventTypeId":46121,"EventTypeName":"Discover it 6/18 Chrome Prime","PayoutLevel":"ORDER","DefaultPayout":"USD250"} |
 | 2025-10-07 04:21:30 | 2025-10-07 04:37:12 | c04f0e52ca1fdafd10dee85c517f934e8e0fca32875e67372ff68456ac857799 | 9099.6488.1276407 |             46121 | COOKIE   |        0.00 |       250.0000 | A-29743072-314b-4006-98db-3c6f69a6a34a |            | DEFAULT    | ʘ               | 104 |        1 | {"ContractId":"S-25413619","EventTypeId":46121,"EventTypeName":"Discover it 6/18 Chrome Prime","PayoutLevel":"ORDER","DefaultPayout":"USD250"} |
 +---------------------+---------------------+------------------------------------------------------------------+-------------------+-------------------+----------+-------------+----------------+----------------------------------------+------------+------------+-----------------+-----+----------+------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
+
+SELECT
+  action_id, oid, campaign_id, ircm_terms_id, payout_group_id,
+  adv_saleamt, adv_commission, payout_trace
+FROM irac_action2
+WHERE action_id IN ('17328.6512.1518136')
+  AND campaign_id = 17328;
+
+
+
+SELECT
+  action_id, oid, campaign_id, ircm_terms_id, payout_group_id,
+  adv_saleamt, adv_commission, payout_trace, doe
+FROM irac_action2
+WHERE oid = 'VPB12839'
+  AND campaign_id = 17328
+ORDER BY doe DESC;
+
+
+SELECT *
+FROM ir_referrer
+WHERE action_id = '17328.6512.1518136'
+ORDER BY id;
+
+
+SELECT *
+FROM irac_test_action
+WHERE program_id = 17328
+  AND oid = 'VPB12839';
