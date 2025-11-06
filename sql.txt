@@ -1,182 +1,376 @@
--- H&R Block (View/Campaign = 5683)
--- r_ds_ircm
-SELECT id AS action_tracker_id, name, archived
-FROM ircm_actiontracker
-WHERE ircm_campaign_id = 5683
-ORDER BY id;
-+-------------------+-------------------------------+----------+
-| action_tracker_id | name                          | archived |
-+-------------------+-------------------------------+----------+
-|             12723 | Account Registration          | false    |
-|             12724 | DIY Purchase                  | false    |
-|             12725 | Software Download Purchase    | false    |
-|             12726 | Assisted In-Store Purchase    | false    |
-|             16308 | Tax Pro Go                    | false    |
-|             21326 | iOS                           | false    |
-|             21327 | Android                       | false    |
-|             23262 | Assisted In-Store Appointment | false    |
-|             24236 | Expat Registration            | false    |
-|             43677 | CLO - Assisted                | false    |
-|             51884 | CLO - DIY                     | false    |
-+-------------------+-------------------------------+----------+
-
--- Block Advisors (resolve the 5 tracker IDs shown in the screenshot)
--- r_ds_ircm
-SELECT id AS action_tracker_id, name, ircm_campaign_id, archived
-FROM ircm_actiontracker
-WHERE id IN (40062,41815,41816,41817,42474)
-ORDER BY id;
-+-------------------+-------------------------------+------------------+----------+
-| action_tracker_id | name                          | ircm_campaign_id | archived |
-+-------------------+-------------------------------+------------------+----------+
-|             40062 | Bookkeeping Appointment       |            21045 | false    |
-|             41815 | Payroll Appointment           |            21045 | false    |
-|             41816 | BA Assisted Conversion        |            21045 | false    |
-|             41817 | BA DIY Conversion             |            21045 | false    |
-|             42474 | Business Formation Conversion |            21045 | false    |
-+-------------------+-------------------------------+------------------+----------+
-
-
--- r_ds_actionlogging_sharded
+-- Failures by day (all H&R event types)
 SELECT action_tracker_id,
-       date_trunc('day', doe) AS day,
+       DATE(doe) AS day,
+       COUNT(*)  AS failures
+FROM ir_failure_event
+WHERE advertiser_id = 407482
+  AND action_tracker_id IN (12723,12724,12725,12726,16308,21326,21327,23262,24236,43677,51884)
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
+GROUP BY action_tracker_id, DATE(doe)
+ORDER BY action_tracker_id, day;
+
+
+-- Failures by day + error_code (drilldown)
+SELECT action_tracker_id,
+       DATE(doe) AS day,
+       IFNULL(error_code,'') AS error_code,
        COUNT(*) AS failures
 FROM ir_failure_event
 WHERE advertiser_id = 407482
-  AND action_tracker_id IN (12723,12724,12725,12726,16308,23262,24236,43677,51884)
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
-GROUP BY 1,2
-ORDER BY 1,2;
--- FUNCTION irac_logging_0.date_trunc does not exist
+  AND action_tracker_id IN (12723,12724,12725,12726,16308,21326,21327,23262,24236,43677,51884)
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
+GROUP BY action_tracker_id, DATE(doe), error_code
+ORDER BY action_tracker_id, day, error_code;
 
--- Breakdown by error_code
--- r_ds_actionlogging_sharded
-SELECT action_tracker_id,
-       date_trunc('day', doe) AS day,
-       COALESCE(error_code,'') AS error_code,
-       COUNT(*) AS failures
-FROM ir_failure_event
-WHERE advertiser_id = 407482
-  AND action_tracker_id IN (12723,12724,12725,12726,16308,23262,24236,43677,51884)
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
-GROUP BY 1,2,3
-ORDER BY 1,2,3;
-FUNCTION irac_logging_0.date_trunc does not exist
 
--- Failures for 24236 (shows "oid missing" pixel fallbacks)
--- r_ds_actionlogging_sharded
+-- 24236 spotlight (detail: you will see "oid missing" rows if pixel fallback lacks orderId)
 SELECT *
 FROM ir_failure_event
 WHERE advertiser_id = 407482
   AND action_tracker_id = 24236
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
 ORDER BY doe DESC
 LIMIT 200;
-FUNCTION irac_logging_0.dateadd does not exist
 
 
--- No-referrer events for 24236 (helps explain non-attributed posts)
--- r_ds_actionlogging_sharded
+-- No‑referrers by day (all H&R event types)
+SELECT action_tracker_id,
+       DATE(doe) AS day,
+       COUNT(*)  AS norefs
+FROM ir_noreferrer_event
+WHERE campaign_id = 5683
+  AND action_tracker_id IN (12723,12724,12725,12726,16308,21326,21327,23262,24236,43677,51884)
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
+GROUP BY action_tracker_id, DATE(doe)
+ORDER BY action_tracker_id, day;
+
+
+-- 24236 no‑referrer detail (pairs with the failure view)
 SELECT *
 FROM ir_noreferrer_event
 WHERE campaign_id = 5683
   AND action_tracker_id = 24236
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
 ORDER BY doe DESC
 LIMIT 200;
-FUNCTION irac_logging_0.dateadd does not exist
 
--- r_ds_actionlogging_sharded
+
+-- Failures by day (BA event types)
 SELECT action_tracker_id,
-       date_trunc('day', doe) AS day,
-       COUNT(*) AS norefs
-FROM ir_noreferrer_event
-WHERE campaign_id = 5683
-  AND action_tracker_id IN (12723,12724,12725,12726,16308,23262,24236,43677,51884)
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
-GROUP BY 1,2
-ORDER BY 1,2;
-FUNCTION irac_logging_0.date_trunc does not exist
-
-
--- Failures by day for BA trackers (campaign-agnostic on purpose)
--- r_ds_actionlogging_sharded
-SELECT action_tracker_id,
-       date_trunc('day', doe) AS day,
-       COUNT(*) AS failures
+       DATE(doe) AS day,
+       COUNT(*)  AS failures
 FROM ir_failure_event
 WHERE action_tracker_id IN (40062,41815,41816,41817,42474)
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
-GROUP BY 1,2
-ORDER BY 1,2;
-FUNCTION irac_logging_0.date_trunc does not exist
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
+GROUP BY action_tracker_id, DATE(doe)
+ORDER BY action_tracker_id, day;
 
--- No-referrers by day for BA trackers
--- r_ds_actionlogging_sharded
+
+-- No‑referrers by day (BA event types)
 SELECT action_tracker_id,
-       date_trunc('day', doe) AS day,
-       COUNT(*) AS norefs
+       DATE(doe) AS day,
+       COUNT(*)  AS norefs
 FROM ir_noreferrer_event
-WHERE action_tracker_id IN (40062,41815,41816,41817,42474)
-  AND doe >= dateadd(day, -30, GETDATE()) AND doe < GETDATE()
-GROUP BY 1,2
-ORDER BY 1,2;
-FUNCTION irac_logging_0.date_trunc does not exist
+WHERE campaign_id = 21045
+  AND action_tracker_id IN (40062,41815,41816,41817,42474)
+  AND doe >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND doe < NOW()
+GROUP BY action_tracker_id, DATE(doe)
+ORDER BY action_tracker_id, day;
 
 
--- Daily action counts by status for each tracker
--- r_ds_iraction_sharded
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 12723
+  ORDER BY ref_date DESC LIMIT 20
+) t1
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 12724
+  ORDER BY ref_date DESC LIMIT 20
+) t2
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 12725
+  ORDER BY ref_date DESC LIMIT 20
+) t3
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 12726
+  ORDER BY ref_date DESC LIMIT 20
+) t4
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 16308
+  ORDER BY ref_date DESC LIMIT 20
+) t5
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 21326
+  ORDER BY ref_date DESC LIMIT 20
+) t6
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 21327
+  ORDER BY ref_date DESC LIMIT 20
+) t7
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 23262
+  ORDER BY ref_date DESC LIMIT 20
+) t8
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 24236
+  ORDER BY ref_date DESC LIMIT 20
+) t9
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 43677
+  ORDER BY ref_date DESC LIMIT 20
+) t10
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 5683 AND action_tracker_id = 51884
+  ORDER BY ref_date DESC LIMIT 20
+) t11
+ORDER BY action_tracker_id, ref_date DESC;
+
+
+
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 21045 AND action_tracker_id = 40062
+  ORDER BY ref_date DESC LIMIT 20
+) b1
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 21045 AND action_tracker_id = 41815
+  ORDER BY ref_date DESC LIMIT 20
+) b2
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 21045 AND action_tracker_id = 41816
+  ORDER BY ref_date DESC LIMIT 20
+) b3
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 21045 AND action_tracker_id = 41817
+  ORDER BY ref_date DESC LIMIT 20
+) b4
+UNION ALL
+SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+FROM (
+  SELECT action_tracker_id, ref_date, ref_type, ref_domain, ref_url, ref_profile_id, action_id
+  FROM ir_referrer
+  WHERE campaign_id = 21045 AND action_tracker_id = 42474
+  ORDER BY ref_date DESC LIMIT 20
+) b5
+ORDER BY action_tracker_id, ref_date DESC;
+
+
+-- Actions by day & status (all H&R event types)
 SELECT action_tracker_id,
-       date_trunc('day', action_date) AS day,
+       DATE(action_date) AS day,
        action_status,
        COUNT(*) AS actions
 FROM irac_action2
 WHERE campaign_id = 5683
-  AND action_tracker_id IN (12723,12724,12725,12726,16308,23262,24236,43677,51884)
-  AND action_date >= dateadd(day, -30, GETDATE()) AND action_date < GETDATE()
-GROUP BY 1,2,3
-ORDER BY 1,2,3;
---FUNCTION irac_logging_0.date_trunc does not exist
+  AND action_tracker_id IN (12723,12724,12725,12726,16308,21326,21327,23262,24236,43677,51884)
+  AND action_date >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND action_date < NOW()
+GROUP BY action_tracker_id, DATE(action_date), action_status
+ORDER BY action_tracker_id, day, action_status;
 
--- Last 100 actions per tracker (all cols) to eyeball OIDs/payload patterns
--- r_ds_iraction_sharded
-SELECT t.*
+
+-- Last 20 actions PER tracker (combined via UNION ALL; no window functions)
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
 FROM (
-  SELECT *,
-         ROW_NUMBER() OVER (PARTITION BY action_tracker_id ORDER BY action_date DESC) AS rn
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
   FROM irac_action2
-  WHERE campaign_id = 5683
-    AND action_tracker_id IN (12723,12724,12725,12726,16308,23262,24236,43677,51884)
-    AND action_date >= dateadd(day, -30, GETDATE()) AND action_date < GETDATE()
-) t
-WHERE t.rn <= 100
-ORDER BY t.action_tracker_id, t.action_date DESC;
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(PARTITION BY action_tracker_id ORDER BY action_date DESC) AS rn
-FROM irac_act' at line 5
+  WHERE campaign_id = 5683 AND action_tracker_id = 12723
+  ORDER BY action_date DESC LIMIT 20
+) a1
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 12724
+  ORDER BY action_date DESC LIMIT 20
+) a2
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 12725
+  ORDER BY action_date DESC LIMIT 20
+) a3
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 12726
+  ORDER BY action_date DESC LIMIT 20
+) a4
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 16308
+  ORDER BY action_date DESC LIMIT 20
+) a5
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 21326
+  ORDER BY action_date DESC LIMIT 20
+) a6
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 21327
+  ORDER BY action_date DESC LIMIT 20
+) a7
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 23262
+  ORDER BY action_date DESC LIMIT 20
+) a8
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 24236
+  ORDER BY action_date DESC LIMIT 20
+) a9
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 43677
+  ORDER BY action_date DESC LIMIT 20
+) a10
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 5683 AND action_tracker_id = 51884
+  ORDER BY action_date DESC LIMIT 20
+) a11
+ORDER BY action_tracker_id, action_date DESC;
 
 
--- r_ds_iraction_sharded + r_ds_actionlogging_sharded
-WITH recent_actions AS (
-  SELECT action_id, oid, action_tracker_id,
-         ROW_NUMBER() OVER (PARTITION BY action_tracker_id ORDER BY action_date DESC) AS rn
+-- Actions by day & status (BA event types)
+SELECT action_tracker_id,
+       DATE(action_date) AS day,
+       action_status,
+       COUNT(*) AS actions
+FROM irac_action2
+WHERE campaign_id = 21045
+  AND action_tracker_id IN (40062,41815,41816,41817,42474)
+  AND action_date >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND action_date < NOW()
+GROUP BY action_tracker_id, DATE(action_date), action_status
+ORDER BY action_tracker_id, day, action_status;
+
+
+-- Last 20 actions PER BA tracker (combined)
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
   FROM irac_action2
-  WHERE campaign_id = 5683
-    AND action_tracker_id IN (12723,12724,12725,12726,16308,23262,24236,43677,51884)
-    AND action_date >= dateadd(day, -30, GETDATE()) AND action_date < GETDATE()
-)
-SELECT ra.action_tracker_id, ra.oid, r.ref_date, r.ref_type, r.ref_domain, r.ref_url, r.ref_profile_id
-FROM recent_actions ra
-LEFT JOIN ir_referrer r ON r.action_id = ra.action_id
-WHERE ra.rn <= 20
-ORDER BY ra.action_tracker_id, ra.oid, r.ref_date DESC;
---You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'recent_actions AS (
-SELECT action_id, oid, action_tracker_id,
-ROW_NUM' at line 2
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'recent_actions AS (
-SELECT action_id, oid, action_tracker_id,
-ROW_NUM' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'recent_actions AS (
-SELECT action_id, oid, action_tracker_id,
-ROW_NUM' at line 2
+  WHERE campaign_id = 21045 AND action_tracker_id = 40062
+  ORDER BY action_date DESC LIMIT 20
+) b1
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 21045 AND action_tracker_id = 41815
+  ORDER BY action_date DESC LIMIT 20
+) b2
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 21045 AND action_tracker_id = 41816
+  ORDER BY action_date DESC LIMIT 20
+) b3
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 21045 AND action_tracker_id = 41817
+  ORDER BY action_date DESC LIMIT 20
+) b4
+UNION ALL
+SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+FROM (
+  SELECT action_tracker_id, action_id, action_date, action_status, oid, publisher_id
+  FROM irac_action2
+  WHERE campaign_id = 21045 AND action_tracker_id = 42474
+  ORDER BY action_date DESC LIMIT 20
+) b5
+ORDER BY action_tracker_id, action_date DESC;
+
+
 
 
 json.campaign:5683 AND json.tracker:12723
@@ -184,6 +378,8 @@ json.campaign:5683 AND json.tracker:12724
 json.campaign:5683 AND json.tracker:12725
 json.campaign:5683 AND json.tracker:12726
 json.campaign:5683 AND json.tracker:16308
+json.campaign:5683 AND json.tracker:21326
+json.campaign:5683 AND json.tracker:21327
 json.campaign:5683 AND json.tracker:23262
 json.campaign:5683 AND json.tracker:24236
 json.campaign:5683 AND json.tracker:43677
@@ -193,11 +389,10 @@ json.campaign:5683 AND json.tracker:51884
 json.campaign:5683 AND json.event:ConversionSubmission AND json.tracker:12723
 json.campaign:5683 AND json.event:ConversionSubmission AND json.tracker:23262
 
+
 json.campaign:5683 AND error
 json.campaign:5683 AND json.tracker:24236 AND error
 json.campaign:5683 AND json.tracker:24236 AND error:"oid=oid missing"
 
-
 json.campaign:5683 AND (json.tracker:12723 OR json.tracker:23262) AND -json.clickid:*
 json.campaign:5683 AND json.test:1
-
