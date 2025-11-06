@@ -1,44 +1,18 @@
 SELECT
-  doe,
-  action_id,
-  oid,
-  publisher_id,
-  adv_saleamt,
-  adv_commission
-FROM irac_action2
-WHERE campaign_id = 17328
-  AND payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
-  AND adv_saleamt > 0
-  AND doe BETWEEN '2025-10-20' AND '2025-11-04 23:59:59'
-ORDER BY doe;
-+---------------------+--------------------+----------+--------------+-------------+----------------+
-| doe                 | action_id          | oid      | publisher_id | adv_saleamt | adv_commission |
-+---------------------+--------------------+----------+--------------+-------------+----------------+
-| 2025-10-31 03:38:15 | 17328.6512.1518136 | VPB12839 |      2003851 |       39.00 |         0.0000 |
-+---------------------+--------------------+----------+--------------+-------------+----------------+
+  st.id,
+  st.ircm_campaign_id AS campaign_id,
+  ins.name AS template_term_name,
+  st.name AS scheduled_term_name,
+  st.start_date,
+  st.end_date,
+  st.archived,
+  st.payout_json
+FROM ircm_scheduled_terms st
+JOIN ircm_insertionorder ins ON ins.id = st.ircm_insertionorder_id
+WHERE st.id = 16929;  -- from payout_trace
 
-SELECT
-  COUNT(*)                           AS actions_impacted,
-  SUM(adv_saleamt)                   AS revenue_impacted,
-  SUM(adv_commission)                AS commission_recorded,
-  MIN(doe)                           AS first_seen,
-  MAX(doe)                           AS last_seen
-FROM irac_action2
-WHERE campaign_id = 17328
-  AND payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
-  AND adv_saleamt > 0
-  AND doe BETWEEN '2025-10-20' AND '2025-11-04 23:59:59';
-+------------------+------------------+---------------------+---------------------+---------------------+
-| actions_impacted | revenue_impacted | commission_recorded | first_seen          | last_seen           |
-+------------------+------------------+---------------------+---------------------+---------------------+
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-|                1 |            39.00 |              0.0000 | 2025-10-31 03:38:15 | 2025-10-31 03:38:15 |
-|                0 |                ʘ |                   ʘ | ʘ                   | ʘ                   |
-+------------------+------------------+---------------------+---------------------+---------------------+
+
+SELECT id, name, start_date, end_date, archived
+FROM ircm_scheduled_terms
+WHERE ircm_campaign_id = 17328
+ORDER BY start_date DESC;
