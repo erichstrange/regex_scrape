@@ -1,10 +1,27 @@
--- ods
-select *
-from ir_ftp_batch_log
-where iram_account_id = 4485306        -- USAA
-  and submit_date >= curdate()
-order by submit_date desc;
-+----------+-----------------+-------------+------------+--------------------------+----------------+------+----------+-------------+------------------+-------+-------------------------+------------------+------------------------+------------------+------------------------+----------------------+-------------+-----------+------------------+-----+-----+-----+-----+-------------+
-| batch_id | iram_account_id | submit_date | start_date | file_parse_complete_date | completed_date | type | filename | file_format | archive_filename | state | procoessing_server_name | tot_record_count | tot_record_error_count | tot_entity_count | tot_entity_error_count | process_entity_count | data_source | error_msg | error_file_ready | doe | dlu | uoe | ulu | file_prefix |
-+----------+-----------------+-------------+------------+--------------------------+----------------+------+----------+-------------+------------------+-------+-------------------------+------------------+------------------------+------------------+------------------------+----------------------+-------------+-----------+------------------+-----+-----+-----+-----+-------------+
-+----------+-----------------+-------------+------------+--------------------------+----------------+------+----------+-------------+------------------+-------+-------------------------+------------------+------------------------+------------------+------------------------+----------------------+-------------+-----------+------------------+-----+-----+-----+-----+-------------+
+-- Window: 2025-10-20 .. 2025-11-04 (adjust as needed)
+SELECT
+  doe,
+  action_id,
+  oid,
+  publisher_id,
+  adv_saleamt,
+  adv_commission
+FROM irac_action2
+WHERE campaign_id = 17328
+  AND payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
+  AND adv_saleamt > 0
+  AND doe BETWEEN '2025-10-20' AND '2025-11-04 23:59:59'
+ORDER BY doe;
+
+SELECT
+  COUNT(*)                           AS actions_impacted,
+  SUM(adv_saleamt)                   AS revenue_impacted,
+  SUM(adv_commission)                AS commission_recorded,   -- should be 0
+  MIN(doe)                           AS first_seen,
+  MAX(doe)                           AS last_seen
+FROM irac_action2
+WHERE campaign_id = 17328
+  AND payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
+  AND adv_saleamt > 0
+  AND doe BETWEEN '2025-10-20' AND '2025-11-04 23:59:59';
+
