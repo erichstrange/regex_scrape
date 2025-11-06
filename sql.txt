@@ -1,6 +1,37 @@
--- ods
-select *
-from ir_ftp_batch_log
-where iram_account_id = 4485306        -- USAA
-  and submit_date >= curdate()
-order by submit_date desc;
+-- Window: 2025-10-20 .. 2025-11-04 (adjust as needed)
+SELECT
+  doe,
+  action_id,
+  oid,
+  publisher_id,
+  adv_saleamt,
+  adv_commission
+FROM irac_action2
+WHERE campaign_id = 17328
+  AND payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
+  AND adv_saleamt > 0
+  AND doe BETWEEN '2025-10-20' AND '2025-11-04 23:59:59'
+ORDER BY doe;
+
+
+SELECT
+  COUNT(*)                           AS actions_impacted,
+  SUM(adv_saleamt)                   AS revenue_impacted,
+  SUM(adv_commission)                AS commission_recorded,   -- should be 0
+  MIN(doe)                           AS first_seen,
+  MAX(doe)                           AS last_seen
+FROM irac_action2
+WHERE campaign_id = 17328
+  AND payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
+  AND adv_saleamt > 0
+  AND doe BETWEEN '2025-10-20' AND '2025-11-04 23:59:59';
+
+
+SELECT r.action_date, a.action_id, a.oid, a.publisher_id, a.adv_saleamt, a.adv_commission
+FROM irac_action2 a
+JOIN ir_referrer r ON r.action_id = a.action_id
+WHERE a.campaign_id = 17328
+  AND a.payout_group_id = '34d496d7-fa48-4001-a8cf-418118dc1d7e'
+  AND a.adv_saleamt > 0
+  AND r.action_date BETWEEN '2025-10-20' AND '2025-11-04 23:59:59'
+ORDER BY r.action_date;
