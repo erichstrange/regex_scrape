@@ -1,5 +1,3 @@
-
-select * from ir_ftp_batch_log
-where iram_account_id = 1453078
-and submit_date >= CURDATE()
-order by submit_date desc;
+json.campaign_id:6439962 AND json.action_tracker_id:60367
+AND (json.oid:("2529769955" OR "2530010667" OR "2530731847" OR "2530879463" OR "2529018219" OR "2527986955" OR "2527986959" OR "2527986961" OR "2527986957" OR "2529291065"))
+AND @timestamp:[2025-10-01 TO 2025-10-10]
