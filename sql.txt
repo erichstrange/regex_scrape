@@ -1,19 +1,5 @@
-SELECT
-  a.oid, a.action_id, a.campaign_id, a.action_date,
-  a.actiontracker_id, a.status, a.currency, a.net_payout
-FROM irac_action2 a
-WHERE a.campaign_id = 39854
-  AND a.action_date >= '2025-10-01'           -- inclusive start
-  AND a.action_date <  '2025-10-11'           -- half-open end (covers through 2025-10-10)
-  AND a.oid IN (
-    'pr2529769955','pr2530010667','pr2530731847','pr2530879463',
-    'pr2529018219','pr2527986955','pr2527986959','pr2527986961',
-    'pr2527986957','pr2529291065'
-  );
--- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.action_date < '2025-10-11'
-AND a.oid IN (
-'pr2529769955'' at line 6
-
+-- r_ds_iraction_sharded
+-- Check whether the OIDs exist in irac_action2 (Oct 1–10, 2025)
 WITH oids AS (
   SELECT 'pr2529769955' AS oid UNION ALL
   SELECT 'pr2530010667' UNION ALL
@@ -28,39 +14,20 @@ WITH oids AS (
 )
 SELECT
   a.oid, a.action_id, a.campaign_id, a.action_date,
-  a.actiontracker_id, a.status, a.currency, a.net_payout
-FROM irac_action2 a
+  a.actiontracker_id, a.status, a.currency, a.net_payout, a.batch_id
+FROM irac_action2 AS a
 JOIN oids o ON o.oid = a.oid
-WHERE a.campaign_id = 39854
-  AND a.action_date >= '2025-10-01'
-  AND a.action_date <  '2025-10-11';
-  -- i used single store and got this error Table 'irdwm.irac_action2' doesn't exist
-Table 'irdwm.irac_action2' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irdwm.irac_action2' doesn't exist
+WHERE a.action_date >= '2025-10-01'   -- inclusive
+  AND a.action_date <  '2025-10-11'   -- through 2025-10-10
+ORDER BY a.action_date;
 
 
-  WITH oids AS (
-  SELECT 'pr2529769955' AS oid UNION ALL
-  SELECT 'pr2530010667' UNION ALL
-  SELECT 'pr2530731847' UNION ALL
-  SELECT 'pr2530879463' UNION ALL
-  SELECT 'pr2529018219' UNION ALL
-  SELECT 'pr2527986955' UNION ALL
-  SELECT 'pr2527986959' UNION ALL
-  SELECT 'pr2527986961' UNION ALL
-  SELECT 'pr2527986957' UNION ALL
-  SELECT 'pr2529291065'
-)
+-- r_ds_iraction_sharded (CTE-less variant)
 SELECT
   a.oid, a.action_id, a.campaign_id, a.action_date,
-  a.actiontracker_id, a.status, a.currency, a.net_payout
-FROM irac_action2 a
-JOIN oids o ON o.oid = a.oid
-WHERE a.campaign_id = 39854
-  AND a.action_date >= '2025-10-01'
-  AND a.action_date <  '2025-10-11';
-
--- Datasource: r_ds_ods
-WITH oids AS (
+  a.actiontracker_id, a.status, a.currency, a.net_payout, a.batch_id
+FROM irac_action2 AS a
+JOIN (
   SELECT 'pr2529769955' AS oid UNION ALL
   SELECT 'pr2530010667' UNION ALL
   SELECT 'pr2530731847' UNION ALL
@@ -71,24 +38,44 @@ WITH oids AS (
   SELECT 'pr2527986961' UNION ALL
   SELECT 'pr2527986957' UNION ALL
   SELECT 'pr2529291065'
-)
+) o ON o.oid = a.oid
+WHERE a.action_date >= '2025-10-01'
+  AND a.action_date <  '2025-10-11'
+ORDER BY a.action_date;
+
+
+-- r_ds_ods
+-- Find any API log payloads mentioning the OIDs (Oct 1–10 inclusive)
 SELECT
-  l.doe AS event_time,
+  l.doe        AS event_time,
   l.status_code,
   l.endpoint,
+  l.oid,
+  l.batch_id,
   l.payload
 FROM ir_api_log AS l
-JOIN oids o
-  ON l.payload ILIKE '%' || o.oid || '%'
-WHERE l.doe >= TIMESTAMP '2025-10-01'
-  AND l.doe <  TIMESTAMP '2025-10-11'
+JOIN (
+  SELECT 'pr2529769955' AS oid UNION ALL
+  SELECT 'pr2530010667' UNION ALL
+  SELECT 'pr2530731847' UNION ALL
+  SELECT 'pr2530879463' UNION ALL
+  SELECT 'pr2529018219' UNION ALL
+  SELECT 'pr2527986955' UNION ALL
+  SELECT 'pr2527986959' UNION ALL
+  SELECT 'pr2527986961' UNION ALL
+  SELECT 'pr2527986957' UNION ALL
+  SELECT 'pr2529291065'
+) o ON INSTR(l.payload, o.oid) > 0
+WHERE l.doe >= '2025-10-01' AND l.doe < '2025-10-11'
 ORDER BY l.doe DESC
 LIMIT 1000;
--- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%' || o.oid || '%'
-WHERE l.doe >= TIMESTAMP '2025-10-01'
-AND l.doe < T' at line 21
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%' || o.oid || '%'
-WHERE l.doe >= TIMESTAMP '2025-10-01'
-AND l.doe < T' at line 21; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%' || o.oid || '%'
-WHERE l.doe >= TIMESTAMP '2025-10-01'
-AND l.doe < T' at line 21
+
+
+-- r_ds_iraction_general
+SELECT program_id, oid, doe
+FROM irac_test_action
+WHERE oid IN (
+  'pr2529769955','pr2530010667','pr2530731847','pr2530879463',
+  'pr2529018219','pr2527986955','pr2527986959','pr2527986961',
+  'pr2527986957','pr2529291065'
+);
