@@ -1,8 +1,11 @@
-IRAwhYhSz8qB50053wmGMaBDEWwvLMtos1
-fHFodE92FDqcZAegVVgVPYTk7FKs8jWt
-
-
-# List catalogs (Partner API)
-curl -u 'IRAwhYhSz8qB50053wmGMaBDEWwvLMtos1:fHFodE92FDqcZAegVVgVPYTk7FKs8jWt' \
+curl -u "$IMPACT_SID:$IMPACT_TOKEN" \
+  -H 'Accept: application/json' \
   -H 'IR-Version: 12' \
-  'https://api.impact.com/Mediapartners/Catalogs?Page=1&PageSize=50'
+  -H 'Cookie:' \
+  "https://api.impact.com/Mediapartners/$IMPACT_SID/Catalogs/<CatalogId>/Items?Page=1&PageSize=200"
+
+curl -u "$IMPACT_SID:$IMPACT_TOKEN" \
+  -H 'Accept: application/json' \
+  -H 'IR-Version: 12' \
+  -H 'Cookie:' \
+  "https://api.impact.com/Mediapartners/$IMPACT_SID/Catalogs?Page=1&PageSize=50"
