@@ -59,3 +59,28 @@ WHERE a.campaign_id = 39854
   AND a.action_date >= '2025-10-01'
   AND a.action_date <  '2025-10-11';
 
+-- Datasource: r_ds_ods
+WITH oids AS (
+  SELECT 'pr2529769955' AS oid UNION ALL
+  SELECT 'pr2530010667' UNION ALL
+  SELECT 'pr2530731847' UNION ALL
+  SELECT 'pr2530879463' UNION ALL
+  SELECT 'pr2529018219' UNION ALL
+  SELECT 'pr2527986955' UNION ALL
+  SELECT 'pr2527986959' UNION ALL
+  SELECT 'pr2527986961' UNION ALL
+  SELECT 'pr2527986957' UNION ALL
+  SELECT 'pr2529291065'
+)
+SELECT
+  l.doe AS event_time,
+  l.status_code,
+  l.endpoint,
+  l.payload
+FROM ir_api_log AS l
+JOIN oids o
+  ON l.payload ILIKE '%' || o.oid || '%'
+WHERE l.doe >= TIMESTAMP '2025-10-01'
+  AND l.doe <  TIMESTAMP '2025-10-11'
+ORDER BY l.doe DESC
+LIMIT 1000;
