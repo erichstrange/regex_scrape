@@ -1,90 +1,44 @@
 SELECT
-  DATE_TRUNC('day', event_datetime) AS dt,
+  DATE_TRUNC('DAY', event_datetime) AS dt,
   campaign_id,
   COUNT(*) AS clicks
 FROM click_fact
 WHERE publisher_id = 6251546
-  AND event_datetime >= DATE '2025-10-19'
-  AND event_datetime <  DATE '2025-11-12'
-GROUP BY 1,2
-ORDER BY 1,2;
--- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1,2
-ORDER BY 1,2' at line 7
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1,2
-ORDER BY 1,2' at line 7; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1,2
-ORDER BY 1,2' at line 7
+  AND event_datetime >= '2025-10-19'
+  AND event_datetime <  '2025-11-12'
+GROUP BY dt, campaign_id
+ORDER BY dt, campaign_id;
+
 
 SELECT COALESCE(method, '<null>') AS method, COUNT(*) AS clicks
 FROM click_fact
 WHERE publisher_id = 6251546
-  AND event_datetime >= DATE '2025-10-19'
-  AND event_datetime <  DATE '2025-11-12'
-GROUP BY 1
+  AND event_datetime >= '2025-10-19'
+  AND event_datetime <  '2025-11-12'
+GROUP BY method
 ORDER BY clicks DESC;
--- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1
-ORDER BY click' at line 4
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1
-ORDER BY click' at line 4; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1
-ORDER BY click' at line 4
-
 
 SELECT
   click_id,
   COUNT(*) AS n,
   MIN(event_datetime) AS first_seen,
   MAX(event_datetime) AS last_seen,
-  ARRAY_AGG(classification) AS classes
+  GROUP_CONCAT(classification ORDER BY event_datetime) AS classes
 FROM click_fact
 WHERE publisher_id = 6251546
-  AND event_datetime >= DATE '2025-10-19'
-  AND event_datetime <  DATE '2025-11-12'
+  AND event_datetime >= '2025-10-19'
+  AND event_datetime <  '2025-11-12'
 GROUP BY click_id
 HAVING COUNT(*) > 1
 ORDER BY n DESC, first_seen;
---You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY click_id
-HAVING ' at line 9
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY click_id
-HAVING ' at line 9; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY click_id
-HAVING ' at line 9
-
 
 SELECT landing_page_url_noquery AS landing_page, COUNT(*) AS clicks
 FROM click_fact
 WHERE publisher_id = 6251546
-  AND event_datetime >= DATE '2025-10-19'
-  AND event_datetime <  DATE '2025-11-12'
-GROUP BY 1
+  AND event_datetime >= '2025-10-19'
+  AND event_datetime <  '2025-11-12'
+GROUP BY landing_page
 ORDER BY clicks DESC;
---You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1
-ORDER BY click' at line 4
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1
-ORDER BY click' at line 4; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-GROUP BY 1
-ORDER BY click' at line 4
-
 
 SELECT
   SUM(CASE WHEN JSON_EXTRACT_STRING(json,'ruleName')     IS NOT NULL THEN 1 ELSE 0 END) AS with_rule_name,
@@ -92,14 +46,6 @@ SELECT
   SUM(IFNULL(JSON_EXTRACT_BIGINT(json,'orgdc'),0)) AS datacenter_flags
 FROM click_fact
 WHERE publisher_id = 6251546
-  AND event_datetime >= DATE '2025-10-19'
-  AND event_datetime <  DATE '2025-11-12';
-  You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-limit 1000' at line 7
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-limit 1000' at line 7; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
-AND event_datetime < DATE '2025-11-12'
-limit 1000' at line 7
+  AND event_datetime >= '2025-10-19'
+  AND event_datetime <  '2025-11-12';
 
