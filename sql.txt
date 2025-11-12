@@ -15,6 +15,12 @@ GROUP BY r.id, r.name
 HAVING COUNT(DISTINCT p.code) = 4
 ORDER BY r.name;
 
++----+-----------------------+-----------+
+| id | name                  | num_perms |
++----+-----------------------+-----------+
+| 42 | Account Administrator |         4 |
++----+-----------------------+-----------+
+
 
 SELECT r.id, r.name
 FROM core_ap_role ar
@@ -24,3 +30,5 @@ WHERE ar.core_ap_id IN (
   FROM iram_usership
   WHERE irAccount_id = 6613564
 );
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 6
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 6; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 6
