@@ -8,7 +8,17 @@ WHERE publisher_id = 6251546
   AND event_datetime <  DATE '2025-11-12'
 GROUP BY 1,2
 ORDER BY 1,2;
-
+-- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1,2
+ORDER BY 1,2' at line 7
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1,2
+ORDER BY 1,2' at line 7; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1,2
+ORDER BY 1,2' at line 7
 
 SELECT COALESCE(method, '<null>') AS method, COUNT(*) AS clicks
 FROM click_fact
@@ -17,6 +27,17 @@ WHERE publisher_id = 6251546
   AND event_datetime <  DATE '2025-11-12'
 GROUP BY 1
 ORDER BY clicks DESC;
+-- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1
+ORDER BY click' at line 4
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1
+ORDER BY click' at line 4; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1
+ORDER BY click' at line 4
 
 
 SELECT
@@ -32,6 +53,17 @@ WHERE publisher_id = 6251546
 GROUP BY click_id
 HAVING COUNT(*) > 1
 ORDER BY n DESC, first_seen;
+--You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY click_id
+HAVING ' at line 9
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY click_id
+HAVING ' at line 9; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY click_id
+HAVING ' at line 9
 
 
 SELECT landing_page_url_noquery AS landing_page, COUNT(*) AS clicks
@@ -41,6 +73,17 @@ WHERE publisher_id = 6251546
   AND event_datetime <  DATE '2025-11-12'
 GROUP BY 1
 ORDER BY clicks DESC;
+--You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1
+ORDER BY click' at line 4
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1
+ORDER BY click' at line 4; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+GROUP BY 1
+ORDER BY click' at line 4
 
 
 SELECT
@@ -51,4 +94,12 @@ FROM click_fact
 WHERE publisher_id = 6251546
   AND event_datetime >= DATE '2025-10-19'
   AND event_datetime <  DATE '2025-11-12';
+  You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+limit 1000' at line 7
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+limit 1000' at line 7; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''2025-10-19'
+AND event_datetime < DATE '2025-11-12'
+limit 1000' at line 7
 
