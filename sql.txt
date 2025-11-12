@@ -84,3 +84,11 @@ WHERE l.doe >= TIMESTAMP '2025-10-01'
   AND l.doe <  TIMESTAMP '2025-10-11'
 ORDER BY l.doe DESC
 LIMIT 1000;
+-- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%' || o.oid || '%'
+WHERE l.doe >= TIMESTAMP '2025-10-01'
+AND l.doe < T' at line 21
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%' || o.oid || '%'
+WHERE l.doe >= TIMESTAMP '2025-10-01'
+AND l.doe < T' at line 21; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%' || o.oid || '%'
+WHERE l.doe >= TIMESTAMP '2025-10-01'
+AND l.doe < T' at line 21
