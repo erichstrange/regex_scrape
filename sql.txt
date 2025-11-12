@@ -8,6 +8,13 @@ WHERE publisher_id = 6251546
   AND event_datetime <  '2025-11-12'
 GROUP BY dt, campaign_id
 ORDER BY dt, campaign_id;
++---------------------+-------------+--------+
+| dt                  | campaign_id | clicks |
++---------------------+-------------+--------+
+| 2025-10-27 00:00:00 |        5119 |      5 |
+| 2025-10-28 00:00:00 |        5119 |     13 |
+| 2025-11-05 00:00:00 |       16063 |      1 |
++---------------------+-------------+--------+
 
 
 SELECT COALESCE(method, '<null>') AS method, COUNT(*) AS clicks
@@ -17,6 +24,12 @@ WHERE publisher_id = 6251546
   AND event_datetime <  '2025-11-12'
 GROUP BY method
 ORDER BY clicks DESC;
++---------+--------+
+| method  | clicks |
++---------+--------+
+| API,IPC |     18 |
+|         |      1 |
++---------+--------+
 
 SELECT
   click_id,
@@ -31,6 +44,11 @@ WHERE publisher_id = 6251546
 GROUP BY click_id
 HAVING COUNT(*) > 1
 ORDER BY n DESC, first_seen;
++-----------------------------------------+---+---------------------+---------------------+---------+
+| click_id                                | n | first_seen          | last_seen           | classes |
++-----------------------------------------+---+---------------------+---------------------+---------+
+| 0trUnez6tzEzRRewe7XF:2zdUkpUiqR35QFvS80 | 2 | 2025-10-27 20:48:17 | 2025-10-27 20:48:17 | U,U     |
++-----------------------------------------+---+---------------------+---------------------+---------+
 
 SELECT landing_page_url_noquery AS landing_page, COUNT(*) AS clicks
 FROM click_fact
@@ -39,6 +57,12 @@ WHERE publisher_id = 6251546
   AND event_datetime <  '2025-11-12'
 GROUP BY landing_page
 ORDER BY clicks DESC;
++---------------------------------------------------+--------+
+| landing_page                                      | clicks |
++---------------------------------------------------+--------+
+| https://www.fubo.tv/stream/ca/dazn/               |     18 |
+| https://www.expressvpn.com/top/special-deal/offer |      1 |
++---------------------------------------------------+--------+
 
 SELECT
   SUM(CASE WHEN JSON_EXTRACT_STRING(json,'ruleName')     IS NOT NULL THEN 1 ELSE 0 END) AS with_rule_name,
@@ -48,4 +72,10 @@ FROM click_fact
 WHERE publisher_id = 6251546
   AND event_datetime >= '2025-10-19'
   AND event_datetime <  '2025-11-12';
+
+  +----------------+--------------------+------------------+
+| with_rule_name | with_blocking_rule | datacenter_flags |
++----------------+--------------------+------------------+
+|              0 |                  0 |                0 |
++----------------+--------------------+------------------+
 
