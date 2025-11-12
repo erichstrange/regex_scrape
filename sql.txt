@@ -1,92 +1,75 @@
--- Total clicks per day for Route One across all Fubo campaigns
-SELECT 
-  DATE_TRUNC('DAY', event_datetime) AS dt,
-  COUNT(*) AS total_clicks
-FROM click_fact
-WHERE publisher_id = 6251546
-  AND event_datetime >= '2025-10-19'
-  AND event_datetime <  '2025-11-12'
-GROUP BY 1
-ORDER BY 1;
-+---------------------+--------------+
-| dt                  | total_clicks |
-+---------------------+--------------+
-| 2025-10-27 00:00:00 |            5 |
-| 2025-10-28 00:00:00 |           13 |
-| 2025-11-05 00:00:00 |            1 |
-+---------------------+--------------+
-
-
--- Inspect latest clicks (show reasons/flags)
+-- Use reference_date (event time) instead of doe (ingest time)
 SELECT
-  event_datetime,
-  campaign_id,
-  method,
-  classification,
-  click_id,
-  JSON_EXTRACT_STRING(json,'ruleName')       AS rule_name,
-  JSON_EXTRACT_STRING(json,'blockingRule')   AS blocking_rule,
-  JSON_EXTRACT_BIGINT(json,'orgdc')          AS datacenter_flag,
-  landing_page_url_noquery                   AS landing_page
-FROM click_fact
-WHERE publisher_id = 6251546
-  AND event_datetime >= '2025-10-19'
-  AND event_datetime <  '2025-11-12'
-ORDER BY event_datetime DESC
+  l.reference_date  AS event_time,
+  l.doe             AS ingested_at,
+  l.status_code,
+  l.endpoint,
+  l.oid,
+  l.batch_id,
+  l.type,
+  l.payload
+FROM ir_api_log AS l
+WHERE l.reference_date >= '2025-10-01'
+  AND l.reference_date <  '2025-10-11'
+  AND l.oid IN (
+    'pr2529769955','pr2530010667','pr2530731847','pr2530879463',
+    'pr2529018219','pr2527986955','pr2527986959','pr2527986961',
+    'pr2527986957','pr2529291065'
+  )
+ORDER BY l.reference_date DESC
 LIMIT 1000;
-+---------------------+-------------+---------+----------------+-----------------------------------------+-----------+---------------+-----------------+---------------------------------------------------+
-| event_datetime      | campaign_id | method  | classification | click_id                                | rule_name | blocking_rule | datacenter_flag | landing_page                                      |
-+---------------------+-------------+---------+----------------+-----------------------------------------+-----------+---------------+-----------------+---------------------------------------------------+
-| 2025-11-05 10:53:37 |       16063 |         | U              | W7QTF2TMdxycRkMRdUU7Nw9NUkpRw5Twb0:wzc0 | ʘ         | ʘ             |               ʘ | https://www.expressvpn.com/top/special-deal/offer |
-| 2025-10-28 21:56:23 |        5119 | API,IPC | U              | 1sdXdmQChz79THa14aV5Z0eeUkpUFR0HWQA52Y0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 21:51:53 |        5119 | API,IPC | U              | 1sdXdmQChz79THa14aV5Z0eeUkpUFySvmwBcU80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 16:24:27 |        5119 | API,IPC | U              | 0x0wgsXiizhtWfpTGLXlayKiUkpUD7zPP14YXU0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 16:23:39 |        5119 | API,IPC | U              | Ur52wvQuqzHUW9tTMV1gjWX0UkpUD70PP14YXU0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 15:22:42 |        5119 | API,IPC | U              | yhw0S1SCIzDNUd42-M3ch1maUkpUDIQUMT3JSM0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 14:22:38 |        5119 | API,IPC | U              | VtpSTZSJczB5RnOVCUQu1zMkUkpUDHW7yxndzc0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 14:13:27 |        5119 | API,IPC | U              | 3bBVc7XCAzJgWE8z:WRMMUF7UkpUDAUHyxFlT00 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 13:20:43 |        5119 | API,IPC | U              | xyd0EdV1DzfuUkBQZ0zkNRflUkpUDk2N0Xmmw40 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 12:18:28 |        5119 | API,IPC | U              | X4WUABXhkzT9TyZVRKUkkxl2UkpUDxRh3xML2c0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 10:11:30 |        5119 | API,IPC | U              | y:QwNE28FzffWj1X66XirWusUkpUGrVWPy2uU80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 08:44:03 |        5119 | API,IPC | U              | V5rQZxyWbzXXTn6QnFXGcQiLUkpUGS1Q-1fqyg0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 04:22:06 |        5119 | API,IPC | U              | VxxzvtSsCzTORDETDZV1v3ODUkpUBhX:XTVqV80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-28 03:23:42 |        5119 | API,IPC | U              | XFNXrXWWxzcMTdwQl-Xlhw6BUkpUBwz:VX21Qw0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-27 20:48:17 |        5119 | API,IPC | U              | 0trUnez6tzEzRRewe7XF:2zdUkpUiqR35QFvS80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-27 20:48:17 |        5119 | API,IPC | U              | 0trUnez6tzEzRRewe7XF:2zdUkpUiqR35QFvS80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-27 19:35:39 |        5119 | API,IPC | D              | 0trUnez6tzEzRRewe7XF:2zdUkpUinUP5QFvS80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-27 19:35:10 |        5119 | API,IPC | U              | 0trUnez6tzEzRRewe7XF:2zdUkpUin3:5QFvS80 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-| 2025-10-27 19:28:51 |        5119 | API,IPC | U              | zSv1mu1AtzIkTetSx9QFlSenUkpUigSX8RodWk0 | ʘ         | ʘ             |               ʘ | https://www.fubo.tv/stream/ca/dazn/               |
-+---------------------+-------------+---------+----------------+-----------------------------------------+-----------+---------------+-----------------+---------------------------------------------------+
-
--- How many clicks were classified as duplicate/excluded/bot by campaign
-SELECT
-  cf.campaign_id,
-  cf.publisher_id,
-  SUM(CASE WHEN cf.classification = 'D' THEN 1 ELSE 0 END) AS duplicate_clicks,
-  SUM(CASE WHEN cf.classification = 'E' THEN 1 ELSE 0 END) AS excluded_clicks,
-  SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END) AS bot_clicks,
-  SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0))      AS datacenter_clicks,
-  COUNT(*)                                                 AS total_clicks
-FROM click_fact cf
-WHERE cf.publisher_id = 6251546
-  AND cf.event_datetime >= '2025-10-19'
-  AND cf.event_datetime <  '2025-11-12'
-  AND cf.classification IN ('D','E','U','B')
-GROUP BY 1,2
-ORDER BY total_clicks DESC;
-+-------------+--------------+------------------+-----------------+------------+-------------------+--------------+
-| campaign_id | publisher_id | duplicate_clicks | excluded_clicks | bot_clicks | datacenter_clicks | total_clicks |
-+-------------+--------------+------------------+-----------------+------------+-------------------+--------------+
-|        5119 |      6251546 |                1 |               0 |          0 |                 0 |           18 |
-|       16063 |      6251546 |                0 |               0 |          0 |                 0 |            1 |
-+-------------+--------------+------------------+-----------------+------------+-------------------+--------------+
 
 
--- Is this publisher being globally filtered?
-SELECT *
-FROM trkcfg.trkcfg_global_click_filter_config
-WHERE publisher_id = 6251546;
-+----+--------------+-------------+-------+--------+-----+-----+-----+-----+
-| id | publisher_id | campaign_id | rules | status | doe | uoe | dlu | ulu |
-+----+--------------+-------------+-------+--------+-----+-----+-----+-----+
-+----+--------------+-------------+-------+--------+-----+-----+-----+-----+
+WITH o AS (
+  SELECT 'pr2529769955' AS oid UNION ALL
+  SELECT 'pr2530010667' UNION ALL
+  SELECT 'pr2530731847' UNION ALL
+  SELECT 'pr2530879463' UNION ALL
+  SELECT 'pr2529018219' UNION ALL
+  SELECT 'pr2527986955' UNION ALL
+  SELECT 'pr2527986959' UNION ALL
+  SELECT 'pr2527986961' UNION ALL
+  SELECT 'pr2527986957' UNION ALL
+  SELECT 'pr2529291065'
+),
+acts AS (
+  SELECT a.oid, a.batch_id, a.action_id, a.action_date
+  FROM irac_action2 a
+  JOIN o ON o.oid = a.oid
+  WHERE a.action_date >= '2025-10-01' AND a.action_date < '2025-10-11'
+)
+SELECT l.*
+FROM ir_api_log l
+JOIN acts ON acts.batch_id = l.batch_id;
+
+
+
+-- All referrers for the actions in scope
+WITH actions AS (
+  SELECT a.action_id
+  FROM irac_action2 a
+  WHERE a.oid IN (
+    'pr2529769955','pr2530010667','pr2530731847','pr2530879463',
+    'pr2529018219','pr2527986955','pr2527986959','pr2527986961',
+    'pr2527986957','pr2529291065'
+  )
+  AND a.action_date >= '2025-10-01'
+  AND a.action_date <  '2025-10-11'
+)
+SELECT r.*
+FROM ir_referrer r
+JOIN actions a ON a.action_id = r.action_id
+ORDER BY r.action_id;
+
+
+SELECT r.*, l.batch_id, l.reference_date, l.doe AS ingested_at
+FROM ir_referrer r
+JOIN irac_action2 a ON a.action_id = r.action_id
+JOIN ir_api_log  l ON l.batch_id   = a.batch_id
+WHERE a.oid = 'pr2529769955';
+
+
+SELECT oid, action_id, adj_date, adj_reason, new_status
+FROM irac_action2
+WHERE oid = 'pr2529018219'  -- example with ITEM_RETURNED
+ORDER BY action_date, adj_date;
