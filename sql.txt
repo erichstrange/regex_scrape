@@ -14,7 +14,11 @@ JOIN core_estaleauser ce
   ON u.account_user_id = ce.id
 WHERE u.irAccount_Id = "6613564"
 ORDER BY ce.lastlogin_date DESC;
-
++---------+----------+-----------------------+-----------+----------+--------+---------------------+---------------------+---------------------+--------------+----------+
+|      id | username | email                 | firstname | lastname | state  | lastlogin_date      | doe                 | dlu                 | uoe          | ulu      |
++---------+----------+-----------------------+-----------+----------+--------+---------------------+---------------------+---------------------+--------------+----------+
+| 6948676 | Litanika | info@litanikahome.com | Home      | Litanika | ACTIVE | 2025-11-12 05:22:42 | 2025-10-15 07:01:12 | 2025-10-15 07:01:14 | unknown_user | Litanika |
++---------+----------+-----------------------+-----------+----------+--------+---------------------+---------------------+---------------------+--------------+----------+
 
 SELECT ce.id,
        ce.firstname,
@@ -27,6 +31,10 @@ JOIN userconnection uc ON ce.username = uc.userID
 JOIN iram_usership iu ON ce.id = iu.account_user_id
 WHERE iu.state = 'active'
   AND irAccount_id = 6613564;
+  +----+-----------+----------+-------+-------+----------+
+| id | firstname | lastname | state | email | username |
++----+-----------+----------+-------+-------+----------+
++----+-----------+----------+-------+-------+----------+
 
 
 SELECT *
@@ -37,10 +45,22 @@ WHERE id IN (
   WHERE core_ap_id = (
     SELECT authorizationPrincipal_id
     FROM iram_usership
-    WHERE account_user_id = <account_user_id>
-      AND irAccount_id     = 6613564
+    WHERE irAccount_id     = 6613564
   )
 );
+
++----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+| id | iram_account_id | permissionType | name                   | description            | userType_id | doe                 | dlu                 | uoe | ulu | archived | version |
++----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+| 17 |               1 | ACCESS_RIGHT   | Account Administration | Account Administration |           4 | 2009-07-20 17:22:48 | 2009-07-20 17:22:48 | ʘ   | ʘ   | false    |       ʘ |
+| 40 |               1 | ACCESS_RIGHT   | Forensiq Standard User | Forensiq Standard User |           4 | 2017-05-08 23:55:50 | 2017-05-08 23:55:50 | ʘ   | ʘ   | false    |       0 |
+|  2 |               1 | SYSTEM         | Advertiser System Role | Advertiser System Role |           4 | 2009-07-20 17:22:11 | 2009-07-20 17:22:11 | ʘ   | ʘ   | false    |       0 |
+| 20 |               1 | ACCESS_RIGHT   | Technical              | Technical              |           4 | 2009-07-20 17:22:55 | 2009-07-20 17:22:55 | ʘ   | ʘ   | false    |       ʘ |
+| 33 |               1 | ACCESS_RIGHT   | Tag Management         | Tag Management         |           4 | 2013-06-18 09:42:55 | 2013-06-18 09:42:55 | ʘ   | ʘ   | false    |       0 |
+| 18 |               1 | ACCESS_RIGHT   | Campaign Management    | Campaign Management    |           4 | 2009-07-20 17:22:50 | 2009-07-20 17:22:50 | ʘ   | ʘ   | false    |       ʘ |
+| 19 |               1 | ACCESS_RIGHT   | Finance                | Finance                |           4 | 2009-07-20 17:22:53 | 2009-07-20 17:22:53 | ʘ   | ʘ   | false    |       ʘ |
+| 21 |               1 | ACCESS_RIGHT   | Creative Management    | Creative Management    |           4 | 2009-07-20 17:22:57 | 2009-07-20 17:22:57 | ʘ   | ʘ   | false    |       ʘ |
++----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
 
 
 SELECT *
@@ -55,15 +75,29 @@ WHERE id IN (
   )
 );
 
++----+----------------+-------------------------------------------------+-------------------------------------------------+----------------------------------------------+---------------------+---------------------+-----+-----+----------+---------+
+| id | permissionType | name                                            | description                                     | code                                         | doe                 | dlu                 | uoe | ulu | archived | version |
++----+----------------+-------------------------------------------------+-------------------------------------------------+----------------------------------------------+---------------------+---------------------+-----+-----+----------+---------+
+|  9 | ACCESS_RIGHT   | Apply to Campaigns                              | Apply to Campaign                               | PERMISSION_PUB_APPLY_TO_CAMPAIGN             | 2009-07-20 17:22:33 | 2009-07-20 17:22:33 | ʘ   | ʘ   | false    |       ʘ |
+| 10 | ACCESS_RIGHT   | Negotiate Agreements                            | Negotiate Agreements                            | PERMISSION_NEGOTIATE_AGREEMENTS              | 2009-07-20 17:22:33 | 2009-07-20 17:22:33 | ʘ   | ʘ   | false    |       ʘ |
+| 11 | ACCESS_RIGHT   | Request Cap Extensions and Agreement Exceptions | Request Cap Extensions and Agreement Exceptions | PERMISSION_PUB_REQ_CAP_EXT_AND_AGREEMENT_EXC | 2009-07-20 17:22:34 | 2009-07-20 17:22:34 | ʘ   | ʘ   | false    |       ʘ |
+| 12 | ACCESS_RIGHT   | View Advertiser Info                            | View Advertiser Info                            | PERMISSION_PUB_VIEW_ADV_INFO                 | 2009-07-20 17:22:34 | 2009-07-20 17:22:34 | ʘ   | ʘ   | false    |       ʘ |
+| 13 | ACCESS_RIGHT   | Send Marketing Message to Advertiser            | Send Marketing Message to Advertiser            | PERMISSION_PUB_SEND_MARKT_MSG_TO_ADV         | 2009-07-20 17:22:34 | 2009-07-20 17:22:34 | ʘ   | ʘ   | false    |       ʘ |
+| 14 | ACCESS_RIGHT   | Run Action and Performance Reports              | Run Action and Performance Reports              | PERMISSION_RUN_ACTION_PERFORMANCE_REPORTS    | 2009-07-20 17:22:34 | 2009-07-20 17:22:34 | ʘ   | ʘ   | false    |       ʘ |
++----+----------------+-------------------------------------------------+-------------------------------------------------+----------------------------------------------+---------------------+---------------------+-----+-----+----------+---------+
+
 
 -- Search for any Template-Term-related permissions/roles
 SELECT *
 FROM core_permission
 WHERE name LIKE '%Template%' OR code LIKE '%TEMPLATE%';
++-----+------------------------------+------------------------------+-----------------------------------------------------------------+---------------------------------------------------------+---------------------+---------------------+-----------+-----------+----------+---------+
+|  id | permissionType               | name                         | description                                                     | code                                                    | doe                 | dlu                 | uoe       | ulu       | archived | version |
++-----+------------------------------+------------------------------+-----------------------------------------------------------------+---------------------------------------------------------+---------------------+---------------------+-----------+-----------+----------+---------+
+|  74 | PARTNER_MANAGER_ACCESS_RIGHT | Template Terms               | Create, view, edit, and delete template terms                   | PERMISSION_PARTNER_MANAGER_MANAGE_INSERTION_ORDERS      | 2017-11-10 00:41:26 | 2020-02-11 02:36:56 | 0         | IRT-35793 | false    |       0 |
+|  86 | PARTNER_MANAGER_ACCESS_RIGHT | Template Term Rules          | Create, edit, and delete rules that apply to all template terms | PERMISSION_PARTNER_MANAGER_MANAGE_INSERTION_ORDER_RULES | 2017-11-10 00:41:28 | 2020-02-11 02:36:57 | 0         | IRT-35793 | false    |       0 |
+| 156 | PARTNER_MANAGER_ACCESS_RIGHT | View Template Terms          | View template terms                                             | PERMISSION_PARTNER_MANAGER_VIEW_INSERTION_ORDERS        | 2018-03-02 00:07:45 | 2020-02-11 02:36:57 | 0         | IRT-35793 | false    |       0 |
+| 184 | PARTNER_MANAGER_ACCESS_RIGHT | Template Terms Administrator | Template Terms Administrator                                    | PERMISSION_PARTNER_MANAGER_TEMPLATE_TERMS_ADMINISTRATOR | 2021-05-11 00:20:51 | 2021-05-11 00:20:51 | CORE-4030 | CORE-4030 | false    |       0 |
++-----+------------------------------+------------------------------+-----------------------------------------------------------------+---------------------------------------------------------+---------------------+---------------------+-----------+-----------+----------+---------+
 
--- Given role IDs from Goal 2, expand to permissions:
-SELECT cp.*
-FROM core_permission cp
-JOIN core_role_permission rp
-  ON rp.core_permission_id = cp.id
-WHERE rp.core_role_id IN (<comma_separated_role_ids>);
+
