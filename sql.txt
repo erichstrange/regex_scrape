@@ -5,18 +5,15 @@ SELECT EXISTS (
   JOIN core_role   r   ON r.id           = ar.core_role_id
   WHERE u.irAccount_id = 6613564
     AND r.name = 'Account Administration'
-    AND u.state = 'ACTIVE'         -- optional but usually desired
-) AS has_admin_role;
-
-
-SELECT EXISTS (
-  SELECT 1
-  FROM iram_usership u
-  JOIN core_ap_role ar ON ar.core_ap_id = u.authorizationPrincipal_id
-  WHERE u.irAccount_id = 6613564
-    AND ar.core_role_id = 17
     AND u.state = 'ACTIVE'
 ) AS has_admin_role;
++----------------+
+| has_admin_role |
++----------------+
+|              1 |
++----------------+
+
+
 
 
 SELECT
@@ -31,3 +28,8 @@ JOIN core_role   r   ON r.id           = ar.core_role_id
 WHERE u.irAccount_id = 6613564
   AND r.name = 'Account Administration'
   AND u.state = 'ACTIVE';
++-----------------+---------------------------+--------+---------+------------------------+
+| account_user_id | authorizationPrincipal_id | state  | role_id | role_name              |
++-----------------+---------------------------+--------+---------+------------------------+
+|         7319761 |                  14258452 | ACTIVE |      17 | Account Administration |
++-----------------+---------------------------+--------+---------+------------------------+
