@@ -3,18 +3,27 @@ WITH oids AS (
   SELECT oid FROM (VALUES
     ('pr2529769955'), ('pr2530010667'), ('pr2530731847'), ('pr2530879463'),
     ('pr2529018219'), ('pr2527986955'), ('pr2527986959'), ('pr2527986961'),
-    ('pr2527986957'), ('pr2529291065')  -- extend with full list
+    ('pr2527986957'), ('pr2529291065')
   ) t(oid)
 )
 SELECT a.oid, a.action_id, a.campaign_id, a.action_date, a.actiontracker_id, a.status, a.currency, a.net_payout
 FROM irac_action2 a
 JOIN oids o ON o.oid = a.oid
 WHERE a.action_date BETWEEN '2025-10-01' AND '2025-10-11'  -- inclusive of 10/10
-  AND a.campaign_id = <UDEMY_CAMPAIGN_ID>;
-
+  AND a.campaign_id = 39854;
+-- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'oids AS (
+SELECT oid FROM (VALUES
+('pr2529769955'), ('pr2530010667'), ('pr' at line 2
 
 -- DRAFT: Look for payloads mentioning the OIDs
 SELECT created_at, status_code, endpoint, payload
 FROM ir_api_log
 WHERE created_at BETWEEN '2025-10-01' AND '2025-10-11'
   AND (payload ILIKE '%pr2529769955%' OR payload ILIKE '%pr2530010667%' /* ...more OIDs... */);
+--- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%pr2529769955%' OR payload ILIKE '%pr2530010667%'
+limit 1000' at line 5
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%pr2529769955%' OR payload ILIKE '%pr2530010667%'
+limit 1000' at line 5; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%pr2529769955%' OR payload ILIKE '%pr2530010667%'
+limit 1000' at line 5
+
+and wtf datasource is REDSHIFT? thats not showing in query runner
