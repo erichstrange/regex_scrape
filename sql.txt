@@ -10,7 +10,9 @@ WHERE a.campaign_id = 39854
     'pr2529018219','pr2527986955','pr2527986959','pr2527986961',
     'pr2527986957','pr2529291065'
   );
-
+-- You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.action_date < '2025-10-11'
+AND a.oid IN (
+'pr2529769955'' at line 6
 
 WITH oids AS (
   SELECT 'pr2529769955' AS oid UNION ALL
@@ -32,6 +34,8 @@ JOIN oids o ON o.oid = a.oid
 WHERE a.campaign_id = 39854
   AND a.action_date >= '2025-10-01'
   AND a.action_date <  '2025-10-11';
+  -- i used single store and got this error Table 'irdwm.irac_action2' doesn't exist
+Table 'irdwm.irac_action2' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irdwm.irac_action2' doesn't exist
 
 
   WITH oids AS (
