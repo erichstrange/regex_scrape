@@ -4,6 +4,18 @@ JOIN core_ap_role ar     ON ar.core_ap_id = u.authorizationPrincipal_id
 JOIN core_role r         ON r.id = ar.core_role_id
 WHERE u.irAccount_id = 6613564
 ORDER BY r.name;
++----+------------------------+
+| id | name                   |
++----+------------------------+
+| 17 | Account Administration |
+|  2 | Advertiser System Role |
+| 18 | Campaign Management    |
+| 21 | Creative Management    |
+| 19 | Finance                |
+| 40 | Forensiq Standard User |
+| 33 | Tag Management         |
+| 20 | Technical              |
++----+------------------------+
 
 
 SELECT 1
@@ -13,3 +25,7 @@ JOIN core_role r     ON r.id = ar.core_role_id
 WHERE u.irAccount_id = 6613564
   AND r.name = 'Account Administrator'
 LIMIT 1;
++---+
+| 1 |
++---+
++---+
