@@ -1,34 +1,15 @@
-
-|
-
-SELECT r.id, r.name, COUNT(DISTINCT p.code) AS num_perms
-FROM core_role r
-JOIN core_role_permission rp ON rp.core_role_id = r.id
-JOIN core_permission p       ON p.id = rp.core_permission_id
-WHERE p.code IN (
-  'PERMISSION_PARTNER_MANAGER_MANAGE_INSERTION_ORDERS',
-  'PERMISSION_PARTNER_MANAGER_MANAGE_INSERTION_ORDER_RULES',
-  'PERMISSION_PARTNER_MANAGER_VIEW_INSERTION_ORDERS',
-  'PERMISSION_PARTNER_MANAGER_TEMPLATE_TERMS_ADMINISTRATOR'
-)
-GROUP BY r.id, r.name
-HAVING COUNT(DISTINCT p.code) = 4
+SELECT DISTINCT r.id, r.name
+FROM iram_usership u
+JOIN core_ap_role ar     ON ar.core_ap_id = u.authorizationPrincipal_id
+JOIN core_role r         ON r.id = ar.core_role_id
+WHERE u.irAccount_id = 6613564
 ORDER BY r.name;
 
-+----+-----------------------+-----------+
-| id | name                  | num_perms |
-+----+-----------------------+-----------+
-| 42 | Account Administrator |         4 |
-+----+-----------------------+-----------+
 
-
-SELECT r.id, r.name
-FROM core_ap_role ar
-JOIN core_role r ON r.id = ar.core_role_id
-WHERE ar.core_ap_id IN (
-  SELECT authorizationPrincipal_id
-  FROM iram_usership
-  WHERE irAccount_id = 6613564
-);
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 6
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 6; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 6
+SELECT 1
+FROM iram_usership u
+JOIN core_ap_role ar ON ar.core_ap_id = u.authorizationPrincipal_id
+JOIN core_role r     ON r.id = ar.core_role_id
+WHERE u.irAccount_id = 6613564
+  AND r.name = 'Account Administrator'
+LIMIT 1;
