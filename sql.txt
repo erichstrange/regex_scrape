@@ -14,6 +14,10 @@ AND p.code IN (
   'PERMISSION_PARTNER_MANAGER_TEMPLATE_TERMS_ADMINISTRATOR'
 )
 ORDER BY p.id;
++----+------+------+
+| id | name | code |
++----+------+------+
++----+------+------+
 
 
 SELECT DISTINCT r.id AS role_id, r.name AS role_name
@@ -27,7 +31,462 @@ WHERE p.code IN (
   'PERMISSION_PARTNER_MANAGER_TEMPLATE_TERMS_ADMINISTRATOR'
 )
 ORDER BY r.name;
-
++---------+--------------------------------------------------------------+
+| role_id | role_name                                                    |
++---------+--------------------------------------------------------------+
+|     156 |  Account  Administrator                                      |
+|     536 | 1                                                            |
+|     469 | <img src=x onerror=alert(1)>                                 |
+|     569 | <img src=x onerror=alert(domain)>                            |
+|     442 | <img src=x onerror=alert(location)>                          |
+|     826 | A&F Role Test                                                |
+|     208 | Access CC                                                    |
+|     651 | Account Admin                                                |
+|     739 | Account Admin                                                |
+|     689 | Account Admin - V2                                           |
+|      42 | Account Administrator                                        |
+|     219 | Account Administrator Role                                   |
+|     695 | Account Executive                                            |
+|     119 | Account Manager                                              |
+|     753 | Account Manager access                                       |
+|     635 | Account Specialist                                           |
+|     380 | Account User                                                 |
+|     417 | Account User                                                 |
+|     449 | Account User                                                 |
+|     453 | Account User                                                 |
+|     434 | Account Users                                                |
+|     658 | ACE Team                                                     |
+|     819 | ACQUIRE                                                      |
+|     550 | Aditiser                                                     |
+|      90 | Admin                                                        |
+|     490 | Admin                                                        |
+|     776 | Admin                                                        |
+|     501 | Admin                                                        |
+|     599 | Admin                                                        |
+|     626 | Admin + Compliance                                           |
+|     673 | Admin + Compliance                                           |
+|     202 | Admin + Compliance Content Update                            |
+|     247 | Admin + Content Update                                       |
+|     248 | Admin + Content Update                                       |
+|     786 | Admin + Content Update                                       |
+|     256 | Admin access                                                 |
+|     443 | Admin Access                                                 |
+|     595 | Admin Access                                                 |
+|     416 | Admin Compliance                                             |
+|     815 | Admin Highland                                               |
+|     624 | Admin Right                                                  |
+|     111 | Admin with out User or Security Management                   |
+|     610 | AdminFinance                                                 |
+|     378 | Administrator                                                |
+|     685 | Administrator Level                                          |
+|     232 | Ads Team                                                     |
+|     404 | Advanced Admin                                               |
+|     772 | Aff Team                                                     |
+|     773 | Aff Team                                                     |
+|     774 | Aff Team                                                     |
+|     206 | Affiliate Manager                                            |
+|     194 | Affiliate Marketing Manager                                  |
+|     733 | Affiliates@psf.com                                           |
+|     659 | Affl Manager                                                 |
+|     151 | Agency                                                       |
+|     472 | Agency                                                       |
+|     540 | Agency                                                       |
+|     398 | Agency                                                       |
+|     492 | Agency                                                       |
+|     268 | Agency                                                       |
+|     270 | Agency                                                       |
+|     597 | Agency                                                       |
+|     356 | Agency                                                       |
+|     683 | Agency                                                       |
+|     154 | Agency (View)                                                |
+|     618 | Agency Access                                                |
+|     318 | Agency Access                                                |
+|     593 | Agency Access                                                |
+|     559 | Agency Access (View only)                                    |
+|     464 | Agency Access - Partner & Finance Management                 |
+|      71 | Agency Account                                               |
+|      72 | Agency Account                                               |
+|     300 | Agency Admin                                                 |
+|     724 | Agency Admin                                                 |
+|     728 | Agency Admin                                                 |
+|     729 | Agency Admin                                                 |
+|     125 | Agency Member                                                |
+|     607 | Agency Partner                                               |
+|     619 | Agency Partners                                              |
+|      91 | Agency Team                                                  |
+|     708 | Agency Team Admins                                           |
+|     203 | Agency View                                                  |
+|     295 | Agency-BV                                                    |
+|     265 | All                                                          |
+|     606 | All                                                          |
+|     558 | all campaigns - w/ advocate                                  |
+|     200 | All Permissions                                              |
+|     571 | All Permissions                                              |
+|     153 | All permissions ex fin reports                               |
+|     397 | All Permissions EXCEPT Applications, Inquiries, Proposals    |
+|     657 | All Permissions Granted User                                 |
+|     662 | all-in                                                       |
+|     303 | am1                                                          |
+|     457 | AMP                                                          |
+|     157 | Analyst                                                      |
+|      44 | Analyst                                                      |
+|     308 | Analyst + Compliance                                         |
+|     309 | Analyst + Compliance                                         |
+|     225 | Analyst +Newsletter + Finance Access                         |
+|     376 | Analytics                                                    |
+|     236 | Analytics                                                    |
+|     617 | ANZ Digital                                                  |
+|     477 | API Access                                                   |
+|      70 | Arie's role                                                  |
+|     589 | Army Support                                                 |
+|     488 | Audit                                                        |
+|     422 | B2B Admin                                                    |
+|     424 | B2B Agents                                                   |
+|     371 | Back-Up December-Yerai                                       |
+|     138 | BD Manager                                                   |
+|     133 | BDAM                                                         |
+|     305 | Bilal Affiliate                                              |
+|     520 | BlueVision                                                   |
+|     260 | Booktopia Sep 2024 v2                                        |
+|     475 | boss                                                         |
+|     552 | Bossman                                                      |
+|     384 | Branded Portal - Community Manager                           |
+|     409 | Broker Access                                                |
+|     282 | Business Analyst (Reconciliation)                            |
+|      84 | Business Analysts                                            |
+|     237 | Business Development                                         |
+|     286 | Business Development Extended                                |
+|     531 | Capital One SBB Compliance Manager                           |
+|     113 | CET                                                          |
+|     821 | ClickySoft                                                   |
+|      63 | Community Manager                                            |
+|     582 | Community Manager 2                                          |
+|     275 | ComplianceDemoRole                                           |
+|     588 | Contiki Admin Support                                        |
+|     730 | Contiki Program Coordinator                                  |
+|     289 | Contiki Program Manager                                      |
+|     542 | Cooperations                                                 |
+|     656 | Country Managers                                             |
+|     306 | CPM - Partner List/Approvals                                 |
+|     528 | Creator campaigns                                            |
+|     645 | Creator Manager                                              |
+|     720 | Creator Team                                                 |
+|     675 | Crypto.com - Partnerships Team                               |
+|     704 | Crypto.com Partnerships Team + Finance Access                |
+|     663 | Crypto.com User                                              |
+|     644 | CustOps Support                                              |
+|     649 | CustOps Support                                              |
+|     118 | Daniel                                                       |
+|     478 | Data Engineer                                                |
+|     676 | Data Engineer + PMM                                          |
+|     385 | Dec 2024 - Finance - Analyst - Newsletter                    |
+|     529 | Default                                                      |
+|     391 | Developer                                                    |
+|     406 | Developer                                                    |
+|     261 | Devotion                                                     |
+|     474 | Director or VP                                               |
+|     526 | Discover Card Program Standard                               |
+|     560 | DMi Partners                                                 |
+|     646 | DMi Partners - Access                                        |
+|     360 | DST - temp                                                   |
+|     281 | Editor access w/ restrictions                                |
+|     329 | Engineering                                                  |
+|     141 | Engineering Team                                             |
+|     255 | Enhanced Account Manager                                     |
+|     285 | ePN Manager                                                  |
+|     301 | ESG                                                          |
+|     763 | Everything User                                              |
+|      80 | Express IT                                                   |
+|     429 | External Advisor                                             |
+|     201 | External Audit                                               |
+|     218 | External Audit accelerationpartners.com                      |
+|     828 | Falcon-KOL                                                   |
+|     262 | Fiat Team                                                    |
+|     278 | FIAT V2                                                      |
+|     238 | Finance                                                      |
+|     290 | Finance                                                      |
+|     653 | Finance                                                      |
+|      46 | Finance                                                      |
+|     147 | Finance and Reporting                                        |
+|     139 | Finance Department                                           |
+|     328 | Finance Modified                                             |
+|     523 | Floura Finance Team                                          |
+|     768 | For PM                                                       |
+|     432 | For Proper                                                   |
+|     785 | Founders                                                     |
+|     580 | Full Access                                                  |
+|     273 | Full Access                                                  |
+|     451 | Full Admin                                                   |
+|     314 | Gen3 Access                                                  |
+|     549 | Gen3 Admin                                                   |
+|     353 | Gen3 Admin                                                   |
+|     565 | Gen3 Admin + Content Update                                  |
+|     332 | Gen3 Compliance Role                                         |
+|     623 | General role                                                 |
+|     241 | GPS                                                          |
+|     249 | GPS Manager                                                  |
+|     242 | GPS Technical                                                |
+|     509 | Growth Team                                                  |
+|     818 | Guest                                                        |
+|     601 | Hari Team                                                    |
+|     765 | Head Performance                                             |
+|     297 | Hi Energy Access                                             |
+|     108 | IG - Local Markets                                           |
+|     734 | Imminent Changes Role                                        |
+|     481 | Impact - Compliance PCM                                      |
+|     425 | Impact - Compliance PCM                                      |
+|     361 | Impact - Compliance PCM                                      |
+|     511 | Impact Compliance                                            |
+|     513 | Impact Compliance - Demo Training View                       |
+|     686 | Impact Compliance - PCM                                      |
+|     687 | Impact Compliance - PCM                                      |
+|     692 | Impact Compliance - PCM                                      |
+|     455 | Impact Compliance Admin                                      |
+|     535 | Impact Compliance Manager                                    |
+|     563 | Impact Compliance Manager                                    |
+|     564 | Impact Compliance Manager                                    |
+|     578 | Impact Compliance Manager                                    |
+|     600 | Impact Compliance Manager                                    |
+|     522 | Impact Compliance Manager                                    |
+|     476 | Impact Compliance Team                                       |
+|     466 | Impact Finance                                               |
+|     396 | Impact Program Compliance Manager                            |
+|     435 | Impact Program Compliance Manager                            |
+|     226 | Impact Program Compliance Manager                            |
+|     229 | Impact.com Program Compliance                                |
+|     381 | impact.com Program Compliance Manager                        |
+|     471 | impact.com Program Compliance Manager                        |
+|     399 | impact.com Program Compliance Manager                        |
+|     648 | Impact.com Program Compliance Manager                        |
+|     495 | impact.com Program Compliance Manager                        |
+|     257 | Impact.com Program Compliance Manager                        |
+|     433 | Impact.com Program Compliance Manager                        |
+|     283 | Impact.com Program Compliance Manager                        |
+|     171 | Implementation & Analysis                                    |
+|      89 | Influencer Coordinator                                       |
+|     740 | Influencer Marketing Agency                                  |
+|     703 | Influencer Team Manager                                      |
+|     541 | Inhouse User                                                 |
+|     713 | Inside Sales                                                 |
+|      79 | Integrative Medicine Manager                                 |
+|     718 | Internal Affiliate Team                                      |
+|     204 | Introducing Partners Manager                                 |
+|     199 | Invited - Account Manager                                    |
+|     382 | J Lee Consulting                                             |
+|      77 | James copy                                                   |
+|     401 | Japan Affiliate User                                         |
+|     682 | JLS                                                          |
+|     190 | Joey—乐行联盟营销                                                  |
+|     681 | Joseph - Affiliate Marketing Manger                          |
+|     590 | JT                                                           |
+|     500 | J_dP                                                         |
+|     130 | Kape Analyst                                                 |
+|     123 | Kape Finance                                                 |
+|     120 | Kape Partnership Manager                                     |
+|     131 | Kape Partnership Ops                                         |
+|     596 | Keri Lyn Role                                                |
+|     539 | Kinesso Admin                                                |
+|      78 | Local Marketing Managers                                     |
+|     468 | Lodestar agency                                              |
+|     150 | Manager                                                      |
+|     616 | Manager                                                      |
+|      92 | Manager                                                      |
+|     497 | Manager                                                      |
+|     498 | Manager                                                      |
+|     230 | Managers                                                     |
+|     330 | Marcomm                                                      |
+|     473 | Marketing - Apres                                            |
+|     172 | Marketing - Global                                           |
+|     293 | Marketing - Outside Vendor                                   |
+|     679 | Marketing Admin                                              |
+|     144 | Marketing Agency                                             |
+|     344 | Marketing Analyst                                            |
+|     525 | Marketing and Finance                                        |
+|     795 | Marketing Associate                                          |
+|     809 | Marketing Associate                                          |
+|     461 | Marketing Manager                                            |
+|     799 | Marketing Manager                                            |
+|     803 | Marketing Manager                                            |
+|     825 | Marketing Manager                                            |
+|     680 | Marketing Staff                                              |
+|     307 | Marketing Team with Ads                                      |
+|     532 | Marketing-Promoter                                           |
+|     354 | Marketplace Outreach                                         |
+|     630 | Master Admin                                                 |
+|     132 | Merchant Access                                              |
+|     383 | Merchant Access                                              |
+|     102 | Merchant Access                                              |
+|     105 | Merchant Access                                              |
+|     331 | Merchant Access                                              |
+|      76 | Merchant Access Test                                         |
+|     746 | Moxie Funding Vis                                            |
+|     459 | Nadia.Zhang                                                  |
+|     184 | Network Quality                                              |
+|     252 | Network Quality Lead + Impact Admin                          |
+|     166 | new                                                          |
+|     372 | NYMO Account Management                                      |
+|     749 | Only for invitation                                          |
+|     244 | Operations                                                   |
+|     250 | Operations + Impact Admin                                    |
+|     347 | Operator                                                     |
+|     517 | Operator                                                     |
+|     611 | Ops-AFF                                                      |
+|     678 | Origin DE                                                    |
+|     755 | Origin UK                                                    |
+|     756 | Origin US                                                    |
+|     506 | OTC Social Team                                              |
+|     348 | Ovative                                                      |
+|     664 | Paid Ads Team                                                |
+|     388 | Parter Commerce V2                                           |
+|     706 | Partner Management                                           |
+|     185 | Partner Management                                           |
+|     243 | Partner Management + Product Catalogs                        |
+|     253 | Partner Management + Tasks                                   |
+|     674 | Partner Manager                                              |
+|     122 | Partner Recruiter                                            |
+|     239 | Partner Support                                              |
+|     109 | Partner Support                                              |
+|     240 | Partner Support + Finance                                    |
+|     251 | Partner Support Manager + Impact Admin                       |
+|     530 | Partner View                                                 |
+|     581 | partners and creators                                        |
+|     742 | Partnerships                                                 |
+|     779 | Partnerships Specialist                                      |
+|     386 | Partnerships Team User                                       |
+|      74 | PC-All                                                       |
+|     502 | PCM                                                          |
+|     782 | PCM + Content Update                                         |
+|     711 | PCM DEMO                                                     |
+|     486 | PCM Screenshot                                               |
+|     189 | PCM Standard (All Permissions)                               |
+|     460 | Perform CB 2025b                                             |
+|     294 | Performance Account Admin                                    |
+|     494 | Performance Analyst                                          |
+|     493 | Performance Manager                                          |
+|      43 | Performance Marketing Manager                                |
+|     789 | Performance Marketing Manager + Funding                      |
+|     668 | Performance Marketing Manager + Funding                      |
+|     669 | Performance Marketing Manager + Funding                      |
+|     292 | Performance Marketing Manager + Validation                   |
+|     134 | Performance Marketing Manager / Affiliate Manager (by Mina)  |
+|     114 | Performance Marketing Manager / Affiliate Manager (noe_cust) |
+|     115 | Performance Marketing Manager / Affiliate Manager (noe_cust) |
+|     491 | Performance Role                                             |
+|     167 | Performance_1                                                |
+|     158 | Performance_Admin                                            |
+|     179 | PerformCB                                                    |
+|     277 | PGN Community Manager                                        |
+|     343 | Platform Owner                                               |
+|     456 | PR Campaigns                                                 |
+|     736 | pretty you london                                            |
+|     258 | Primary Admin - Full Role                                    |
+|     338 | Prod Support                                                 |
+|     246 | Product                                                      |
+|     448 | Program Admin                                                |
+|     339 | Program Manager                                              |
+|     178 | Program Managers                                             |
+|     176 | Purple                                                       |
+|     641 | QA Tester                                                    |
+|     340 | QA Testing                                                   |
+|     271 | QTG Engineers and QAs                                        |
+|      85 | Quality Assurence                                            |
+|     110 | Rachel C                                                     |
+|     121 | RBL Admin                                                    |
+|     408 | RE Impact Admin                                              |
+|     747 | Read Only                                                    |
+|     421 | Read-Only                                                    |
+|     629 | Recruit Partners & Creators + Reporting                      |
+|     221 | Recruiting & Partnerships                                    |
+|     743 | Regional Affiliate Manager                                   |
+|     155 | Regional Marketing Leads                                     |
+|     573 | Regular                                                      |
+|     715 | Regular User                                                 |
+|     684 | Revel API                                                    |
+|     722 | RevWise / Swallow                                            |
+|     721 | RevWise / VB                                                 |
+|     690 | Role - No Content, No Branding                               |
+|     519 | S&A                                                          |
+|     688 | Scrowp                                                       |
+|     420 | Sebastian                                                    |
+|     276 | Seller Admin                                                 |
+|     195 | Senior Operations Manager                                    |
+|     777 | SEO Admin                                                    |
+|     521 | Silverbean                                                   |
+|     107 | Silverbean - Agency User                                     |
+|     614 | Silverbean Management                                        |
+|     180 | Silverbean Manager                                           |
+|     793 | Single Agency                                                |
+|     709 | Social Admin                                                 |
+|     727 | Sony                                                         |
+|     470 | Sox Compliance + Content Update                              |
+|      86 | SOX Compliant                                                |
+|     418 | Specialist                                                   |
+|     124 | Standard User                                                |
+|     508 | Standard User                                                |
+|     700 | Strategy                                                     |
+|     820 | super                                                        |
+|     135 | Super Curious                                                |
+|     608 | Super user                                                   |
+|     302 | Super user                                                   |
+|     783 | Super User                                                   |
+|     568 | Super User                                                   |
+|     263 | Super User                                                   |
+|     205 | Super User                                                   |
+|     767 | Super User + Content Update                                  |
+|     770 | Super User + Content Update                                  |
+|     403 | Supervision                                                  |
+|     411 | Support Specialist                                           |
+|      93 | Synsyn                                                       |
+|     170 | Talent Manager                                               |
+|     817 | Tano                                                         |
+|     233 | TBC Dev                                                      |
+|     482 | Team                                                         |
+|     771 | Tech                                                         |
+|     317 | Tech & DNA                                                   |
+|     324 | Tech & DNA Admin                                             |
+|     373 | Tech & DNA Role                                              |
+|     516 | Tech Role                                                    |
+|      75 | Tech team                                                    |
+|      73 | Tech/Data                                                    |
+|     357 | Template Terms Access                                        |
+|     304 | Tenba Administrator Access                                   |
+|     814 | TEST                                                         |
+|     636 | Test 1                                                       |
+|     414 | Test Role                                                    |
+|     671 | TestActionManager                                            |
+|     129 | TestAdmin                                                    |
+|     149 | Testing                                                      |
+|     128 | TestRole                                                     |
+|     274 | thoughMix                                                    |
+|     514 | TPRM                                                         |
+|     752 | True Admin                                                   |
+|     336 | US Card Compliance                                           |
+|     440 | US Card ESM                                                  |
+|     358 | US Card Finance                                              |
+|     441 | US Card Leadership                                           |
+|     335 | US Card Operations                                           |
+|     334 | US Card Segment Lead                                         |
+|     665 | US Growth Team                                               |
+|     214 | USAA - Marketing Manager I                                   |
+|     412 | User Access                                                  |
+|     594 | View / Reporting Access                                      |
+|     714 | View Access                                                  |
+|     280 | View only                                                    |
+|     483 | Viewer                                                       |
+|     775 | Viewer                                                       |
+|     430 | WE Admin - No Funding                                        |
+|     574 | WOWSTAFF ROLE                                                |
+|     691 | YLH Team                                                     |
+|     584 | カスタムロール１                                                     |
+|     652 | 其他管理员                                                        |
+|     533 | 可查看数据                                                        |
+|     816 | 数据监控                                                         |
+|     325 | 无邀请user权限                                                    |
+|     323 | 海外营销部                                                        |
+|     505 | 管理员                                                          |
+|     637 | 网红团队                                                         |
+|     191 | 艾维—合作伙伴                                                      |
++---------+--------------------------------------------------------------+
 
 SELECT
   ce.id,
@@ -44,6 +503,11 @@ LEFT JOIN userconnection uc
   ON ce.username = uc.userID           -- keep LEFT JOIN unless you truly require a uc row
 WHERE iu.irAccount_id = 6613564        -- prefer numeric (no quotes) for an INT column
   AND UPPER(iu.state) = 'ACTIVE';
+  +---------+-----------+----------+--------+-----------------------+----------+--------------------+
+|      id | firstname | lastname | state  | email                 | username | has_userconnection |
++---------+-----------+----------+--------+-----------------------+----------+--------------------+
+| 7319761 | Home      | Litanika | ACTIVE | info@litanikahome.com | Litanika |                  0 |
++---------+-----------+----------+--------+-----------------------+----------+--------------------+
 
 
 
@@ -56,6 +520,10 @@ WHERE ar.core_ap_id = (
   WHERE irAccount_id = 6613564
 )
 AND r.name = 'Advertiser Management';
++---+
+| 1 |
++---+
++---+
 
 
 SELECT p.id, p.name, p.code, p.permissionType
@@ -64,3 +532,8 @@ JOIN core_role_permission rp ON rp.core_role_id = r.id
 JOIN core_permission p       ON p.id = rp.core_permission_id
 WHERE r.name = 'Advertiser System Role'
 ORDER BY p.permissionType, p.code;
++----+-------------------+------------------------------+----------------+
+| id | name              | code                         | permissionType |
++----+-------------------+------------------------------+----------------+
+|  2 | Advertiser System | PERMISSION_ADVERTISER_SYSTEM | SYSTEM         |
++----+-------------------+------------------------------+----------------+
