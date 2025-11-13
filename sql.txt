@@ -1,35 +1,44 @@
-SELECT EXISTS (
-  SELECT 1
-  FROM iram_usership u
-  JOIN core_ap_role ar ON ar.core_ap_id  = u.authorizationPrincipal_id
-  JOIN core_role   r   ON r.id           = ar.core_role_id
-  WHERE u.irAccount_id = 6613564
-    AND r.name = 'Account Administration'
-    AND u.state = 'ACTIVE'
-) AS has_admin_role;
-+----------------+
-| has_admin_role |
-+----------------+
-|              1 |
-+----------------+
+-- Action row for this OID (AAL should surface rows backed by this data)
+SELECT *
+FROM irac_action2
+WHERE campaign_id = 23324
+  AND oid = 'f3f3302b-1dff-49d9-9933-c39cf6a7ff50'
+  AND action_date BETWEEN '2025-11-12 00:00:00' AND '2025-11-13 23:59:59'
+ORDER BY action_date DESC
+LIMIT 100;
 
 
+-- By Batch Id (fastest if you already have it)
+SELECT *
+FROM ir_api_log
+WHERE batch_id = 'A-06bf01b7-bc6b-4556-a9f3-0c7b73436cc4'
+ORDER BY doe DESC;
 
 
-SELECT
-  u.account_user_id,
-  u.authorizationPrincipal_id,
-  u.state,
-  r.id   AS role_id,
-  r.name AS role_name
-FROM iram_usership u
-JOIN core_ap_role ar ON ar.core_ap_id  = u.authorizationPrincipal_id
-JOIN core_role   r   ON r.id           = ar.core_role_id
-WHERE u.irAccount_id = 6613564
-  AND r.name = 'Account Administration'
-  AND u.state = 'ACTIVE';
-+-----------------+---------------------------+--------+---------+------------------------+
-| account_user_id | authorizationPrincipal_id | state  | role_id | role_name              |
-+-----------------+---------------------------+--------+---------+------------------------+
-|         7319761 |                  14258452 | ACTIVE |      17 | Account Administration |
-+-----------------+---------------------------+--------+---------+------------------------+
+-- By Advertiser, Tracker, OID and time window
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 5167565
+  AND ircm_tracker_id = 43669
+  AND oid = 'f3f3302b-1dff-49d9-9933-c39cf6a7ff50'
+  AND doe BETWEEN '2025-11-12 15:30:00' AND '2025-11-12 16:30:00'
+ORDER BY doe DESC
+LIMIT 100;
+
+
+-- Method 2 from the how-to (campaign + tracker + oid)
+SELECT *
+FROM ir_referrer
+WHERE campaign_id = 23324
+  AND action_tracker_id = 43669
+  AND oid = 'f3f3302b-1dff-49d9-9933-c39cf6a7ff50'
+ORDER BY ref_date DESC
+LIMIT 50;
+
+
+SELECT *
+FROM ir_correlated_event
+WHERE campaign_id = 23324
+  AND oid = 'f3f3302b-1dff-49d9-9933-c39cf6a7ff50'
+ORDER BY doe DESC
+LIMIT 50;
