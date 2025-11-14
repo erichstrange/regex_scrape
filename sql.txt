@@ -8,6 +8,12 @@ WHERE service_provider_legal_entity_id = '170911-3482';
 | 274049 |                               66447 |            192600 |                           170911 |           60091 |                    46705 |              60091 |                           46705 | PAID_BY_ADVERTISER |     4 | 2016 |               1 | 2016-05-02 12:07:46 | 2016-05-02 12:07:46 | 2016-04-16 07:27:07 | ʘ               | 2016-05-02 12:07:46 | 2016-05-02 12:07:47 | estalea.ir.accounting.invoice.job.MonthlyRecipientGeneratedInvoiceJob[app1.phx.impactradius.net:13680] | estalea.ir.accounting.invoice.job.MonthlyRecipientGeneratedInvoiceJob[app1.phx.impactradius.net:13680] |
 +--------+-------------------------------------+-------------------+----------------------------------+-----------------+--------------------------+--------------------+---------------------------------+--------------------+-------+------+-----------------+---------------------+---------------------+---------------------+-----------------+---------------------+---------------------+--------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
 
+-- DRAFT: pull its line items (table name may be iracct_campaign_recipient_generated_lineitem)
+SELECT *
+FROM iracct_campaign_recipient_generated_lineitem li
+WHERE li.recipient_generated_invoice_id = <id from rgi above>
+ORDER BY li.line_number;
+
 
 
 Show tables (in irract)
