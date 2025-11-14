@@ -1,10 +1,188 @@
 -- DRAFT (r_ds_iracct): locate the partner invoice by invoice number
 SELECT *
-FROM iracct_recipientgenerated_invoice rgi
-WHERE rgi.invoice_number = '170911-3482';
+FROM iracct_recipientgenerated_invoice
+WHERE service_provider_legal_entity_id = '170911-3482';
++--------+-------------------------------------+-------------------+----------------------------------+-----------------+--------------------------+--------------------+---------------------------------+--------------------+-------+------+-----------------+---------------------+---------------------+---------------------+-----------------+---------------------+---------------------+--------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+|     id | iracct_agency_advertiser_invoice_id | iram_publisher_id | service_provider_legal_entity_id | iram_account_id | customer_legal_entity_id | iram_advertiser_id | source_customer_legal_entity_id | state              | month | year | sequence_number | due_date            | date_generated      | paid_by_adv_date    | paid_by_ir_date | doe                 | dlu                 | uoe                                                                                                    | ulu                                                                                                    |
++--------+-------------------------------------+-------------------+----------------------------------+-----------------+--------------------------+--------------------+---------------------------------+--------------------+-------+------+-----------------+---------------------+---------------------+---------------------+-----------------+---------------------+---------------------+--------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+| 274049 |                               66447 |            192600 |                           170911 |           60091 |                    46705 |              60091 |                           46705 | PAID_BY_ADVERTISER |     4 | 2016 |               1 | 2016-05-02 12:07:46 | 2016-05-02 12:07:46 | 2016-04-16 07:27:07 | ʘ               | 2016-05-02 12:07:46 | 2016-05-02 12:07:47 | estalea.ir.accounting.invoice.job.MonthlyRecipientGeneratedInvoiceJob[app1.phx.impactradius.net:13680] | estalea.ir.accounting.invoice.job.MonthlyRecipientGeneratedInvoiceJob[app1.phx.impactradius.net:13680] |
++--------+-------------------------------------+-------------------+----------------------------------+-----------------+--------------------------+--------------------+---------------------------------+--------------------+-------+------+-----------------+---------------------+---------------------+---------------------+-----------------+---------------------+---------------------+--------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
 
--- DRAFT: pull its line items (table name may be iracct_campaign_recipient_generated_lineitem)
-SELECT *
-FROM iracct_campaign_recipient_generated_lineitem li
-WHERE li.recipient_generated_invoice_id = <id from rgi above>
-ORDER BY li.line_number;
+
+
+Show tables (in irract)
++--------------------------------------------------+
+| Tables_in_iracct                                 |
++--------------------------------------------------+
+| base_job_audit                                   |
+| billing_group_relationships                      |
+| billing_group_wallets                            |
+| bulk_process_state                               |
+| clearing_subnetwork_reference                    |
+| core_alert                                       |
+| core_alert_destination                           |
+| core_alert_subscriber                            |
+| core_alert_topic                                 |
+| core_alert_topic_link_alert_subscriber           |
+| core_composite_unique_system_runtime             |
+| core_configuration                               |
+| core_estaleanetwork                              |
+| core_system_runtime                              |
+| core_versioninfo                                 |
+| customer_settings_fees                           |
+| customer_settings_fees_impact                    |
+| customer_settings_general                        |
+| customer_settings_payment_request                |
+| databasechangelog                                |
+| databasechangelog_sku                            |
+| databasechangeloglock                            |
+| databasechangeloglock_sku                        |
+| finance_account                                  |
+| finance_account_additional_fields                |
+| finance_account_tmp                              |
+| finance_ach_dailysequence                        |
+| finance_ach_log                                  |
+| finance_alerts                                   |
+| finance_alerts_config                            |
+| finance_bank_balance                             |
+| finance_bankinfo                                 |
+| finance_bankinfo_additional                      |
+| finance_batchjob_log                             |
+| finance_billing_address                          |
+| finance_cash_account                             |
+| finance_cash_ledger                              |
+| finance_claw_back_log                            |
+| finance_clearing_overdue                         |
+| finance_clearing_overdue_breakdown               |
+| finance_clearing_overdue_relationship            |
+| finance_contact                                  |
+| finance_content                                  |
+| finance_credit_card                              |
+| finance_credit_card_transaction                  |
+| finance_creditcard                               |
+| finance_directdeposit                            |
+| finance_directdeposit_batch                      |
+| finance_electronic_document                      |
+| finance_electronic_signature                     |
+| finance_email                                    |
+| finance_email_log                                |
+| finance_exchange_rate                            |
+| finance_exchange_rate_history                    |
+| finance_exchange_rate_periodic_history           |
+| finance_file_log                                 |
+| finance_identity_verification_member_info        |
+| finance_inbound_payment_method_fee               |
+| finance_inbound_payment_method_restriction       |
+| finance_invoice                                  |
+| finance_ledger                                   |
+| finance_ledger_operator_entry_info               |
+| finance_ledger_paystub_update                    |
+| finance_log_request                              |
+| finance_manual_approval_deposit                  |
+| finance_networksetting                           |
+| finance_payment_method_parent_restriction        |
+| finance_paymentmethod                            |
+| finance_paymentrun                               |
+| finance_paymentsetting                           |
+| finance_paypal_auth                              |
+| finance_paypalinfo                               |
+| finance_paystub                                  |
+| finance_qualify_to_pay                           |
+| finance_qualify_to_pay_history                   |
+| finance_realtime_balance                         |
+| finance_reseller                                 |
+| finance_reserved_funds_case                      |
+| finance_reserved_funds_case_detail               |
+| finance_tax_information                          |
+| finance_transactioncode                          |
+| finance_two_factor_auth_status                   |
+| finance_user_payment_method                      |
+| finance_validation_monitor                       |
+| finance_veriff_hit_result                        |
+| finance_veriff_listing                           |
+| finance_veriff_watchlist_request                 |
+| idw_replicator_heartbeat                         |
+| iracct_account_agency_invoice                    |
+| iracct_account_agency_invoice_lineitem           |
+| iracct_adv_agency_billing_config                 |
+| iracct_adv_agency_fee_config                     |
+| iracct_agency_advertiser_invoice                 |
+| iracct_agency_billing_config                     |
+| iracct_agency_spread_deal_result                 |
+| iracct_billing_config_add_on                     |
+| iracct_billing_config_agency_console             |
+| iracct_billing_config_agency_spread_deal         |
+| iracct_billing_config_attribution                |
+| iracct_billing_config_coalition                  |
+| iracct_billing_config_foundation                 |
+| iracct_billing_config_generation                 |
+| iracct_billing_config_generation_totals          |
+| iracct_billing_config_imptracking                |
+| iracct_billing_config_origination                |
+| iracct_billing_config_partner_brand_compliance   |
+| iracct_billing_config_partner_mgmt               |
+| iracct_billing_config_partner_quality_compliance |
+| iracct_billing_config_partner_recruitment        |
+| iracct_billing_config_tag_manager                |
+| iracct_billing_global_config                     |
+| iracct_billing_process_record                    |
+| iracct_campaign_mp_funds_transfer                |
+| iracct_campaign_proforma_lineitem                |
+| iracct_campaign_recipient_generated_lineitem     |
+| iracct_credit_memo                               |
+| iracct_credit_memo_lineitem                      |
+| iracct_funds_transfer_event_date_detail          |
+| iracct_impact_fee_configuration                  |
+| iracct_impact_fee_tier                           |
+| iracct_impactradius_invoice                      |
+| iracct_impactradius_invoice_lineitem             |
+| iracct_invoice                                   |
+| iracct_invoice_billto_address                    |
+| iracct_invoice_intramonth_clearing_status        |
+| iracct_invoice_intramonth_irpaid_status          |
+| iracct_invoice_settings                          |
+| iracct_ledgerext                                 |
+| iracct_mediapartner_advertiser_proforma_summary  |
+| iracct_networkfee                                |
+| iracct_payment_request_record                    |
+| iracct_proforma_summary                          |
+| iracct_proforma_summary_process_record           |
+| iracct_qrtz_blob_triggers                        |
+| iracct_qrtz_calendars                            |
+| iracct_qrtz_cron_triggers                        |
+| iracct_qrtz_fired_triggers                       |
+| iracct_qrtz_job_details                          |
+| iracct_qrtz_locks                                |
+| iracct_qrtz_paused_trigger_grps                  |
+| iracct_qrtz_scheduler_state                      |
+| iracct_qrtz_simple_triggers                      |
+| iracct_qrtz_simprop_triggers                     |
+| iracct_qrtz_triggers                             |
+| iracct_radius_pricing_history                    |
+| iracct_recipientgenerated_invoice                |
+| iracct_recipientgenerated_invoice_process_record |
+| iracct_technical_support_log                     |
+| iracct_vat_config                                |
+| iracct_withholding_tax_config                    |
+| irfin1064affected                                |
+| legal_entity                                     |
+| legal_entity_programs                            |
+| legal_entity_relationships                       |
+| legal_entity_reseller                            |
+| legal_entity_reseller_internal                   |
+| m_audit_status_log                               |
+| plan                                             |
+| plan_purchase                                    |
+| plan_sku                                         |
+| plan_upgrade                                     |
+| product                                          |
+| service_provider_settings_general                |
+| sku                                              |
+| sku_price_book                                   |
+| subscription                                     |
+| subscription_amendment                           |
+| subscription_line                                |
+| subscription_line_detail                         |
+| tax_entity                                       |
+| tier                                             |
++--------------------------------------------------+
