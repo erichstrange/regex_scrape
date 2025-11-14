@@ -6,21 +6,11 @@ WHERE advertiser_id = 30720
   AND event_datetime <  '2025-11-01'
 GROUP BY day
 ORDER BY day;
++-----+---------+
+| day | actions |
++-----+---------+
++-----+---------+
 
-
-SELECT DATE(action_datetime) AS day, COUNT(*) AS actions
-FROM action_fact
-WHERE advertiser_id = 30720
-  AND action_datetime >= '2025-10-01'
-  AND action_datetime <  '2025-11-01'
-GROUP BY day
-ORDER BY day;
-
-
-SELECT COUNT(*) AS actions_oct
-FROM conversion_fact
-WHERE advertiser_id = 30720
-  AND p_event_date_ym = 202510;          -- helps partition pruning
 
 
 -- Count with/without code in one pass
@@ -32,3 +22,8 @@ FROM conversion_fact
 WHERE advertiser_id = 30720
   AND event_datetime >= '2025-10-01'
   AND event_datetime <  '2025-11-01';
++--------------+-----------+---------------+
+| without_code | with_code | total_actions |
++--------------+-----------+---------------+
+|            ʘ |         ʘ |             0 |
++--------------+-----------+---------------+
