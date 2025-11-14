@@ -53,3 +53,6 @@ FROM base b
 LEFT JOIN qualifying q
   ON q.oid = b.oid AND q.sku = b.sku
 ORDER BY b.action_datetime_utc, b.action_id, b.sku;
+--You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'qualifying AS (
+
+SELECT 'A385560474' AS oid, '2399930003' AS sku, 'Sporting ' at line 2
