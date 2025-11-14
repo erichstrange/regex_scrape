@@ -1,29 +1,9 @@
--- Conversions by day (presence/volume)
-SELECT DATE(event_datetime) AS day, COUNT(*) AS actions
-FROM conversion_fact
-WHERE advertiser_id = 30720
-  AND event_datetime >= DATE_SUB('2025-11-01', INTERVAL 90 DAY)
-  AND event_datetime <  '2025-11-01'
-GROUP BY day
-ORDER BY day;
-+-----+---------+
-| day | actions |
-+-----+---------+
-+-----+---------+
-
-
-
--- Count with/without code in one pass
-SELECT
-  SUM(CASE WHEN promo_code IS NULL OR promo_code='' THEN 1 ELSE 0 END) AS without_code,
-  SUM(CASE WHEN promo_code IS NOT NULL AND promo_code<>'' THEN 1 ELSE 0 END) AS with_code,
-  COUNT(*) AS total_actions
-FROM conversion_fact
-WHERE advertiser_id = 30720
-  AND event_datetime >= '2025-10-01'
-  AND event_datetime <  '2025-11-01';
-+--------------+-----------+---------------+
-| without_code | with_code | total_actions |
-+--------------+-----------+---------------+
-|            ʘ |         ʘ |             0 |
-+--------------+-----------+---------------+
+-- DRAFT: Partner invoice & lines
+SELECT fi.invoice_number,
+       fi.invoice_date, fi.period_start, fi.period_end,
+       fil.line_number, fil.event_type_name, fil.quantity,
+       fil.unit_amount, fil.amount, fil.description,
+       fil.created_by, fil.created_date, fil.updated_by, fil.updated_date
+FROM finance_invoice fi
+JOIN finance_invoice_line_item fil ON fil.finance_invoice_id = fi.id
+WHERE fi.invoice_number = '170911-3482';
