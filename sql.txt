@@ -1,8 +1,38 @@
--- [r_ds_singlestore] Vetted pattern: pull all click events for a specific adv/publisher/campaign in a narrow window
-SELECT *
+-- Clicks that occurred in September but were LOCKED in October and are now not payable
+SELECT
+  COUNT(*)                                       AS clicks_reversed,
+  -- use the contract rate seen on payable rows to estimate the credit amount
+  COUNT(*) * 13.50                               AS implied_credit_usd
+FROM click_fact
+WHERE advertiser_id = 5819706        -- Chime
+  AND publisher_id  = 170911         -- Nerdwallet, Inc (US)
+  AND campaign_id   = 28165
+  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
+  AND cpc_locking_date >= '2025-10-01' AND cpc_locking_date < '2025-11-01'
+  AND cpc_payable = 0
+  AND (cpc_error_code IS NOT NULL OR cpc_error_code <> '');
+
+
+SELECT
+  event_datetime, click_id, profile_id,
+  classification, method, cpc_error_code,
+  cpc_locking_date
 FROM click_fact
 WHERE advertiser_id = 5819706
-  AND publisher_id  = 170911       -- NerdWallet, Inc (US)
+  AND publisher_id  = 170911
+  AND campaign_id   = 28165
+  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
+  AND cpc_locking_date >= '2025-10-01' AND cpc_locking_date < '2025-11-01'
+  AND cpc_payable = 0
+ORDER BY cpc_locking_date, event_datetime
+LIMIT 1000;
+
+
+SELECT cpc_adv_raw_payout, COUNT(*) AS rows
+FROM click_fact
+WHERE advertiser_id = 5819706
+  AND publisher_id  = 170911
   AND campaign_id   = 28165
   AND event_datetime >= '2025-09-27' AND event_datetime < '2025-09-28'
-ORDER BY event_datetime DESC;
+  AND cpc_payable = 1
+GROUP BY cpc_adv_raw_payout;
