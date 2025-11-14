@@ -1,4 +1,4 @@
--- [SingleStore] Click logs with exact inbound URLs & rule hits
+-- 1
 SELECT
   cf.event_datetime,
   cf.click_id,
@@ -9,12 +9,12 @@ SELECT
   JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule
 FROM click_fact cf
 LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE cf.campaign_id  = 9488                            -- TFD
-  AND cf.publisher_id IN (34844 /*Cartera*/, 10579 /*Rakuten*/)
+WHERE cf.campaign_id  = 9488
+  AND cf.publisher_id IN (34844, 10579)
   AND cf.event_datetime BETWEEN '2025-09-22' AND '2025-09-30'
 ORDER BY cf.event_datetime DESC;
 
-
+-- 2
 SELECT cf.publisher_id, COUNT(*) AS clicks,
        MIN(cf.event_datetime) AS first_seen, MAX(cf.event_datetime) AS last_seen
 FROM click_fact cf
@@ -24,7 +24,7 @@ WHERE cf.campaign_id = 9488
 GROUP BY cf.publisher_id
 ORDER BY clicks DESC;
 
-
+-- 3
 SELECT af.oid, af.publisher_id,
        ad.ad_id AS stamped_ad_id, ad.name AS stamped_ad_name,
        af.ref_landingpage_url, af.ref_domain
