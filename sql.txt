@@ -1,4 +1,4 @@
-SELECT DISTINCT r.click_id, r.conversion_event_id, r.event_datetime
+SELECT DISTINCT r.event_url, r.event_alternative_id, r.event_datetime, r.campaign_id, r.conversion_event_id, r.advertiser_id
 FROM radius_path_event_fact r
 WHERE r.campaign_id = 9488
   AND r.conversion_event_id IN (
@@ -8,27 +8,40 @@ WHERE r.campaign_id = 9488
     'A-9488.6480.717713'
   )
   AND r.event_type = 'Click';
+  +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------+---------------------+-------------+---------------------+---------------+
+| event_url                                                                                                                                                                                                                                              | event_alternative_id                    | event_datetime      | campaign_id | conversion_event_id | advertiser_id |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------+---------------------+-------------+---------------------+---------------+
+| https://thefarmersdog.com/p/rakutendpd?clickId=1B3S4tRv4xycUyATSM1W81eUUkp1O-zBw0X2xc0&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | 1B3S4tRv4xycUyATSM1W81eUUkp1O-zBw0X2xc0 | 2025-09-25 03:04:22 |        9488 | A-9488.6476.1182803 |       1374555 |
+| https://thefarmersdog.com/p/rakutendpd?clickId=y5sVzSReLxycWhpSNCWSvX8IUkp1-OyRsSY5X00&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | y5sVzSReLxycWhpSNCWSvX8IUkp1-OyRsSY5X00 | 2025-09-28 20:41:22 |        9488 | A-9488.6480.717713  |       1374555 |
+| https://thefarmersdog.com/p/rakutendpd?clickId=04M3pNRZNxycRRiUK3Q6hQbnUkp19xTRMxcp0Q0&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | 04M3pNRZNxycRRiUK3Q6hQbnUkp19xTRMxcp0Q0 | 2025-09-28 13:14:26 |        9488 | A-9488.6480.169991  |       1374555 |
+| https://thefarmersdog.com/p/rakutendpd?clickId=wOZ2dDRpnxycR3K11nT1TSs8Ukp1ptUXIzPuxE0&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | wOZ2dDRpnxycR3K11nT1TSs8Ukp1ptUXIzPuxE0 | 2025-09-23 08:21:23 |        9488 | A-9488.6475.13560   |       1374555 |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------+---------------------+-------------+---------------------+---------------+
 
 
 SELECT
   cf.event_datetime,
   cf.click_id,
-  JSON_UNQUOTE(JSON_EXTRACT(cf.json,'$.inboundLink')) AS inbound_link,
+  JSON_EXTRACT_JSON(cf.json,'$.inboundLink') AS inbound_link,
   cf.landing_page_url,
   ad.ad_id, ad.name AS ad_name,
   cf.publisher_id,
-  JSON_UNQUOTE(JSON_EXTRACT(cf.json,'$.ruleName'))     AS rule_name,
-  JSON_UNQUOTE(JSON_EXTRACT(cf.json,'$.blockingRule')) AS blocking_rule
+  JSON_EXTRACT_JSON(cf.json,'$.ruleName')     AS rule_name,
+ JSON_EXTRACT_JSON(cf.json,'$.blockingRule') AS blocking_rule
 FROM click_fact cf
 LEFT JOIN ad_dim ad ON ad.id = cf.ad_dim_id
-WHERE cf.click_id IN ('<paste the 3–4 click_ids from Step 1>');
+WHERE cf.click_id IN ('1B3S4tRv4xycUyATSM1W81eUUkp1O-zBw0X2xc0',
+					  'y5sVzSReLxycWhpSNCWSvX8IUkp1-OyRsSY5X00',
+					  '04M3pNRZNxycRRiUK3Q6hQbnUkp19xTRMxcp0Q0',
+					  'wOZ2dDRpnxycR3K11nT1TSs8Ukp1ptUXIzPuxE0' );
+
+--
++---------------------+-----------------------------------------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+-------------------------------+--------------+-----------+---------------+
+| event_datetime      | click_id                                | inbound_link | landing_page_url                                                                                                                                                                                                                                       |   ad_id | ad_name                       | publisher_id | rule_name | blocking_rule |
++---------------------+-----------------------------------------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+-------------------------------+--------------+-----------+---------------+
+| 2025-09-25 03:04:22 | 1B3S4tRv4xycUyATSM1W81eUUkp1O-zBw0X2xc0 | ʘ            | https://thefarmersdog.com/p/rakutendpd?clickId=1B3S4tRv4xycUyATSM1W81eUUkp1O-zBw0X2xc0&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | 3273108 | dogpersonday2025_50% Rakuten  |        34844 | ʘ         | ʘ             |
+| 2025-09-23 08:21:23 | wOZ2dDRpnxycR3K11nT1TSs8Ukp1ptUXIzPuxE0 | ʘ            | https://thefarmersdog.com/p/rakutendpd?clickId=wOZ2dDRpnxycR3K11nT1TSs8Ukp1ptUXIzPuxE0&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | 3273108 | dogpersonday2025_50% Rakuten  |        34844 | ʘ         | ʘ             |
+| 2025-09-28 20:41:22 | y5sVzSReLxycWhpSNCWSvX8IUkp1-OyRsSY5X00 | ʘ            | https://thefarmersdog.com/p/rakutendpd?clickId=y5sVzSReLxycWhpSNCWSvX8IUkp1-OyRsSY5X00&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | 3273108 | dogpersonday2025_50% Rakuten  |        34844 | ʘ         | ʘ             |
+| 2025-09-28 13:14:26 | 04M3pNRZNxycRRiUK3Q6hQbnUkp19xTRMxcp0Q0 | ʘ            | https://thefarmersdog.com/p/rakutendpd?clickId=04M3pNRZNxycRRiUK3Q6hQbnUkp19xTRMxcp0Q0&irgwc=1&utm_source=creditcard&utm_medium=paid_affiliate&utm_campaign=34844-Cartera%20Commerce%2C%20Inc.&utm_content=3273108-dogpersonday2025_50%25%20Rakuten%20 | 3273108 | dogpersonday2025_50% Rakuten  |        34844 | ʘ         | ʘ             |
++---------------------+-----------------------------------------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------+-------------------------------+--------------+-----------+---------------+
 
 
-SELECT cf.publisher_id, COUNT(*) AS clicks,
-       MIN(cf.event_datetime) AS first_seen, MAX(cf.event_datetime) AS last_seen
-FROM click_fact cf
-WHERE cf.campaign_id = 9488
-  AND cf.landing_page_url LIKE 'https://thefarmersdog.com/p/rakutendpd%'
-  AND cf.event_datetime BETWEEN '2025-09-22' AND '2025-09-30'
-GROUP BY cf.publisher_id
-ORDER BY clicks DESC;
