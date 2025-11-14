@@ -1,49 +1,46 @@
--- Clicks that occurred in September but were LOCKED in October and are now not payable
+-- COUNT only; adjust range if volume > 1M/day
 SELECT
-  COUNT(*)                                       AS clicks_reversed,
-  -- use the contract rate seen on payable rows to estimate the credit amount
-  COUNT(*) * 13.50                               AS implied_credit_usd
-FROM click_fact
-WHERE advertiser_id = 5819706        -- Chime
-  AND publisher_id  = 170911         -- Nerdwallet, Inc (US)
-  AND campaign_id   = 28165
-  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
-  AND cpc_locking_date >= '2025-10-01' AND cpc_locking_date < '2025-11-01'
-  AND cpc_payable = 0
-  AND (cpc_error_code IS NOT NULL OR cpc_error_code <> '');
-+-----------------+--------------------+
-| clicks_reversed | implied_credit_usd |
-+-----------------+--------------------+
-|               0 |               0.00 |
-+-----------------+--------------------+
+  SUM(CASE WHEN promo_code IS NULL OR promo_code='' THEN 1 ELSE 0 END) AS actions_without_code,
+  SUM(CASE WHEN promo_code IS NOT NULL AND promo_code<>'' THEN 1 ELSE 0 END) AS actions_with_code,
+  COUNT(*) AS total_actions
+FROM conversion_fact
+WHERE advertiser_id = 30720
+  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01';
 
 
-SELECT
-  event_datetime, click_id, profile_id,
-  classification, method, cpc_error_code,
-  cpc_locking_date
-FROM click_fact
-WHERE advertiser_id = 5819706
-  AND publisher_id  = 170911
-  AND campaign_id   = 28165
-  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
-  AND cpc_locking_date >= '2025-10-01' AND cpc_locking_date < '2025-11-01'
-  AND cpc_payable = 0
-ORDER BY cpc_locking_date, event_datetime
+SELECT UPPER(TRIM(promo_code)) AS promo_code_norm, COUNT(*) AS actions
+FROM conversion_fact
+WHERE advertiser_id = 30720
+  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
+  AND promo_code IS NOT NULL AND promo_code <> ''
+GROUP BY 1
+ORDER BY actions DESC;
+
+
+/* DRAFT – duplicates by OID + action_tracker */
+WITH x AS (
+  SELECT oid, action_tracker_id, COUNT(*) AS c
+  FROM conversion_fact
+  WHERE advertiser_id = 30720
+    AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
+  GROUP BY 1,2
+)
+SELECT SUM(CASE WHEN c>1 THEN c-1 ELSE 0 END) AS duplicate_rows,
+       COUNT(*) AS unique_order_rows
+FROM x;
+
+
+
+SELECT r.ref_type, COUNT(*) AS actions
+FROM action_fact f
+LEFT JOIN ref_type_dim r ON r.id = f.ref_type_dim_id
+WHERE f.advertiser_id = 30720
+  AND f.action_datetime >= '2025-10-01' AND f.action_datetime < '2025-11-01'
+  AND r.ref_type = 'PROMOCODE'
+GROUP BY 1;
+
+
+SELECT code, ircm_campaign_id, status, doe, dlu
+FROM ircm_promocode
+WHERE ircm_campaign_id IN (<Motatos campaign id(s)>)
 LIMIT 1000;
--- -- result in query - 2025-11-13T173323.156.csv
-
-
-SELECT cpc_adv_raw_payout, COUNT(*) AS rows
-FROM click_fact
-WHERE advertiser_id = 5819706
-  AND publisher_id  = 170911
-  AND campaign_id   = 28165
-  AND event_datetime >= '2025-09-27' AND event_datetime < '2025-09-28'
-  AND cpc_payable = 1
-GROUP BY cpc_adv_raw_payout;
--- +--------------------+------+
-| cpc_adv_raw_payout | rows |
-+--------------------+------+
-|            13.5000 |  583 |
-+--------------------+------+
