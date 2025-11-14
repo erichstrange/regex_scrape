@@ -6,7 +6,11 @@ SELECT
 FROM conversion_fact
 WHERE advertiser_id = 30720
   AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01';
-
++----------------------+-------------------+---------------+
+| actions_without_code | actions_with_code | total_actions |
++----------------------+-------------------+---------------+
+|                    ʘ |                 ʘ |             0 |
++----------------------+-------------------+---------------+
 
 SELECT UPPER(TRIM(promo_code)) AS promo_code_norm, COUNT(*) AS actions
 FROM conversion_fact
@@ -15,6 +19,10 @@ WHERE advertiser_id = 30720
   AND promo_code IS NOT NULL AND promo_code <> ''
 GROUP BY 1
 ORDER BY actions DESC;
++-----------------+---------+
+| promo_code_norm | actions |
++-----------------+---------+
++-----------------+---------+
 
 
 /* DRAFT – duplicates by OID + action_tracker */
@@ -28,6 +36,11 @@ WITH x AS (
 SELECT SUM(CASE WHEN c>1 THEN c-1 ELSE 0 END) AS duplicate_rows,
        COUNT(*) AS unique_order_rows
 FROM x;
++----------------+-------------------+
+| duplicate_rows | unique_order_rows |
++----------------+-------------------+
+|              ʘ |                 0 |
++----------------+-------------------+
 
 
 
@@ -38,6 +51,10 @@ WHERE f.advertiser_id = 30720
   AND f.action_datetime >= '2025-10-01' AND f.action_datetime < '2025-11-01'
   AND r.ref_type = 'PROMOCODE'
 GROUP BY 1;
++----------+---------+
+| ref_type | actions |
++----------+---------+
++----------+---------+
 
 
 SELECT code, ircm_campaign_id, status, doe, dlu
