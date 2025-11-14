@@ -1,49 +1,53 @@
--- REI Product Boost – per-item amounts for impacted OIDs
--- DS: r_ds_iraction_sharded
+-- REI Product Boost – Final Audit CSV (category-matching items only)
+-- DS: datalake_irdwm  (IRDW/Redshift)
 
+WITH items AS (
+  SELECT
+    af.advertiser_id,
+    af.campaign_id,
+    af.publisher_id                                AS media_partner_id,
+    af.action_id,
+    af.oid,
+    af.action_datetime                             AS action_datetime_utc,
+    aif.sku,
+    aif.quantity,
+    COALESCE(asd.original_format_category, asd.category) AS catalog_category_path,
+    asd.catalog_id,
+    asd.catalog_item_id
+  FROM datalake_irdwm.action_fact        af
+  JOIN datalake_irdwm.action_item_fact   aif ON aif.action_id = af.action_id
+  LEFT JOIN datalake_irdwm.action_sku_dim asd ON asd.id       = aif.sku_dim_id
+  WHERE af.advertiser_id  = 3622523                 -- REI
+    AND af.campaign_id    = 17195                   -- Program
+    AND af.publisher_id IN (5879071,2536211,2850304,6213049,2022587) -- 5 partners
+    AND af.action_datetime >= TIMESTAMP '2025-10-14 00:00:00+00'
+    AND af.action_datetime <  TIMESTAMP '2025-10-17 19:00:00+00'
+    AND (
+      asd.original_format_category LIKE 'Sporting Goods%> Outdoor Recreation%> Winter Sports & Activities%> Skiing & Snowboarding%'
+      OR asd.original_format_category LIKE 'Sporting Goods%> Outdoor Recreation%> Winter Sports & Activities%> Snowshoeing%'
+      OR asd.original_format_category LIKE 'Apparel & Accessories%> Clothing%> Outerwear%> Snow Pants & Suits%'
+      OR asd.original_format_category LIKE 'Vehicles & Parts%> Vehicle Parts & Accessories%> Vehicle Storage & Cargo%> Motor Vehicle Carrying Racks%> Vehicle Ski & Snowboard Racks%'
+    )
+),
+pubs AS (
+  SELECT publisher_id, COALESCE(name, trading_name, CAST(publisher_id AS VARCHAR)) AS media_partner_name
+  FROM datalake_irdwm.publisher_dim
+)
 SELECT
-  advertiser_id,
-  campaign_id,
-  publisher_id                 AS media_partner_id,
-  action_id,
-  oid,
-  action_date                  AS action_datetime_utc,
-  sku,
-  quantity,
-  adv_saleamt                  AS item_adv_sale_amount,
-  adv_currency,
-  cart_saleamt                 AS item_cart_sale_amount,
-  cart_currency,
-  payout_trace,
-  item_json,
-  order_json
-FROM irac_action2
-WHERE advertiser_id = 3622523              -- REI
-  AND campaign_id   = 17195               -- Program
-  AND oid IN (
-    'A385560474',
-    'A385595006',
-    'A385443249',
-    'A385633257',
-    'A385643176',
-    'A385648053',
-    'A385659112',
-    'A385710403',
-    'A385720943'
-  )
-ORDER BY action_date, action_id, sku;
-+---------------+-------------+------------------+--------------------+------------+---------------------+------------+----------+----------------------+--------------+-----------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------------------------+
-| advertiser_id | campaign_id | media_partner_id | action_id          | oid        | action_datetime_utc | sku        | quantity | item_adv_sale_amount | adv_currency | item_cart_sale_amount | cart_currency | payout_trace                                                                                                                                                | item_json       | order_json               |
-+---------------+-------------+------------------+--------------------+------------+---------------------+------------+----------+----------------------+--------------+-----------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------------------------+
-|       3622523 |       17195 |          2850304 | 17195.6495.862361  | A385560474 | 2025-10-14 00:56:44 | 2399930003 |        1 |               679.95 | USD          |                679.95 | USD           | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","DefaultPayoutRate":"15%"}                               | {}              | {"orderShipping":7.990}  |
-|       3622523 |       17195 |          2850304 | 17195.6495.862361  | A385560474 | 2025-10-14 00:56:44 | 2409480004 |        1 |               749.95 | USD          |                749.95 | USD           | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","DefaultPayoutRate":"15%"}                               | {}              | ʘ                        |
-|       3622523 |       17195 |          2022587 | 17195.6496.685543  | A385595006 | 2025-10-14 20:11:13 | 2130310001 |        1 |               279.95 | USD          |                279.95 | USD           | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} | {}              | {"orderShipping":7.990}  |
-|       3622523 |       17195 |          2022587 | 17195.6496.719473  | A385443249 | 2025-10-14 20:26:31 | 2404130003 |        1 |               489.93 | USD          |                489.93 | USD           | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} | {}              | {"orderShipping":7.990}  |
-|       3622523 |       17195 |          6213049 | 17195.6497.742556  | A385633257 | 2025-10-15 21:40:53 | 2389770002 |        1 |               224.83 | USD          |                224.83 | USD           | {"ContractId":"S-28932938","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"5%"}  | {}              | {}                       |
-|       3622523 |       17195 |          2022587 | 17195.6497.1163174 | A385643176 | 2025-10-16 02:40:48 | 2397930003 |        1 |               299.95 | USD          |                299.95 | USD           | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} | {}              | {"orderShipping":7.990}  |
-|       3622523 |       17195 |          2850304 | 17195.6497.1241878 | A385648053 | 2025-10-16 04:25:27 | 2396240003 |       -1 |              -979.95 | USD          |               -979.95 | USD           | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} | {"adjLineNo":1} | ʘ                        |
-|       3622523 |       17195 |          2850304 | 17195.6497.1241878 | A385648053 | 2025-10-16 04:25:27 | 2396240003 |        1 |               979.95 | USD          |                979.95 | USD           | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} | {}              | {"orderShipping":7.990}  |
-|       3622523 |       17195 |          2022587 | 17195.6498.200484  | A385659112 | 2025-10-16 14:35:50 | 1996680001 |        1 |               139.95 | USD          |                139.95 | USD           | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} | {}              | {}                       |
-|       3622523 |       17195 |          2850304 | 17195.6499.320825  | A385710403 | 2025-10-17 16:18:51 | 2399920003 |        1 |               629.95 | USD          |                629.95 | USD           | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} | {}              | {}                       |
-|       3622523 |       17195 |          2850304 | 17195.6499.412122  | A385720943 | 2025-10-17 17:55:22 | 2255980003 |        1 |               899.00 | USD          |                899.00 | USD           | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} | {}              | {"orderShipping":19.990} |
-+---------------+-------------+------------------+--------------------+------------+---------------------+------------+----------+----------------------+--------------+-----------------------+---------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+--------------------------+
+  i.advertiser_id,
+  i.campaign_id,
+  i.media_partner_id,
+  p.media_partner_name,
+  i.action_id,
+  i.oid,
+  i.action_datetime_utc,
+  i.sku,
+  i.quantity,
+  i.catalog_category_path,
+  i.catalog_id,
+  i.catalog_item_id,
+  CASE WHEN i.quantity > 0 THEN TRUE ELSE FALSE END              AS eligible_for_remediation,
+  CASE WHEN i.quantity > 0 THEN NULL ELSE 'quantity<=0 (adjustment/no-op)' END AS remediation_note
+FROM items i
+LEFT JOIN pubs p ON p.publisher_id = i.media_partner_id
+ORDER BY i.action_datetime_utc, i.action_id, i.sku;
