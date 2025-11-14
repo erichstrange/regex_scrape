@@ -11,6 +11,11 @@ WHERE advertiser_id = 5819706        -- Chime
   AND cpc_locking_date >= '2025-10-01' AND cpc_locking_date < '2025-11-01'
   AND cpc_payable = 0
   AND (cpc_error_code IS NOT NULL OR cpc_error_code <> '');
++-----------------+--------------------+
+| clicks_reversed | implied_credit_usd |
++-----------------+--------------------+
+|               0 |               0.00 |
++-----------------+--------------------+
 
 
 SELECT
@@ -26,6 +31,7 @@ WHERE advertiser_id = 5819706
   AND cpc_payable = 0
 ORDER BY cpc_locking_date, event_datetime
 LIMIT 1000;
+-- -- result in query - 2025-11-13T173323.156.csv
 
 
 SELECT cpc_adv_raw_payout, COUNT(*) AS rows
@@ -36,3 +42,8 @@ WHERE advertiser_id = 5819706
   AND event_datetime >= '2025-09-27' AND event_datetime < '2025-09-28'
   AND cpc_payable = 1
 GROUP BY cpc_adv_raw_payout;
+-- +--------------------+------+
+| cpc_adv_raw_payout | rows |
++--------------------+------+
+|            13.5000 |  583 |
++--------------------+------+
