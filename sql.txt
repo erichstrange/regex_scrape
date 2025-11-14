@@ -1,53 +1,55 @@
--- REI Product Boost – Final Audit CSV (category-matching items only)
--- DS: datalake_irdwm  (IRDW/Redshift)
+-- REI Product Boost – Clean Audit CSV for AP/Jithin
+-- DS: r_ds_iraction_sharded
 
-WITH items AS (
-  SELECT
-    af.advertiser_id,
-    af.campaign_id,
-    af.publisher_id                                AS media_partner_id,
-    af.action_id,
-    af.oid,
-    af.action_datetime                             AS action_datetime_utc,
-    aif.sku,
-    aif.quantity,
-    COALESCE(asd.original_format_category, asd.category) AS catalog_category_path,
-    asd.catalog_id,
-    asd.catalog_item_id
-  FROM datalake_irdwm.action_fact        af
-  JOIN datalake_irdwm.action_item_fact   aif ON aif.action_id = af.action_id
-  LEFT JOIN datalake_irdwm.action_sku_dim asd ON asd.id       = aif.sku_dim_id
-  WHERE af.advertiser_id  = 3622523                 -- REI
-    AND af.campaign_id    = 17195                   -- Program
-    AND af.publisher_id IN (5879071,2536211,2850304,6213049,2022587) -- 5 partners
-    AND af.action_datetime >= TIMESTAMP '2025-10-14 00:00:00+00'
-    AND af.action_datetime <  TIMESTAMP '2025-10-17 19:00:00+00'
-    AND (
-      asd.original_format_category LIKE 'Sporting Goods%> Outdoor Recreation%> Winter Sports & Activities%> Skiing & Snowboarding%'
-      OR asd.original_format_category LIKE 'Sporting Goods%> Outdoor Recreation%> Winter Sports & Activities%> Snowshoeing%'
-      OR asd.original_format_category LIKE 'Apparel & Accessories%> Clothing%> Outerwear%> Snow Pants & Suits%'
-      OR asd.original_format_category LIKE 'Vehicles & Parts%> Vehicle Parts & Accessories%> Vehicle Storage & Cargo%> Motor Vehicle Carrying Racks%> Vehicle Ski & Snowboard Racks%'
-    )
+WITH qualifying AS (
+  /* Inline the boost-eligible (oid, sku) you found in IRDW, plus their category path for clarity */
+  SELECT 'A385560474' AS oid, '2399930003' AS sku, 'Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski Bindings' AS catalog_category_path
+  UNION ALL SELECT 'A385595006','2130310001','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski Bindings'
+  UNION ALL SELECT 'A385443249','2404130003','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Skis'
+  UNION ALL SELECT 'A385633257','2389770002','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Snowboards'
+  UNION ALL SELECT 'A385643176','2397930003','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski & Snowboard Bags'
+  UNION ALL SELECT 'A385648053','2396240003','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski Boots'
+  UNION ALL SELECT 'A385659112','1996680001','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski & Snowboard Wax'
+  UNION ALL SELECT 'A385710403','2399920003','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski Bindings'
+  UNION ALL SELECT 'A385720943','2255980003','Sporting Goods > Outdoor Recreation > Winter Sports & Activities > Skiing & Snowboarding > Ski Boots'
 ),
-pubs AS (
-  SELECT publisher_id, COALESCE(name, trading_name, CAST(publisher_id AS VARCHAR)) AS media_partner_name
-  FROM datalake_irdwm.publisher_dim
+base AS (
+  /* Pull the original itemized records for those nine OIDs */
+  SELECT
+    advertiser_id,
+    campaign_id,
+    publisher_id               AS media_partner_id,
+    action_id,
+    oid,
+    action_date                AS action_datetime_utc,
+    sku,
+    quantity,
+    adv_saleamt                AS item_adv_sale_amount,
+    adv_currency,
+    payout_trace
+  FROM irac_action2
+  WHERE advertiser_id = 3622523
+    AND campaign_id   = 17195
+    AND oid IN ('A385560474','A385595006','A385443249','A385633257','A385643176',
+                'A385648053','A385659112','A385710403','A385720943')
+    /* Ignore negative adjustment rows; we want the net sale line(s) for re-submission */
+    AND NOT (quantity < 0 OR adv_saleamt < 0)
 )
 SELECT
-  i.advertiser_id,
-  i.campaign_id,
-  i.media_partner_id,
-  p.media_partner_name,
-  i.action_id,
-  i.oid,
-  i.action_datetime_utc,
-  i.sku,
-  i.quantity,
-  i.catalog_category_path,
-  i.catalog_id,
-  i.catalog_item_id,
-  CASE WHEN i.quantity > 0 THEN TRUE ELSE FALSE END              AS eligible_for_remediation,
-  CASE WHEN i.quantity > 0 THEN NULL ELSE 'quantity<=0 (adjustment/no-op)' END AS remediation_note
-FROM items i
-LEFT JOIN pubs p ON p.publisher_id = i.media_partner_id
-ORDER BY i.action_datetime_utc, i.action_id, i.sku;
+  b.media_partner_id,
+  b.action_id,
+  b.oid,
+  CONCAT(b.oid, '_c')                            AS new_oid_for_resubmit,
+  b.action_datetime_utc,
+  b.sku,
+  b.quantity,
+  b.item_adv_sale_amount,
+  b.adv_currency,
+  q.catalog_category_path,
+  CASE WHEN q.oid IS NOT NULL THEN 1 ELSE 0 END  AS boost_category_flag,
+  CASE WHEN q.oid IS NOT NULL THEN ROUND(b.item_adv_sale_amount * 0.20, 2) END AS expected_boost_commission,
+  4018                                          AS product_boost_campaign_id
+FROM base b
+LEFT JOIN qualifying q
+  ON q.oid = b.oid AND q.sku = b.sku
+ORDER BY b.action_datetime_utc, b.action_id, b.sku;
