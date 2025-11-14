@@ -1,35 +1,16 @@
--- 1
 SELECT
-  cf.event_datetime,
-  cf.click_id,
-  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS inbound_link,
-  ad.ad_id, ad.name AS ad_name,
-  cf.publisher_id, cf.landing_page_url,
-  JSON_EXTRACT_STRING(cf.json,'ruleName')     AS rule_name,
-  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule
+  cf.campaign_id, cf.event_datetime,
+  JSON_EXTRACT_STRING(cf.json,'inboundLink') AS tracking_link,
+  cf.click_id, cf.profile_id, ad.ad_id, ad.name AS ad_name,
+  JSON_EXTRACT_STRING(cf.json,'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json,'ruleName') AS rule_name,
+  landing_page_url, cf.pub_subid1, cf.pub_subid2, cf.pub_subid3, cf.pub_subid4,
+  cf.method, cf.classification, cf.cpc_contract_id,
+  cf.cpc_adv_raw_payout, cf.cpc_error_code, cf.cpc_payout_trace, cf.cpc_payable
 FROM click_fact cf
 LEFT JOIN ad_dim ad ON cf.ad_dim_id = ad.id
-WHERE cf.campaign_id  = 9488
-  AND cf.publisher_id IN (34844, 10579)
-  AND cf.event_datetime BETWEEN '2025-09-22' AND '2025-09-30'
+WHERE advertiser_id = 5819706      -- Chime
+  AND cf.publisher_id = <Nerdwallet_partner_id>
+  AND cf.campaign_id  = 28165       -- Program ID supplied
+  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
 ORDER BY cf.event_datetime DESC;
-
--- 2
-SELECT cf.publisher_id, COUNT(*) AS clicks,
-       MIN(cf.event_datetime) AS first_seen, MAX(cf.event_datetime) AS last_seen
-FROM click_fact cf
-WHERE cf.campaign_id = 9488
-  AND cf.landing_page_url LIKE '%/p/rakutendpd%'
-  AND cf.event_datetime >= DATE_SUB(NOW(), INTERVAL 60 DAY)
-GROUP BY cf.publisher_id
-ORDER BY clicks DESC;
-
--- 3
-SELECT af.oid, af.publisher_id,
-       ad.ad_id AS stamped_ad_id, ad.name AS stamped_ad_name,
-       af.ref_landingpage_url, af.ref_domain
-FROM action_fact af
-LEFT JOIN ad_dim ad ON ad.id = af.ref_ad_dim_id
-WHERE af.campaign_id = 9488
-  AND af.action_datetime BETWEEN '2025-09-22' AND '2025-09-30'
-ORDER BY af.action_datetime DESC;
