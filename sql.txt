@@ -15,3 +15,5 @@ WHERE cf.advertiser_id = 5819706          -- Chime
   AND cf.event_datetime >= '2025-09-01'
   AND cf.event_datetime <  '2025-10-01'
 ORDER BY cf.event_datetime DESC;
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information
