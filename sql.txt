@@ -15,6 +15,8 @@ WHERE campaign_id = 17195
   AND action_date <  TIMESTAMP '2025-10-17 19:00:00'
 ORDER BY action_date;
 
+-- still processing
+
 
 /* Append these filters to the vetted "Action SKU – Product Catalog Match" query:
    - Time window
@@ -38,3 +40,14 @@ WHERE
     OR category LIKE 'Vehicle Ski & Snowboard Racks%'
   )
 ORDER BY doe;
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'WHERE
+doe >= '2025-10-14 00:00:00' AND doe < '2025-10-17 19:00:00'
+AND (
+' at line 1
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'WHERE
+doe >= '2025-10-14 00:00:00' AND doe < '2025-10-17 19:00:00'
+AND (
+' at line 1; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'WHERE
+doe >= '2025-10-14 00:00:00' AND doe < '2025-10-17 19:00:00'
+AND (
+' at line 1
