@@ -1,19 +1,14 @@
--- DRAFT | Data source: datalake_ipost
--- 1) Was any mailing created for this subject/date range?
-SELECT mailing_id, email_name, subject, sent_total, date_sent
-FROM datalake_ipost.brand_mailing_stats
-WHERE LOWER(subject) LIKE LOWER('%Holiday Increased CPA Rates%')
-  AND date_sent BETWEEN '2025-11-06' AND '2025-11-10'
-ORDER BY date_sent DESC;
+-- CONVERSIONS API LOGS FOR AXS (ir_api_log)
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 4984840
+  AND doe >= '2025-11-11' AND doe < '2025-11-12'
+ORDER BY submit_date DESC;
 
--- 2) If a mailing exists, sample sends to confirm delivery never started:
-SELECT mailing_id, send_datetime, status, email
-FROM datalake_ipost.brand_sends
-WHERE mailing_id = <mailing_id_from_query_1>
-LIMIT 50;
 
--- 3) Partner-facing mailings (if this newsletter targeted partners/contacts):
-SELECT mailing_id, subject, date_sent, total_sent
-FROM datalake_ipost.publisher_mailing_stats
-WHERE LOWER(subject) LIKE LOWER('%Holiday Increased CPA Rates%')
-ORDER BY date_sent DESC;
+-- AUDIT: TechnicalIntegration / Gateway settings for account
+SELECT *
+FROM m_audit_log
+WHERE account_id = 4984840
+  AND entity_type = 'TechnicalIntegration'
+ORDER BY change_date DESC;
