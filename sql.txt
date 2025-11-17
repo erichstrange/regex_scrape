@@ -1,10 +1,27 @@
--- DRAFT — Data source: r_ds_outreach_snapshot
-SELECT outreach_id, outreach_type, created_at, subject, email_address, html_body
-FROM new_email
-WHERE subject ILIKE '%Holiday Increased CPA Rates%'
-  AND created_at >= '2025-11-07' AND created_at < '2025-11-15';
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%Holiday Increased CPA Rates%'
-AND created_at >= '2025-11-07' AND creat' at line 4
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%Holiday Increased CPA Rates%'
-AND created_at >= '2025-11-07' AND creat' at line 4; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ILIKE '%Holiday Increased CPA Rates%'
-AND created_at >= '2025-11-07' AND creat' at line 4
+SELECT
+  submit_date,
+  response_code,
+  ircm_campaign_id,
+  ircm_tracker_id,
+  oid,
+  payload,
+  error_json
+FROM ir_api_log
+WHERE iram_account_id = 4984840
+  AND doe >= '2025-11-11'
+  AND doe <  '2025-11-12'
+  AND response_code = 400              -- only failures
+ORDER BY submit_date DESC
+LIMIT 200;
+
+SELECT
+  error_json,
+  COUNT(*) AS events
+FROM ir_api_log
+WHERE iram_account_id = 4984840
+  AND doe >= '2025-11-11'
+  AND doe <  '2025-11-12'
+  AND response_code = 400
+  AND error_json IS NOT NULL
+GROUP BY error_json
+ORDER BY events DESC;
