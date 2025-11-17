@@ -9,7 +9,10 @@ SELECT
 FROM iracct.iracct_impactradius_invoice AS iri
 WHERE iri.legal_entity_id = 170911   -- Nerdwallet LE
   AND iri.sequence_number = 3482;    -- "...-3482"
-
++----+----------------+--------------------+----------------+-------+------+-------+
+| id | invoice_number | finance_invoice_id | date_generated | month | year | state |
++----+----------------+--------------------+----------------+-------+------+-------+
++----+----------------+--------------------+----------------+-------+------+-------+
 
 
 -- Line items tied to the above invoice header
@@ -26,9 +29,12 @@ JOIN iracct.iracct_impactradius_invoice AS iri
   ON li.finance_invoice_id = iri.finance_invoice_id
 WHERE iri.legal_entity_id = 170911
   AND iri.sequence_number = 3482
-  AND li.iram_advertiser_id = 5819706     -- Chime
+  AND li.iram_advertiser_id = 5819706
 ORDER BY li.id;
-
++----+----------+-------------+-------------+----------------+-------------------------+---------------+------------------------+-------------+------------+
+| id | txn_code | description | num_actions | adv_net_amount | adv_net_amount_currency | mp_net_amount | mp_net_amount_currency | event_month | event_year |
++----+----------+-------------+-------------+----------------+-------------------------+---------------+------------------------+-------------+------------+
++----+----------+-------------+-------------+----------------+-------------------------+---------------+------------------------+-------------+------------+
 
 
 
@@ -47,18 +53,11 @@ FROM iracct.iracct_recipientgenerated_invoice AS rgi
 WHERE rgi.service_provider_legal_entity_id = 170911
   AND rgi.sequence_number = 3482
   AND rgi.iram_advertiser_id = 5819706;
+  +----+----------------------------------+-----------------+--------------------+-------------------+----------------+-------+------+-------+
+| id | service_provider_legal_entity_id | sequence_number | iram_advertiser_id | iram_publisher_id | date_generated | month | year | state |
++----+----------------------------------+-----------------+--------------------+-------------------+----------------+-------+------+-------+
++----+----------------------------------+-----------------+--------------------+-------------------+----------------+-------+------+-------+
 
-SELECT
-  li.id,
-  li.txn_code,
-  li.description,
-  li.num_actions,
-  li.adv_net_amount, li.adv_net_amount_currency,
-  li.mp_net_amount,  li.mp_net_amount_currency,
-  li.event_month, li.event_year
-FROM iracct.iracct_campaign_recipient_generated_lineitem AS li
-WHERE li.iracct_recipientgenerated_invoice_id = :rgi_id   -- <-- from the header above
-ORDER BY li.id;
 
 
 
@@ -68,3 +67,5 @@ WHERE iram_advertiser_id = 5819706
   AND iram_publisher_id  = 170911
   AND doe BETWEEN '2025-11-01' AND '2025-11-10'
 ORDER BY dlu DESC;
+Unknown column 'iram_advertiser_id' in 'where clause'
+Unknown column 'iram_advertiser_id' in 'where clause'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'iram_advertiser_id' in 'where clause'
