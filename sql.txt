@@ -9,6 +9,12 @@ FROM iracct.iracct_campaign_recipient_generated_lineitem li
 WHERE li.iracct_recipientgenerated_invoice_id = 9699125
 GROUP BY 1
 ORDER BY 1;
++-----------------------------+----------------+
+| statement_bucket            | amount_adv_usd |
++-----------------------------+----------------+
+| CPC                         |         -13.50 |
+| No Event Type / Other Costs |      -45780.00 |
++-----------------------------+----------------+
 
 
 SELECT
@@ -18,7 +24,13 @@ SELECT
 FROM iracct.iracct_campaign_recipient_generated_lineitem li
 WHERE li.iracct_recipientgenerated_invoice_id = 9699125
   AND li.txn_code = 'CPC'
-ORDER BY li.adv_net_amount DESC;  -- positive first, then the negative
+ORDER BY li.adv_net_amount DESC;
++----------+----------+-------------+----------------+-------------+------------+
+|       id | txn_code | num_actions | amount_adv_usd | event_month | event_year |
++----------+----------+-------------+----------------+-------------+------------+
+| 15974690 | CPC      |        1812 |       24462.00 |           9 |       2025 |
+| 15979436 | CPC      |           0 |      -24475.50 |           9 |       2025 |
++----------+----------+-------------+----------------+-------------+------------+
 
 
 SELECT
@@ -30,3 +42,8 @@ SELECT
   rgi.date_generated, rgi.state
 FROM iracct.iracct_recipientgenerated_invoice rgi
 WHERE rgi.id = 9699125;
++---------+-------------------+-----------------+--------------------+-------+------+---------------------+--------+
+|      id | iram_publisher_id | sequence_number | iram_advertiser_id | month | year | date_generated      | state  |
++---------+-------------------+-----------------+--------------------+-------+------+---------------------+--------+
+| 9699125 |            170911 |            3482 |            5819706 |    10 | 2025 | 2025-11-07 10:08:29 | UNPAID |
++---------+-------------------+-----------------+--------------------+-------+------+---------------------+--------+
