@@ -1,70 +1,72 @@
--- REI Product Boost – Clean Audit CSV with item_campaign_id
--- DS: r_ds_iraction_sharded
-
+/* DRAFT — Header for RGI 170911-3482 (Chime 5819706, Nerdwallet 170911) */
 SELECT
-  advertiser_id,
-  campaign_id,
-  publisher_id               AS media_partner_id,
-  action_id,
-  oid,
-  CONCAT(oid, '_c')          AS new_oid_for_resubmit,
-  action_date                AS action_datetime_utc,
-  sku,
-  quantity,
-  adv_saleamt                AS item_adv_sale_amount,
-  adv_currency,
-  payout_trace,
-  item_campaign_id,          -- <=== NEW
+  rgi.id,
+  CONCAT(rgi.service_provider_legal_entity_id, '-', rgi.sequence_number) AS invoice_number,
+  rgi.iram_advertiser_id,
+  rgi.iram_publisher_id,
+  rgi.year,
+  rgi.month,
+  rgi.date_generated,
+  rgi.state,
+  rgi.due_date
+FROM iracct.iracct_recipientgenerated_invoice rgi
+WHERE rgi.iram_advertiser_id = 5819706      -- Chime
+  AND rgi.service_provider_legal_entity_id = 170911  -- Nerdwallet LE
+  AND rgi.sequence_number = 3482;            -- the “-3482” piece
 
-  -- mark boost-eligible lines
-  CASE
-    WHEN (oid = 'A385560474' AND sku = '2399930003') THEN 1
-    WHEN (oid = 'A385595006' AND sku = '2130310001') THEN 1
-    WHEN (oid = 'A385443249' AND sku = '2404130003') THEN 1
-    WHEN (oid = 'A385633257' AND sku = '2389770002') THEN 1
-    WHEN (oid = 'A385643176' AND sku = '2397930003') THEN 1
-    WHEN (oid = 'A385648053' AND sku = '2396240003') THEN 1
-    WHEN (oid = 'A385659112' AND sku = '1996680001') THEN 1
-    WHEN (oid = 'A385710403' AND sku = '2399920003') THEN 1
-    WHEN (oid = 'A385720943' AND sku = '2255980003') THEN 1
-    ELSE 0
-  END AS boost_category_flag,
 
-  -- expected boosted commission only for boost-eligible rows
-  CASE
-    WHEN (oid = 'A385560474' AND sku = '2399930003') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385595006' AND sku = '2130310001') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385443249' AND sku = '2404130003') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385633257' AND sku = '2389770002') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385643176' AND sku = '2397930003') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385648053' AND sku = '2396240003') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385659112' AND sku = '1996680001') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385710403' AND sku = '2399920003') THEN ROUND(adv_saleamt * 0.20, 2)
-    WHEN (oid = 'A385720943' AND sku = '2255980003') THEN ROUND(adv_saleamt * 0.20, 2)
-    ELSE NULL
-  END AS expected_boost_commission,
+/* DRAFT — Line items for that RGI (expect exactly 2 rows: CPC –13.50, Make-good –45,780.00) */
+SELECT
+  li.*  -- keep * to see available columns; we’ll read description/amount/event_type fields as present
+FROM iracct.iracct_campaign_recipient_generated_lineitem li
+JOIN iracct.iracct_recipientgenerated_invoice rgi
+      ON li.recipient_generated_invoice_id = rgi.id  -- if this column name 404s, use the fallback below
+WHERE rgi.iram_advertiser_id = 5819706
+  AND rgi.service_provider_legal_entity_id = 170911
+  AND rgi.sequence_number = 3482
+ORDER BY li.line_number;
 
-  4018 AS product_boost_campaign_id
+/* Fallback join key (some envs): li.recipientgeneratedinvoice_id */
+-- JOIN iracct.iracct_recipientgenerated_invoice rgi
+--   ON li.recipientgeneratedinvoice_id = rgi.id
 
-FROM irac_action2
-WHERE advertiser_id = 3622523
-  AND campaign_id   = 17195
-  AND oid IN ('A385560474','A385595006','A385443249','A385633257','A385643176',
-              'A385648053','A385659112','A385710403','A385720943')
-  -- drop negative adjustment rows; we want the positive sale line
-  AND NOT (quantity < 0 OR adv_saleamt < 0)
-ORDER BY action_date, action_id, sku;
-+---------------+-------------+------------------+--------------------+------------+----------------------+---------------------+------------+----------+----------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+---------------------+---------------------------+---------------------------+
-| advertiser_id | campaign_id | media_partner_id | action_id          | oid        | new_oid_for_resubmit | action_datetime_utc | sku        | quantity | item_adv_sale_amount | adv_currency | payout_trace                                                                                                                                                | item_campaign_id | boost_category_flag | expected_boost_commission | product_boost_campaign_id |
-+---------------+-------------+------------------+--------------------+------------+----------------------+---------------------+------------+----------+----------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+---------------------+---------------------------+---------------------------+
-|       3622523 |       17195 |          2850304 | 17195.6495.862361  | A385560474 | A385560474_c         | 2025-10-14 00:56:44 | 2399930003 |        1 |               679.95 | USD          | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","DefaultPayoutRate":"15%"}                               |                ʘ |                   1 |                    135.99 |                      4018 |
-|       3622523 |       17195 |          2850304 | 17195.6495.862361  | A385560474 | A385560474_c         | 2025-10-14 00:56:44 | 2409480004 |        1 |               749.95 | USD          | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","DefaultPayoutRate":"15%"}                               |                ʘ |                   0 |                         ʘ |                      4018 |
-|       3622523 |       17195 |          2022587 | 17195.6496.685543  | A385595006 | A385595006_c         | 2025-10-14 20:11:13 | 2130310001 |        1 |               279.95 | USD          | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} |                ʘ |                   1 |                     55.99 |                      4018 |
-|       3622523 |       17195 |          2022587 | 17195.6496.719473  | A385443249 | A385443249_c         | 2025-10-14 20:26:31 | 2404130003 |        1 |               489.93 | USD          | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} |                ʘ |                   1 |                     97.99 |                      4018 |
-|       3622523 |       17195 |          6213049 | 17195.6497.742556  | A385633257 | A385633257_c         | 2025-10-15 21:40:53 | 2389770002 |        1 |               224.83 | USD          | {"ContractId":"S-28932938","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"5%"}  |                ʘ |                   1 |                     44.97 |                      4018 |
-|       3622523 |       17195 |          2022587 | 17195.6497.1163174 | A385643176 | A385643176_c         | 2025-10-16 02:40:48 | 2397930003 |        1 |               299.95 | USD          | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} |                ʘ |                   1 |                     59.99 |                      4018 |
-|       3622523 |       17195 |          2850304 | 17195.6497.1241878 | A385648053 | A385648053_c         | 2025-10-16 04:25:27 | 2396240003 |        1 |               979.95 | USD          | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} |                ʘ |                   1 |                    195.99 |                      4018 |
-|       3622523 |       17195 |          2022587 | 17195.6498.200484  | A385659112 | A385659112_c         | 2025-10-16 14:35:50 | 1996680001 |        1 |               139.95 | USD          | {"ContractId":"S-29324378","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"10%"} |                ʘ |                   1 |                     27.99 |                      4018 |
-|       3622523 |       17195 |          2850304 | 17195.6499.320825  | A385710403 | A385710403_c         | 2025-10-17 16:18:51 | 2399920003 |        1 |               629.95 | USD          | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} |                ʘ |                   1 |                    125.99 |                      4018 |
-|       3622523 |       17195 |          2850304 | 17195.6499.412122  | A385720943 | A385720943_c         | 2025-10-17 17:55:22 | 2255980003 |        1 |               899.00 | USD          | {"ContractId":"S-28388457","EventTypeId":33010,"EventTypeName":"Online Sale","PayoutLevel":"ORDER","PayoutLevelOverride":"MIXED","DefaultPayoutRate":"15%"} |                ʘ |                   1 |                    179.80 |                      4018 |
-+---------------+-------------+------------------+--------------------+------------+----------------------+---------------------+------------+----------+----------------------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------+---------------------+---------------------------+---------------------------+
+
+
+
+
+/* DRAFT — Header by invoice_number literal */
+SELECT
+  iri.id,
+  iri.invoice_number,
+  iri.iram_advertiser_id,
+  iri.iram_publisher_id,
+  iri.date_generated,
+  iri.state
+FROM iracct.iracct_impactradius_invoice iri
+WHERE iri.invoice_number = '170911-3482'
+  AND iri.iram_advertiser_id = 5819706;
+
+/* DRAFT — Line items for that invoice id */
+SELECT
+  l.*
+FROM iracct.iracct_impactradius_invoice_lineitem l
+WHERE l.iracct_impactradius_invoice_id = (
+  SELECT iri.id
+  FROM iracct.iracct_impactradius_invoice iri
+  WHERE iri.invoice_number = '170911-3482'
+    AND iri.iram_advertiser_id = 5819706
+)
+ORDER BY l.line_number;
+
+
+
+/* Redshift — count non-payable CPC clicks that locked in Oct for Sept activity */
+SELECT
+  COUNT(*) AS nonpayables_sept_locked_oct
+FROM click_fact
+WHERE advertiser_id = 5819706          -- Chime
+  AND publisher_id  = 170911            -- Nerdwallet
+  AND campaign_id   = 28165
+  AND event_datetime >= '2025-09-01' AND event_datetime < '2025-10-01'
+  AND cpc_locking_date >= '2025-10-01' AND cpc_locking_date < '2025-11-01'
+  AND cpc_payable = 0;
