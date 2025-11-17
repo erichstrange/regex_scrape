@@ -1,71 +1,32 @@
-/* Find the two Sept-2025 credit lines for Chime/Nerdwallet */
 SELECT
-  li.id,
-  li.iracct_recipientgenerated_invoice_id AS rgi_id,
-  li.iram_publisher_id,
-  li.service_provider_legal_entity_id,
-  li.txn_code,
-  li.description,
-  li.num_actions            AS quantity,
-  li.adv_net_amount         AS amount_adv,
-  li.adv_net_amount_currency AS currency_adv,
-  li.event_month, li.event_year,
-  li.finance_invoice_id
+  CASE
+    WHEN li.txn_code = 'CPC' THEN 'CPC'
+    WHEN li.txn_code = 'MAKE_GOOD' THEN 'No Event Type / Other Costs'
+    ELSE li.txn_code
+  END AS statement_bucket,
+  SUM(li.adv_net_amount) AS amount_adv_usd
 FROM iracct.iracct_campaign_recipient_generated_lineitem li
-WHERE li.iram_advertiser_id = 5819706               -- Chime
-  AND (li.iram_publisher_id = 170911
-       OR li.service_provider_legal_entity_id = 170911)  -- Nerdwallet identifiers
-  AND li.event_year  = 2025
-  AND li.event_month = 9
-  AND li.adv_net_amount IN (-13.50, -45780.00)
-ORDER BY li.adv_net_amount;
-+----------+---------+-------------------+----------------------------------+-----------+-------------+----------+------------+--------------+-------------+------------+--------------------+
-|       id |  rgi_id | iram_publisher_id | service_provider_legal_entity_id | txn_code  | description | quantity | amount_adv | currency_adv | event_month | event_year | finance_invoice_id |
-+----------+---------+-------------------+----------------------------------+-----------+-------------+----------+------------+--------------+-------------+------------+--------------------+
-| 16218669 | 9699125 |            170911 |                           149715 | MAKE_GOOD | ʘ           |        ʘ |  -45780.00 | USD          |           9 |       2025 |           13700736 |
-+----------+---------+-------------------+----------------------------------+-----------+-------------+----------+------------+--------------+-------------+------------+--------------------+
+WHERE li.iracct_recipientgenerated_invoice_id = 9699125
+GROUP BY 1
+ORDER BY 1;
 
 
-
+SELECT
+  li.id, li.txn_code, li.num_actions,
+  li.adv_net_amount AS amount_adv_usd,
+  li.event_month, li.event_year
+FROM iracct.iracct_campaign_recipient_generated_lineitem li
+WHERE li.iracct_recipientgenerated_invoice_id = 9699125
+  AND li.txn_code = 'CPC'
+ORDER BY li.adv_net_amount DESC;  -- positive first, then the negative
 
 
 SELECT
   rgi.id,
-  rgi.iram_publisher_id,
-  rgi.service_provider_legal_entity_id,
-  rgi.iram_advertiser_id,
-  rgi.sequence_number,
-  rgi.year, rgi.month,
-  rgi.date_generated,
-  rgi.state, rgi.due_date
+  rgi.iram_publisher_id,          -- 170911
+  rgi.sequence_number,            -- 3482
+  rgi.iram_advertiser_id,         -- 5819706
+  rgi.month, rgi.year,
+  rgi.date_generated, rgi.state
 FROM iracct.iracct_recipientgenerated_invoice rgi
 WHERE rgi.id = 9699125;
-+---------+-------------------+----------------------------------+--------------------+-----------------+------+-------+---------------------+--------+---------------------+
-|      id | iram_publisher_id | service_provider_legal_entity_id | iram_advertiser_id | sequence_number | year | month | date_generated      | state  | due_date            |
-+---------+-------------------+----------------------------------+--------------------+-----------------+------+-------+---------------------+--------+---------------------+
-| 9699125 |            170911 |                           149715 |            5819706 |            3482 | 2025 |    10 | 2025-11-07 10:08:29 | UNPAID | 2025-11-06 08:00:00 |
-+---------+-------------------+----------------------------------+--------------------+-----------------+------+-------+---------------------+--------+---------------------+
-
-
-
-
-SELECT
-  CASE
-    WHEN li.description LIKE 'Advertising Media Partner Payout%' THEN 'CPC'
-    WHEN li.description LIKE 'Bonuses, Make Goods and Paid Placements%' THEN 'No Event Type / Other Costs'
-    ELSE COALESCE(li.txn_code,'(unclassified)')
-  END AS statement_bucket,
-  li.description,
-  li.num_actions AS quantity,
-  li.adv_net_amount AS amount_adv,
-  li.adv_net_amount_currency AS currency
-FROM iracct.iracct_campaign_recipient_generated_lineitem li
-WHERE li.iracct_recipientgenerated_invoice_id = 9699125
-ORDER BY statement_bucket;
-+------------------+-------------+----------+------------+----------+
-| statement_bucket | description | quantity | amount_adv | currency |
-+------------------+-------------+----------+------------+----------+
-| CPC              | ʘ           |     1812 |   24462.00 | USD      |
-| CPC              | ʘ           |        0 |  -24475.50 | USD      |
-| MAKE_GOOD        | ʘ           |        ʘ |  -45780.00 | USD      |
-+------------------+-------------+----------+------------+----------+
