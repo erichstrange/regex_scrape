@@ -13,7 +13,10 @@ FROM iracct.iracct_recipientgenerated_invoice rgi
 WHERE rgi.iram_advertiser_id = 5819706      -- Chime
   AND rgi.service_provider_legal_entity_id = 170911  -- Nerdwallet LE
   AND rgi.sequence_number = 3482;            -- the “-3482” piece
-
+-- +----+----------------+--------------------+-------------------+------+-------+----------------+-------+----------+
+| id | invoice_number | iram_advertiser_id | iram_publisher_id | year | month | date_generated | state | due_date |
++----+----------------+--------------------+-------------------+------+-------+----------------+-------+----------+
++----+----------------+--------------------+-------------------+------+-------+----------------+-------+----------+
 
 /* DRAFT — Line items for that RGI (expect exactly 2 rows: CPC –13.50, Make-good –45,780.00) */
 SELECT
@@ -29,10 +32,92 @@ ORDER BY li.line_number;
 /* Fallback join key (some envs): li.recipientgeneratedinvoice_id */
 -- JOIN iracct.iracct_recipientgenerated_invoice rgi
 --   ON li.recipientgeneratedinvoice_id = rgi.id
+--Unknown column 'li.recipient_generated_invoice_id' in 'on clause'
+Unknown column 'li.recipient_generated_invoice_id' in 'on clause'; nested exception is java.sql.SQLSyntaxErrorException: Unknown column 'li.recipient_generated_invoice_id' in 'on clause'
 
+DESCRIBE iracct.iracct_campaign_recipient_generated_lineitem
++--------------------------------------+----------------------+------+-----+---------+----------------+
+| Field                                | Type                 | Null | Key | Default | Extra          |
++--------------------------------------+----------------------+------+-----+---------+----------------+
+| id                                   | int(10) unsigned     | NO   | PRI | ʘ       | auto_increment |
+| iracct_recipientgenerated_invoice_id | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| iracct_invoice_settings_id           | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| iram_publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| service_provider_legal_entity_id     | int(10) unsigned     | NO   |     | ʘ       |                |
+| iram_account_id                      | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| customer_legal_entity_id             | int(10) unsigned     | NO   |     | ʘ       |                |
+| iram_advertiser_id                   | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| source_customer_legal_entity_id      | int(10) unsigned     | YES  |     | ʘ       |                |
+| ircm_campaign_id                     | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ircm_actiontracker_id                | int(10) unsigned     | YES  |     | ʘ       |                |
+| irad_trackable_campaign_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| reseller_program_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| reseller_related_line_item_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| month                                | tinyint(3) unsigned  | NO   |     | ʘ       |                |
+| year                                 | smallint(5) unsigned | NO   |     | ʘ       |                |
+| event_month                          | tinyint(3) unsigned  | NO   |     | ʘ       |                |
+| event_year                           | smallint(5) unsigned | NO   |     | ʘ       |                |
+| txn_code                             | varchar(255)         | NO   |     | ʘ       |                |
+| description                          | varchar(512)         | YES  |     | ʘ       |                |
+| mp_net_amount                        | decimal(12,2)        | NO   |     | ʘ       |                |
+| mp_net_amount_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| mp_vat_amount                        | decimal(12,2)        | YES  |     | ʘ       |                |
+| mp_vat_amount_currency               | varchar(3)           | YES  |     | ʘ       |                |
+| vat_classification                   | varchar(255)         | YES  |     | ʘ       |                |
+| num_actions                          | int(10) unsigned     | YES  |     | ʘ       |                |
+| date_from                            | datetime             | YES  |     | ʘ       |                |
+| date_to                              | datetime             | YES  |     | ʘ       |                |
+| prev_month_adjustment                | tinyint(1)           | NO   |     | ʘ       |                |
+| vat_percentage                       | decimal(5,4)         | YES  |     | ʘ       |                |
+| due_date                             | datetime             | YES  |     | ʘ       |                |
+| irac_lifecycle_id                    | int(10) unsigned     | YES  |     | ʘ       |                |
+| mp_finance_ledger_id                 | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| finance_invoice_id                   | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| finance_paystub_id                   | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| determination_date                   | datetime             | YES  |     | ʘ       |                |
+| adv_withholding_tax_amount           | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_withholding_tax_amount_currency  | varchar(3)           | YES  |     | ʘ       |                |
+| mp_withholding_tax_amount            | decimal(12,2)        | YES  |     | ʘ       |                |
+| mp_withholding_tax_amount_currency   | varchar(3)           | YES  |     | ʘ       |                |
+| doe                                  | datetime             | NO   |     | ʘ       |                |
+| dlu                                  | datetime             | YES  |     | ʘ       |                |
+| uoe                                  | varchar(255)         | NO   |     | ʘ       |                |
+| ulu                                  | varchar(255)         | YES  |     | ʘ       |                |
+| adv_net_amount                       | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_net_amount_currency              | varchar(3)           | YES  |     | ʘ       |                |
+| adv_vat_amount                       | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_vat_amount_currency              | varchar(3)           | YES  |     | ʘ       |                |
+| tax_jurisdiction_net_amount          | decimal(12,2)        | YES  |     | ʘ       |                |
+| tax_jurisdiction_net_amount_currency | varchar(3)           | YES  |     | ʘ       |                |
+| tax_jurisdiction_vat_amount          | decimal(12,2)        | YES  |     | ʘ       |                |
+| tax_jurisdiction_vat_amount_currency | varchar(3)           | YES  |     | ʘ       |                |
++--------------------------------------+----------------------+------+-----+---------+----------------+
 
-
-
+DESCRIBE iracct.iracct_recipientgenerated_invoice
++-------------------------------------+----------------------+------+-----+---------+----------------+
+| Field                               | Type                 | Null | Key | Default | Extra          |
++-------------------------------------+----------------------+------+-----+---------+----------------+
+| id                                  | int(10) unsigned     | NO   | PRI | ʘ       | auto_increment |
+| iracct_agency_advertiser_invoice_id | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| iram_publisher_id                   | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| service_provider_legal_entity_id    | int(10) unsigned     | NO   |     | ʘ       |                |
+| iram_account_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| customer_legal_entity_id            | int(10) unsigned     | NO   |     | ʘ       |                |
+| iram_advertiser_id                  | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| source_customer_legal_entity_id     | int(10) unsigned     | YES  |     | ʘ       |                |
+| state                               | varchar(50)          | NO   |     | ʘ       |                |
+| month                               | tinyint(3) unsigned  | NO   |     | ʘ       |                |
+| year                                | smallint(5) unsigned | NO   |     | ʘ       |                |
+| sequence_number                     | int(10) unsigned     | NO   |     | ʘ       |                |
+| due_date                            | datetime             | YES  |     | ʘ       |                |
+| date_generated                      | datetime             | YES  |     | ʘ       |                |
+| paid_by_adv_date                    | datetime             | YES  |     | ʘ       |                |
+| paid_by_ir_date                     | datetime             | YES  |     | ʘ       |                |
+| doe                                 | datetime             | NO   |     | ʘ       |                |
+| dlu                                 | datetime             | YES  |     | ʘ       |                |
+| uoe                                 | varchar(255)         | NO   |     | ʘ       |                |
+| ulu                                 | varchar(255)         | YES  |     | ʘ       |                |
++-------------------------------------+----------------------+------+-----+---------+----------------+
 
 /* DRAFT — Header by invoice_number literal */
 SELECT
@@ -57,6 +142,49 @@ WHERE l.iracct_impactradius_invoice_id = (
     AND iri.iram_advertiser_id = 5819706
 )
 ORDER BY l.line_number;
+
+DESCRIBE iracct.iracct_impactradius_invoice
++---------------------------------------------+----------------------+------+-----+---------+----------------+
+| Field                                       | Type                 | Null | Key | Default | Extra          |
++---------------------------------------------+----------------------+------+-----+---------+----------------+
+| id                                          | int(10) unsigned     | NO   | PRI | ʘ       | auto_increment |
+| iram_account_id                             | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| legal_entity_id                             | int(10) unsigned     | YES  |     | ʘ       |                |
+| state                                       | varchar(50)          | NO   |     | ʘ       |                |
+| overdue_status                              | varchar(255)         | YES  |     | ʘ       |                |
+| month                                       | tinyint(3) unsigned  | NO   |     | ʘ       |                |
+| year                                        | smallint(5) unsigned | NO   |     | ʘ       |                |
+| due_date                                    | datetime             | YES  |     | ʘ       |                |
+| paid_date                                   | datetime             | YES  |     | ʘ       |                |
+| amount_paid                                 | decimal(12,2)        | YES  |     | ʘ       |                |
+| amount_paid_currency                        | varchar(5)           | YES  |     | ʘ       |                |
+| date_generated                              | datetime             | YES  |     | ʘ       |                |
+| sequence_number                             | int(10) unsigned     | NO   |     | ʘ       |                |
+| is_manual_invoice                           | tinyint(1)           | NO   |     | 0       |                |
+| is_immediate_payment                        | tinyint(1)           | YES  |     | ʘ       |                |
+| is_held_back                                | tinyint(1)           | YES  |     | 0       |                |
+| revenue_recognizable_month                  | int(2)               | YES  |     | ʘ       |                |
+| revenue_recognizable_year                   | int(4)               | YES  |     | ʘ       |                |
+| sales_tax_reference                         | varchar(50)          | YES  |     | ʘ       |                |
+| currency                                    | varchar(3)           | YES  |     | ʘ       |                |
+| billing_entity                              | varchar(255)         | YES  |     | ʘ       |                |
+| finance_invoice_id                          | int(10) unsigned     | YES  |     | ʘ       |                |
+| funding_account_id                          | int(10) unsigned     | YES  |     | ʘ       |                |
+| is_show_funding_account_id                  | tinyint(1)           | NO   |     | 0       |                |
+| show_payment_instructions                   | tinyint(1)           | NO   |     | 1       |                |
+| category                                    | varchar(128)         | YES  |     | ʘ       |                |
+| category_reason                             | varchar(128)         | YES  |     | ʘ       |                |
+| billing_error                               | tinyint(1)           | YES  |     | 0       |                |
+| billing_error_reason                        | varchar(128)         | YES  |     | ʘ       |                |
+| comment                                     | varchar(255)         | YES  |     | ʘ       |                |
+| finance_billing_address_id                  | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| service_provider_finance_billing_address_id | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| doe                                         | datetime             | NO   |     | ʘ       |                |
+| dlu                                         | datetime             | YES  |     | ʘ       |                |
+| uoe                                         | varchar(255)         | NO   |     | ʘ       |                |
+| ulu                                         | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id                      | int(10) unsigned     | NO   |     | ʘ       |                |
++---------------------------------------------+----------------------+------+-----+---------+----------------+
 
 
 
