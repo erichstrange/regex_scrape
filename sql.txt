@@ -1,16 +1,18 @@
+-- DRAFT – boundary-check for Walmart Creator / oak.haus (4085301)
+-- Purpose: show which orders flip in/out of Oct 1–31 when viewed in two time zones.
+
 SELECT
-  outreach_id,
-  outreach_type,
-  COUNT(*) AS recipient_count,
-  MIN(created_at) AS first_created_at,
-  MAX(created_at) AS last_created_at
-FROM new_email
-WHERE outreach_id = 74055
-GROUP BY outreach_id, outreach_type;
-
-
-
-SELECT *
-FROM new_email
-WHERE outreach_id = 74055
-LIMIT 1;
+    a.oid,
+    a.action_id,
+    a.campaign_id,
+    a.publisher_id,
+    a.doe                          AS doe_utc_raw,
+    -- Adjust as needed if your warehouse uses a different function
+    (a.doe AT TIME ZONE 'US/Central') AS doe_ct,
+    (a.doe AT TIME ZONE 'US/Pacific') AS doe_pt
+FROM irac_action2 a
+WHERE a.iram_account_id = 1356456               -- Walmart account
+  AND a.publisher_id    = 4085301               -- oak.haus.collective
+  AND a.doe >= '2025-09-30'
+  AND a.doe <  '2025-11-02'
+ORDER BY a.doe;
