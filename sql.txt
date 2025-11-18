@@ -2,6 +2,7 @@
 select date_from, date_to, timezone
 from advertiser_dim
 where advertiser_id = 1356456;
+Table 'irac_action_0.advertiser_dim' doesn't exist
 
 
 
@@ -18,7 +19,30 @@ FROM irac_action2 a
 WHERE a.advertiser_id = 1356456
   AND a.publisher_id  = 4085301
   AND DATE(CONVERT_TZ(a.action_date,'GMT','America/Los_Angeles')) BETWEEN '2025-10-01' AND '2025-10-31';
-
++---------------------+--------+
+| tz                  | orders |
++---------------------+--------+
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
++---------------------+--------+
 
 
 -- OIDs included in CT Oct window but not in PT
@@ -32,6 +56,10 @@ WHERE a.advertiser_id = 1356456
   AND DATE(CONVERT_TZ(a.action_date,'GMT','America/Chicago')) BETWEEN '2025-10-01' AND '2025-10-31'
   AND NOT (DATE(CONVERT_TZ(a.action_date,'GMT','America/Los_Angeles')) BETWEEN '2025-10-01' AND '2025-10-31')
 ORDER BY a.action_date;
++-----+-----------+---------------+--------------+--------------+
+| oid | action_id | action_dt_gmt | action_dt_ct | action_dt_pt |
++-----+-----------+---------------+--------------+--------------+
++-----+-----------+---------------+--------------+--------------+
 
 -- OIDs included in PT Oct window but not in CT (inverse)
 SELECT DISTINCT a.oid, a.action_id,
@@ -44,3 +72,7 @@ WHERE a.advertiser_id = 1356456
   AND DATE(CONVERT_TZ(a.action_date,'GMT','America/Los_Angeles')) BETWEEN '2025-10-01' AND '2025-10-31'
   AND NOT (DATE(CONVERT_TZ(a.action_date,'GMT','America/Chicago')) BETWEEN '2025-10-01' AND '2025-10-31')
 ORDER BY a.action_date;
++-----+-----------+---------------+--------------+--------------+
+| oid | action_id | action_dt_gmt | action_dt_ct | action_dt_pt |
++-----+-----------+---------------+--------------+--------------+
++-----+-----------+---------------+--------------+--------------+
