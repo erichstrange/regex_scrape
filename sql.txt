@@ -7,12 +7,21 @@ WHERE advertiser_id = 1356456      -- Walmart
   AND publisher_id  = 4085301      -- oak.haus.collective
   AND action_date >= '2025-10-01'
   AND action_date <  '2025-11-01';
++-------------+------------------+-----------------+
+| rows_in_oct | first_action_utc | last_action_utc |
++-------------+------------------+-----------------+
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
+|           0 | ʘ                | ʘ               |
++-------------+------------------+-----------------+
 
-
-SELECT COUNT(*)
-FROM iraction_sharded.irac_action2
-WHERE advertiser_id = 1356456
-  AND action_date >= '2025-10-01' AND action_date < '2025-11-01';
 
 
 
@@ -31,6 +40,31 @@ WHERE a.advertiser_id = 1356456
   AND DATE(CONVERT_TZ(a.action_date,'GMT','America/Los_Angeles'))
       BETWEEN '2025-10-01' AND '2025-10-31';
 
+      +---------------------+--------+
+| tz                  | orders |
++---------------------+--------+
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
+| America/Chicago     |      0 |
+| America/Los_Angeles |      0 |
++---------------------+--------+
+
 
 -- OIDs included in CT Oct window but not in PT
 SELECT DISTINCT a.oid, a.action_id,
@@ -45,6 +79,11 @@ WHERE a.advertiser_id = 1356456
   AND NOT (DATE(CONVERT_TZ(a.action_date,'GMT','America/Los_Angeles'))
       BETWEEN '2025-10-01' AND '2025-10-31')
 ORDER BY a.action_date;
++-----+-----------+---------------+--------------+--------------+
+| oid | action_id | action_dt_utc | action_dt_ct | action_dt_pt |
++-----+-----------+---------------+--------------+--------------+
++-----+-----------+---------------+--------------+--------------+
+
 
 -- OIDs included in PT Oct window but not in CT (inverse)
 SELECT DISTINCT a.oid, a.action_id,
@@ -59,3 +98,8 @@ WHERE a.advertiser_id = 1356456
   AND NOT (DATE(CONVERT_TZ(a.action_date,'GMT','America/Chicago'))
       BETWEEN '2025-10-01' AND '2025-10-31')
 ORDER BY a.action_date;
+
++-----+-----------+---------------+--------------+--------------+
+| oid | action_id | action_dt_utc | action_dt_ct | action_dt_pt |
++-----+-----------+---------------+--------------+--------------+
++-----+-----------+---------------+--------------+--------------+
