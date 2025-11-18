@@ -6,13 +6,1122 @@ SELECT
     a.action_id,
     a.campaign_id,
     a.publisher_id,
-    a.doe                          AS doe_utc_raw,
-    -- Adjust as needed if your warehouse uses a different function
-    (a.doe AT TIME ZONE 'US/Central') AS doe_ct,
-    (a.doe AT TIME ZONE 'US/Pacific') AS doe_pt
+    a.doe                          AS doe_utc_raw
 FROM irac_action2 a
-WHERE a.iram_account_id = 1356456               -- Walmart account
+WHERE a.advertiser_id = 1356456               -- Walmart account
   AND a.publisher_id    = 4085301               -- oak.haus.collective
   AND a.doe >= '2025-09-30'
   AND a.doe <  '2025-11-02'
 ORDER BY a.doe;
++-----+-----------+-------------+--------------+-------------+
+| oid | action_id | campaign_id | publisher_id | doe_utc_raw |
++-----+-----------+-------------+--------------+-------------+
++-----+-----------+-------------+--------------+-------------+
+
+
+
+describe irac_action2
++---------------------------------+----------------------+------+-----+---------+----------------+
+| Field                           | Type                 | Null | Key | Default | Extra          |
++---------------------------------+----------------------+------+-----+---------+----------------+
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  |     | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  |     | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  | MUL | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  |     | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  |     | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| id                              | bigint(20) unsigned  | NO   | PRI | ʘ       | auto_increment |
+| action_id                       | varchar(64)          | NO   | MUL | ʘ       |                |
+| action_date                     | datetime             | NO   | PRI | ʘ       |                |
+| action_type                     | varchar(10)          | NO   |     | ʘ       |                |
+| campaign_id                     | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| action_tracker_id               | int(10) unsigned     | NO   |     | ʘ       |                |
+| oid                             | varchar(255)         | NO   | MUL | ʘ       |                |
+| advertiser_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| publisher_id                    | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| ircm_terms_id                   | int(10) unsigned     | NO   |     | ʘ       |                |
+| payout_group_id                 | varchar(64)          | YES  |     | ʘ       |                |
+| partner_hidden                  | tinyint(1)           | NO   |     | 0       |                |
+| payout_trace                    | text                 | YES  |     | ʘ       |                |
+| return_policy                   | varchar(255)         | NO   |     | ʘ       |                |
+| irac_lifecycle_id               | int(10) unsigned     | NO   | MUL | ʘ       |                |
+| irac_minepc_lifecycle_id        | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| irac_perf_bonus_lifecycle_id    | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| ref_type                        | varchar(10)          | YES  |     | ʘ       |                |
+| ref_unique_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_date                        | datetime             | YES  |     | ʘ       |                |
+| ref_profile_id                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ip_address                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_user_agent                  | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_url                         | varchar(1024)        | YES  |     | ʘ       |                |
+| ref_domain                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_country                     | varchar(255)         | YES  |     | ʘ       |                |
+| ref_area                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_region                      | varchar(255)         | YES  |     | ʘ       |                |
+| ref_city                        | varchar(255)         | YES  |     | ʘ       |                |
+| ref_ad_id                       | int(10) unsigned     | YES  |     | ʘ       |                |
+| ref_adv_ad_id                   | varchar(255)         | YES  |     | ʘ       |                |
+| ref_action_id                   | varchar(64)          | YES  |     | ʘ       |                |
+| ref_promo_code                  | varchar(255)         | YES  |     | ʘ       |                |
+| ref_branded_id                  | int(10) unsigned     | YES  |     | ʘ       |                |
+| pub_subid1                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid2                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid3                      | varchar(255)         | YES  |     | ʘ       |                |
+| pub_subid4                      | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_id                     | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_status                 | varchar(255)         | YES  |     | ʘ       |                |
+| adv_cust_postcode               | varchar(255)         | YES  |     | ʘ       |                |
+| adv_note                        | varchar(255)         | YES  |     | ʘ       |                |
+| str1                            | varchar(64)          | YES  |     | ʘ       |                |
+| str2                            | varchar(64)          | YES  |     | ʘ       |                |
+| date1                           | varchar(30)          | YES  |     | ʘ       |                |
+| date2                           | varchar(30)          | YES  |     | ʘ       |                |
+| adj_date                        | datetime             | YES  |     | ʘ       |                |
+| adj_reason                      | varchar(255)         | YES  |     | ʘ       |                |
+| batch_id                        | varchar(255)         | YES  |     | ʘ       |                |
+| validity                        | char(1)              | YES  |     | ʘ       |                |
+| sku                             | varchar(255)         | YES  |     | ʘ       |                |
+| item_name                       | varchar(255)         | YES  |     | ʘ       |                |
+| item_disp_code                  | varchar(120)         | YES  |     | ʘ       |                |
+| item_json                       | text                 | YES  |     | ʘ       |                |
+| order_json                      | text                 | YES  |     | ʘ       |                |
+| category                        | varchar(255)         | YES  |     | ʘ       |                |
+| quantity                        | int(11)              | YES  |     | ʘ       |                |
+| adv_sub_total                   | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_sub_total                  | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_order_rebate                | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_order_rebate               | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_margin                      | decimal(12,4)        | YES  |     | ʘ       |                |
+| cart_margin                     | decimal(12,4)        | YES  |     | ʘ       |                |
+| client_cost                     | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| cart_currency                   | varchar(3)           | YES  |     | ʘ       |                |
+| raw_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| pub_currency                    | varchar(3)           | NO   |     | ʘ       |                |
+| contract_currency               | varchar(3)           | NO   |     | ʘ       |                |
+| agency_currency                 | varchar(3)           | YES  |     | ʘ       |                |
+| adv_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| raw_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| pub_commission                  | decimal(14,4)        | NO   |     | ʘ       |                |
+| adv_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_vat_amount                  | decimal(14,4)        | YES  |     | ʘ       |                |
+| adv_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_saleamt                    | decimal(12,2)        | YES  |     | ʘ       |                |
+| pub_saleamt                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| adv_rebate                      | decimal(12,2)        | YES  |     | ʘ       |                |
+| cart_rebate                     | decimal(12,2)        | YES  |     | ʘ       |                |
+| ircm_category_list_id           | int(10) unsigned     | YES  |     | ʘ       |                |
+| new_status                      | varchar(64)          | YES  |     | ʘ       |                |
+| action_count_gross              | tinyint(4)           | NO   |     | ʘ       |                |
+| action_count_net                | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_count_gross           | tinyint(4)           | NO   |     | ʘ       |                |
+| overlimit_approved_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| request_count_gross             | tinyint(4)           | YES  |     | ʘ       |                |
+| request_approved_count          | tinyint(4)           | YES  |     | ʘ       |                |
+| partial_adjustment_count        | tinyint(4)           | NO   |     | ʘ       |                |
+| reversal_count                  | tinyint(4)           | YES  |     | ʘ       |                |
+| call_provider                   | varchar(255)         | YES  |     | ʘ       |                |
+| call_session_id                 | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_caller_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_domestic   | varchar(255)         | YES  |     | ʘ       |                |
+| call_called_phone_no_country    | varchar(255)         | YES  |     | ʘ       |                |
+| call_total_call_duration_millis | int(11)              | YES  |     | ʘ       |                |
+| call_talk_duration_millis       | int(11)              | YES  |     | ʘ       |                |
+| call_status                     | varchar(20)          | YES  |     | ʘ       |                |
+| concurrent_call_count           | smallint(5) unsigned | YES  |     | ʘ       |                |
+| metadata                        | text                 | YES  |     | ʘ       |                |
+| doe                             | datetime             | YES  | MUL | ʘ       |                |
+| uoe                             | varchar(255)         | YES  |     | ʘ       |                |
+| core_estaleanetwork_id          | int(10) unsigned     | NO   |     | ʘ       |                |
+| adv_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| pub_xchange_buffer_amt          | decimal(14,4)        | YES  |     | ʘ       |                |
+| is_secondary                    | tinyint(1)           | YES  |     | ʘ       |                |
+| shared_event_id                 | varchar(60)          | YES  | MUL | ʘ       |                |
+| order_campaign_id               | int(10) unsigned     | YES  | MUL | ʘ       |                |
+| item_campaign_id                | int(10) unsigned     | YES  | MUL | ʘ       |                |
++---------------------------------+----------------------+------+-----+---------+----------------+
