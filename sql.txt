@@ -2,9 +2,15 @@
 SELECT DISTINCT outreach_id
 FROM new_email
 WHERE subject ILIKE '%Holiday Increased CPA Rates%'
-  AND created_at >= '2025-11-07'::timestamp
-  AND created_at <  '2025-11-15'::timestamp
+  AND created_at >= '2025-11-07'
+  AND created_at <  '2025-11-15'
 ORDER BY outreach_id;
++-------------+
+| outreach_id |
++-------------+
+|       74055 |
+|       74060 |
++-------------+
 
 
 -- r_ds_outreach_snapshot
@@ -18,28 +24,30 @@ WHERE subject ILIKE '%Holiday Increased CPA Rates%'
   AND created_at <  '2025-11-15'::timestamp
 GROUP BY outreach_id
 ORDER BY outreach_id;
++-------------+------------+---------------------+---------------------+
+| outreach_id | recipients | first_email         | last_email          |
++-------------+------------+---------------------+---------------------+
+|       74055 |        153 | 2025-11-07 20:40:04 | 2025-11-07 20:40:12 |
+|       74060 |       1155 | 2025-11-07 20:41:07 | 2025-11-07 20:42:16 |
++-------------+------------+---------------------+---------------------+
 
-
--- r_ds_outreach_snapshot (schema names as in the vetted index)
-SELECT *
-FROM outreach.outreach_log
-WHERE outreach_id IN (74055, 74060)
-ORDER BY outreach_id, created_at;
 
 SELECT *
 FROM outreach.icee_job
 WHERE outreach_id IN (74055, 74060)
 ORDER BY outreach_id;
++----+------------+-----+-------------+---------------+-------------+--------+-----------+--------+-------+
+| id | created_at | psi | platform_id | outreach_type | outreach_id | job_id | completed | bucket | files |
++----+------------+-----+-------------+---------------+-------------+--------+-----------+--------+-------+
++----+------------+-----+-------------+---------------+-------------+--------+-----------+--------+-------+
 
 SELECT outreach_id, COUNT(*) AS preview_count
 FROM outreach.segment_preview
 WHERE outreach_id IN (74055, 74060)
 GROUP BY outreach_id
 ORDER BY outreach_id;
++-------------+---------------+
+| outreach_id | preview_count |
++-------------+---------------+
++-------------+---------------+
 
-
--- r_ds_outreach_snapshot
-SELECT *
-FROM new_email
-WHERE outreach_id = 74055
-LIMIT 1;
