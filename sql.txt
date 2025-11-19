@@ -1,26 +1,5 @@
--- Oct 2025 DISTINCT orders (OID) with/without promo code
-SELECT
-  advertiser_id,
-  SUM(has_code)                              AS orders_with_code,
-  SUM(1 - has_code)                          AS orders_without_code,
-  COUNT(*)                                   AS total_orders
-FROM (
-  SELECT
-    advertiser_id,
-    oid,
-    CASE WHEN MAX(CASE WHEN promo_code IS NOT NULL AND promo_code <> '' THEN 1 ELSE 0 END) = 1
-         THEN 1 ELSE 0 END                   AS has_code
-  FROM conversion_fact
-  WHERE advertiser_id IN (6006417, 6006625)             -- DACH & Nordics in conv logs
-    AND event_datetime >= '2025-10-01'
-    AND event_datetime <  '2025-11-01'
-  GROUP BY advertiser_id, oid
-) oids
-GROUP BY advertiser_id
-ORDER BY advertiser_id;
-+---------------+------------------+---------------------+--------------+
-| advertiser_id | orders_with_code | orders_without_code | total_orders |
-+---------------+------------------+---------------------+--------------+
-|       6006417 |            13400 |               28740 |        42140 |
-|       6006625 |            22731 |               74249 |        96980 |
-+---------------+------------------+---------------------+--------------+
+-- DS: r_ds_ircm
+-- Build a comma-separated IN list of LOWER(promo_code) for both programs
+SELECT GROUP_CONCAT("'", LOWER(promo_code), "'" ORDER BY promo_code SEPARATOR ',') AS in_list
+FROM ircm_promocode
+WHERE ircm_campaign_id IN (30720, 30723);
