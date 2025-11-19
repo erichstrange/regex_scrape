@@ -1,55 +1,100 @@
--- r_ds_outreach_snapshot
+-- Overall counts by advertiser for Oct 2025
 SELECT
-  outreach_id,
-  LOWER(to_email) AS email,
-  CASE
-    WHEN error IS NOT NULL THEN 'failed'
-    WHEN sent_at IS NULL THEN 'queued'
-    WHEN opened_at IS NOT NULL THEN 'delivered_opened'
-    WHEN clicked_at IS NOT NULL THEN 'delivered_clicked'
-    ELSE 'sent'
-  END AS derived_status,
-  created_at,
-  sent_at,
-  opened_at,
-  clicked_at,
-  error,
-  message_id
-FROM new_email
-WHERE outreach_id IN (74055, 74060)
-  AND created_at >= '2025-11-07 20:39:00'
-  AND created_at <  '2025-11-07 20:45:00'
-ORDER BY outreach_id, id DESC;
+  advertiser_id,
+  SUM(CASE WHEN promo_code IS NULL OR promo_code='' THEN 1 ELSE 0 END) AS actions_without_code,
+  SUM(CASE WHEN promo_code IS NOT NULL AND promo_code<>'' THEN 1 ELSE 0 END) AS actions_with_code,
+  COUNT(*) AS total_actions
+FROM conversion_fact
+WHERE advertiser_id IN (30720, 30723)
+  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
+GROUP BY advertiser_id
+ORDER BY advertiser_id;
 
 
-
--- r_ds_outreach_snapshot
+-- Gather Impact-issued codes for both programs
+WITH impact_codes AS (
+  SELECT LOWER(code) AS code
+  FROM r_ds_ircm.ircm_promocode
+  WHERE ircm_campaign_id IN (30720, 30723)
+)
+-- Count Impact actions that used those Impact-issued codes only
 SELECT
-  outreach_id,
-  COUNT(*)                               AS total,
-  SUM(sent_at    IS NOT NULL)            AS sent,
-  SUM(opened_at  IS NOT NULL)            AS opened,
-  SUM(clicked_at IS NOT NULL)            AS clicked,
-  SUM(error      IS NOT NULL)            AS failed,
-  SUM(sent_at IS NULL AND error IS NULL) AS queued
-FROM new_email
-WHERE outreach_id IN (74055, 74060)
-  AND created_at >= '2025-11-07 20:39:00'
-  AND created_at <  '2025-11-07 20:45:00'
-GROUP BY outreach_id
-ORDER BY outreach_id;
+  cf.advertiser_id,
+  COUNT(*) AS actions_with_impact_issued_code
+FROM conversion_fact cf
+WHERE cf.advertiser_id IN (30720, 30723)
+  AND cf.event_datetime >= '2025-10-01' AND cf.event_datetime < '2025-11-01'
+  AND cf.promo_code IS NOT NULL AND cf.promo_code <> ''
+  AND LOWER(cf.promo_code) IN (SELECT code FROM impact_codes)
+GROUP BY cf.advertiser_id
+ORDER BY cf.advertiser_id;
 
 
 
--- r_ds_outreach_snapshot
+-- List codes used in Impact that are NOT in the Impact-issued list (likely the main source of discrepancy)
+WITH impact_codes AS (
+  SELECT LOWER(code) AS code
+  FROM r_ds_ircm.ircm_promocode
+  WHERE ircm_campaign_id IN (30720, 30723)
+)
 SELECT
-  LOWER(to_email) AS email,
-  COUNT(*) AS occurrences,
-  GROUP_CONCAT(DISTINCT outreach_id ORDER BY outreach_id) AS outreaches
-FROM new_email
-WHERE outreach_id IN (74055, 74060)
-  AND created_at >= '2025-11-07 20:39:00'
-  AND created_at <  '2025-11-07 20:45:00'
-GROUP BY LOWER(to_email)
-HAVING COUNT(*) > 1
-ORDER BY occurrences DESC, email;
+  cf.advertiser_id,
+  LOWER(cf.promo_code) AS promo_code_not_in_impact_list,
+  COUNT(*) AS uses
+FROM conversion_fact cf
+WHERE cf.advertiser_id IN (30720, 30723)
+  AND cf.event_datetime >= '2025-10-01' AND cf.event_datetime < '2025-11-01'
+  AND cf.promo_code IS NOT NULL AND cf.promo_code <> ''
+  AND LOWER(cf.promo_code) NOT IN (SELECT code FROM impact_codes)
+GROUP BY cf.advertiser_id, LOWER(cf.promo_code)
+ORDER BY uses DESC
+LIMIT 200;
+
+
+-- OIDs pulled from the two CSVs you attached (15 DACH + 15 Nordics)
+-- DACH
+-- 451108AT, 449233AT, 452573AT, 460814AT, 447741AT, 458113AT, 453679AT, 455149AT, 452790AT, 462632AT, 462046AT, 462803AT, 459256AT, 461118AT, 463114AT
+-- Nordics
+-- 80317382DK, 80333449DK, 80312438DK, 80313760DK, 80293902DK, 80275300DK, 80306407DK, 80297804DK, 80300195DK, 80305232DK, 80286184DK, 80343260DK, 80327932DK, 80305614DK, 80313738DK
+
+SELECT
+  advertiser_id, event_datetime, oid, promo_code, method, action_tracker_id, status
+FROM conversion_fact
+WHERE advertiser_id IN (30720, 30723)
+  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
+  AND oid IN (
+    '451108AT','449233AT','452573AT','460814AT','447741AT','458113AT','453679AT','455149AT','452790AT','462632AT','462046AT','462803AT','459256AT','461118AT','463114AT',
+    '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK','80275300DK','80306407DK','80297804DK','80300195DK','80305232DK','80286184DK','80343260DK','80327932DK','80305614DK','80313738DK'
+  )
+ORDER BY event_datetime;
+
+
+-- If the merchant enforces “one code per purchase,” this should be clean.
+-- We’ll still verify no order has multiple conversions/codes.
+SELECT
+  advertiser_id,
+  oid,
+  COUNT(*) AS action_count,
+  COUNT(DISTINCT CASE WHEN promo_code IS NULL OR promo_code='' THEN NULL ELSE LOWER(promo_code) END) AS distinct_codes
+FROM conversion_fact
+WHERE advertiser_id IN (30720, 30723)
+  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
+GROUP BY advertiser_id, oid
+HAVING action_count > 1 OR distinct_codes > 1
+ORDER BY action_count DESC
+LIMIT 200;
+
+
+
+-- Pull any dispositions/adjustments for the same OIDs in Oct.
+SELECT
+  action_date, doe, campaign_id, action_tracker_id, action_id, oid,
+  adj_reason, new_status, batch_id, adv_cust_status
+FROM irac_action2
+WHERE campaign_id IN (30720, 30723)
+  AND action_date >= '2025-10-01' AND action_date < '2025-11-01'
+  AND oid IN (
+    '451108AT','449233AT','452573AT','460814AT','447741AT','458113AT','453679AT','455149AT','452790AT','462632AT','462046AT','462803AT','459256AT','461118AT','463114AT',
+    '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK','80275300DK','80306407DK','80297804DK','80300195DK','80305232DK','80286184DK','80343260DK','80327932DK','80305614DK','80313738DK'
+  )
+ORDER BY doe DESC;
