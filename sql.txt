@@ -1,52 +1,54 @@
--- Was this address even in the generated audience?
-SELECT id, outreach_id, to_email, subject, created_at, status, sent_at, provider, provider_message_id
+SELECT
+  id, outreach_id, LOWER(to_email) AS to_email,
+  created_at, sent_at, opened_at, clicked_at,
+  error,
+  esp_type,
+  message_id,           -- often the provider’s X-Message-Id in our pipelines
+  ir_message_id,        -- our internal / relay id (if used)
+  thread_id,
+  subject
 FROM new_email
 WHERE outreach_id IN (74055, 74060)
-  AND lower(to_email) = 'info@mimoni.com'
+  AND LOWER(to_email) = 'info@mimoni.com'
 ORDER BY created_at DESC;
-+----------+-------------+-----------------+------------------------------------------------------+---------------------+---------------------+
-|       id | outreach_id | to_email        | subject                                              | created_at          | sent_at             |
-+----------+-------------+-----------------+------------------------------------------------------+---------------------+---------------------+
-| 57370217 |       74055 | info@mimoni.com | Cricut Partner Program: Holiday Increased CPA Rates! | 2025-11-07 20:40:04 | 2025-11-07 20:40:01 |
-+----------+-------------+-----------------+------------------------------------------------------+---------------------+---------------------+
 
 
-DESCIRBE new_email
-+---------------+--------------+------+-----+-------------------+-----------------------------------------------+
-| Field         | Type         | Null | Key | Default           | Extra                                         |
-+---------------+--------------+------+-----+-------------------+-----------------------------------------------+
-| id            | int          | NO   | PRI | ʘ                 | auto_increment                                |
-| platform_id   | varchar(255) | NO   |     | ʘ                 |                                               |
-| psi           | varchar(255) | NO   | MUL | ʘ                 |                                               |
-| outreach_type | varchar(50)  | NO   |     | ʘ                 |                                               |
-| outreach_id   | int          | NO   |     | ʘ                 |                                               |
-| message_id    | varchar(255) | YES  | MUL | ʘ                 |                                               |
-| email_address | varchar(100) | YES  | MUL | ʘ                 |                                               |
-| supply_psi    | varchar(100) | YES  | MUL | ʘ                 |                                               |
-| partner_id    | varchar(100) | YES  | MUL | ʘ                 |                                               |
-| partner_name  | varchar(255) | YES  |     | ʘ                 |                                               |
-| contact_id    | varchar(100) | YES  |     | ʘ                 |                                               |
-| contact_name  | varchar(255) | YES  |     | ʘ                 |                                               |
-| created_at    | timestamp    | YES  | MUL | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
-| updated_at    | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
-| sent_at       | timestamp    | YES  |     | ʘ                 |                                               |
-| opened_at     | timestamp    | YES  | MUL | ʘ                 |                                               |
-| clicked_at    | timestamp    | YES  | MUL | ʘ                 |                                               |
-| error         | varchar(64)  | YES  | MUL | ʘ                 |                                               |
-| app_name      | varchar(100) | YES  |     | ʘ                 |                                               |
-| from_email    | json         | NO   |     | ʘ                 |                                               |
-| reply_to      | json         | YES  |     | ʘ                 |                                               |
-| subject       | varchar(255) | NO   |     | ʘ                 |                                               |
-| bcc           | json         | YES  |     | ʘ                 |                                               |
-| cc            | json         | YES  |     | ʘ                 |                                               |
-| body          | mediumtext   | NO   |     | ʘ                 |                                               |
-| to_email      | varchar(100) | YES  |     | ʘ                 |                                               |
-| reference_id  | varchar(255) | YES  |     | ʘ                 |                                               |
-| rsi           | varchar(255) | NO   |     | ʘ                 |                                               |
-| thread_id     | varchar(100) | YES  |     | ʘ                 |                                               |
-| ir_message_id | varchar(100) | YES  |     | ʘ                 |                                               |
-| ir_thread_id  | varchar(100) | YES  |     | ʘ                 |                                               |
-| esp_type      | varchar(100) | NO   |     | ʘ                 |                                               |
-| created_by    | varchar(100) | YES  |     | ʘ                 |                                               |
-| updated_by    | varchar(100) | YES  |     | ʘ                 |                                               |
-+---------------+--------------+------+-----+-------------------+-----------------------------------------------+
+SELECT
+  outreach_id,
+  LOWER(to_email) AS email,
+  CASE
+    WHEN error IS NOT NULL THEN 'failed'
+    WHEN sent_at IS NULL THEN 'queued'
+    WHEN opened_at IS NOT NULL THEN 'delivered_opened'
+    WHEN clicked_at IS NOT NULL THEN 'delivered_clicked'
+    ELSE 'sent'
+  END AS derived_status,
+  created_at, sent_at, opened_at, clicked_at, error, message_id
+FROM new_email
+WHERE outreach_id IN (74055, 74060)
+ORDER BY outreach_id, created_at DESC;
+
+
+SELECT
+  outreach_id,
+  COUNT(*)                                 AS total,
+  SUM(sent_at    IS NOT NULL)              AS sent,
+  SUM(opened_at  IS NOT NULL)              AS opened,
+  SUM(clicked_at IS NOT NULL)              AS clicked,
+  SUM(error      IS NOT NULL)              AS failed,
+  SUM(sent_at IS NULL AND error IS NULL)   AS queued
+FROM new_email
+WHERE outreach_id IN (74055, 74060)
+GROUP BY outreach_id
+ORDER BY outreach_id;
+
+SELECT
+  LOWER(to_email) AS email,
+  COUNT(*) AS occurrences,
+  GROUP_CONCAT(DISTINCT outreach_id ORDER BY outreach_id) AS outreaches
+FROM new_email
+WHERE outreach_id IN (74055, 74060)
+GROUP BY LOWER(to_email)
+HAVING COUNT(*) > 1
+ORDER BY occurrences DESC, email;
+
