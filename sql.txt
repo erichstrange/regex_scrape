@@ -1,18 +1,4 @@
-SELECT
-  id, outreach_id, LOWER(to_email) AS to_email,
-  created_at, sent_at, opened_at, clicked_at,
-  error,
-  esp_type,
-  message_id,           -- often the provider’s X-Message-Id in our pipelines
-  ir_message_id,        -- our internal / relay id (if used)
-  thread_id,
-  subject
-FROM new_email
-WHERE outreach_id IN (74055, 74060)
-  AND LOWER(to_email) = 'info@mimoni.com'
-ORDER BY created_at DESC;
-
-
+-- r_ds_outreach_snapshot
 SELECT
   outreach_id,
   LOWER(to_email) AS email,
@@ -23,32 +9,47 @@ SELECT
     WHEN clicked_at IS NOT NULL THEN 'delivered_clicked'
     ELSE 'sent'
   END AS derived_status,
-  created_at, sent_at, opened_at, clicked_at, error, message_id
+  created_at,
+  sent_at,
+  opened_at,
+  clicked_at,
+  error,
+  message_id
 FROM new_email
 WHERE outreach_id IN (74055, 74060)
-ORDER BY outreach_id, created_at DESC;
+  AND created_at >= '2025-11-07 20:39:00'
+  AND created_at <  '2025-11-07 20:45:00'
+ORDER BY outreach_id, id DESC;
 
 
+
+-- r_ds_outreach_snapshot
 SELECT
   outreach_id,
-  COUNT(*)                                 AS total,
-  SUM(sent_at    IS NOT NULL)              AS sent,
-  SUM(opened_at  IS NOT NULL)              AS opened,
-  SUM(clicked_at IS NOT NULL)              AS clicked,
-  SUM(error      IS NOT NULL)              AS failed,
-  SUM(sent_at IS NULL AND error IS NULL)   AS queued
+  COUNT(*)                               AS total,
+  SUM(sent_at    IS NOT NULL)            AS sent,
+  SUM(opened_at  IS NOT NULL)            AS opened,
+  SUM(clicked_at IS NOT NULL)            AS clicked,
+  SUM(error      IS NOT NULL)            AS failed,
+  SUM(sent_at IS NULL AND error IS NULL) AS queued
 FROM new_email
 WHERE outreach_id IN (74055, 74060)
+  AND created_at >= '2025-11-07 20:39:00'
+  AND created_at <  '2025-11-07 20:45:00'
 GROUP BY outreach_id
 ORDER BY outreach_id;
 
+
+
+-- r_ds_outreach_snapshot
 SELECT
   LOWER(to_email) AS email,
   COUNT(*) AS occurrences,
   GROUP_CONCAT(DISTINCT outreach_id ORDER BY outreach_id) AS outreaches
 FROM new_email
 WHERE outreach_id IN (74055, 74060)
+  AND created_at >= '2025-11-07 20:39:00'
+  AND created_at <  '2025-11-07 20:45:00'
 GROUP BY LOWER(to_email)
 HAVING COUNT(*) > 1
 ORDER BY occurrences DESC, email;
-
