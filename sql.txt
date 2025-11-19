@@ -9,7 +9,10 @@ WHERE advertiser_id IN (30720, 30723)
   AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
 GROUP BY advertiser_id
 ORDER BY advertiser_id;
-
++---------------+----------------------+-------------------+---------------+
+| advertiser_id | actions_without_code | actions_with_code | total_actions |
++---------------+----------------------+-------------------+---------------+
++---------------+----------------------+-------------------+---------------+
 
 -- Gather Impact-issued codes for both programs
 WITH impact_codes AS (
@@ -28,6 +31,17 @@ WHERE cf.advertiser_id IN (30720, 30723)
   AND LOWER(cf.promo_code) IN (SELECT code FROM impact_codes)
 GROUP BY cf.advertiser_id
 ORDER BY cf.advertiser_id;
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
+SELECT LOWER(code) AS code
+FROM r_ds_ircm.ircm_promocode
+' at line 2
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
+SELECT LOWER(code) AS code
+FROM r_ds_ircm.ircm_promocode
+' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
+SELECT LOWER(code) AS code
+FROM r_ds_ircm.ircm_promocode
+' at line 2
 
 
 
@@ -49,6 +63,17 @@ WHERE cf.advertiser_id IN (30720, 30723)
 GROUP BY cf.advertiser_id, LOWER(cf.promo_code)
 ORDER BY uses DESC
 LIMIT 200;
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
+SELECT code
+FROM ircm_promocode
+WHERE ircm_campaign_id I' at line 2
+You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
+SELECT code
+FROM ircm_promocode
+WHERE ircm_campaign_id I' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
+SELECT code
+FROM ircm_promocode
+WHERE ircm_campaign_id I' at line 2
 
 
 -- OIDs pulled from the two CSVs you attached (15 DACH + 15 Nordics)
@@ -67,6 +92,8 @@ WHERE advertiser_id IN (30720, 30723)
     '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK','80275300DK','80306407DK','80297804DK','80300195DK','80305232DK','80286184DK','80343260DK','80327932DK','80305614DK','80313738DK'
   )
 ORDER BY event_datetime;
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
 
 
 -- If the merchant enforces “one code per purchase,” this should be clean.
@@ -83,18 +110,10 @@ GROUP BY advertiser_id, oid
 HAVING action_count > 1 OR distinct_codes > 1
 ORDER BY action_count DESC
 LIMIT 200;
++---------------+-----+--------------+----------------+
+| advertiser_id | oid | action_count | distinct_codes |
++---------------+-----+--------------+----------------+
++---------------+-----+--------------+----------------+
 
 
 
--- Pull any dispositions/adjustments for the same OIDs in Oct.
-SELECT
-  action_date, doe, campaign_id, action_tracker_id, action_id, oid,
-  adj_reason, new_status, batch_id, adv_cust_status
-FROM irac_action2
-WHERE campaign_id IN (30720, 30723)
-  AND action_date >= '2025-10-01' AND action_date < '2025-11-01'
-  AND oid IN (
-    '451108AT','449233AT','452573AT','460814AT','447741AT','458113AT','453679AT','455149AT','452790AT','462632AT','462046AT','462803AT','459256AT','461118AT','463114AT',
-    '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK','80275300DK','80306407DK','80297804DK','80300195DK','80305232DK','80286184DK','80343260DK','80327932DK','80305614DK','80313738DK'
-  )
-ORDER BY doe DESC;
