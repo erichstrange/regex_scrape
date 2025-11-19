@@ -4,10 +4,49 @@ FROM new_email
 WHERE outreach_id IN (74055, 74060)
   AND lower(to_email) = 'info@mimoni.com'
 ORDER BY created_at DESC;
++----------+-------------+-----------------+------------------------------------------------------+---------------------+---------------------+
+|       id | outreach_id | to_email        | subject                                              | created_at          | sent_at             |
++----------+-------------+-----------------+------------------------------------------------------+---------------------+---------------------+
+| 57370217 |       74055 | info@mimoni.com | Cricut Partner Program: Holiday Increased CPA Rates! | 2025-11-07 20:40:04 | 2025-11-07 20:40:01 |
++----------+-------------+-----------------+------------------------------------------------------+---------------------+---------------------+
 
--- Any evidence we ever handed anything off to SG?
-SELECT COUNT(*) AS with_provider_ids
-FROM new_email
-WHERE outreach_id IN (74055, 74060)
-  AND provider = 'sendgrid'
-  AND provider_message_id IS NOT NULL;
+
+DESCIRBE new_email
++---------------+--------------+------+-----+-------------------+-----------------------------------------------+
+| Field         | Type         | Null | Key | Default           | Extra                                         |
++---------------+--------------+------+-----+-------------------+-----------------------------------------------+
+| id            | int          | NO   | PRI | ʘ                 | auto_increment                                |
+| platform_id   | varchar(255) | NO   |     | ʘ                 |                                               |
+| psi           | varchar(255) | NO   | MUL | ʘ                 |                                               |
+| outreach_type | varchar(50)  | NO   |     | ʘ                 |                                               |
+| outreach_id   | int          | NO   |     | ʘ                 |                                               |
+| message_id    | varchar(255) | YES  | MUL | ʘ                 |                                               |
+| email_address | varchar(100) | YES  | MUL | ʘ                 |                                               |
+| supply_psi    | varchar(100) | YES  | MUL | ʘ                 |                                               |
+| partner_id    | varchar(100) | YES  | MUL | ʘ                 |                                               |
+| partner_name  | varchar(255) | YES  |     | ʘ                 |                                               |
+| contact_id    | varchar(100) | YES  |     | ʘ                 |                                               |
+| contact_name  | varchar(255) | YES  |     | ʘ                 |                                               |
+| created_at    | timestamp    | YES  | MUL | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| updated_at    | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
+| sent_at       | timestamp    | YES  |     | ʘ                 |                                               |
+| opened_at     | timestamp    | YES  | MUL | ʘ                 |                                               |
+| clicked_at    | timestamp    | YES  | MUL | ʘ                 |                                               |
+| error         | varchar(64)  | YES  | MUL | ʘ                 |                                               |
+| app_name      | varchar(100) | YES  |     | ʘ                 |                                               |
+| from_email    | json         | NO   |     | ʘ                 |                                               |
+| reply_to      | json         | YES  |     | ʘ                 |                                               |
+| subject       | varchar(255) | NO   |     | ʘ                 |                                               |
+| bcc           | json         | YES  |     | ʘ                 |                                               |
+| cc            | json         | YES  |     | ʘ                 |                                               |
+| body          | mediumtext   | NO   |     | ʘ                 |                                               |
+| to_email      | varchar(100) | YES  |     | ʘ                 |                                               |
+| reference_id  | varchar(255) | YES  |     | ʘ                 |                                               |
+| rsi           | varchar(255) | NO   |     | ʘ                 |                                               |
+| thread_id     | varchar(100) | YES  |     | ʘ                 |                                               |
+| ir_message_id | varchar(100) | YES  |     | ʘ                 |                                               |
+| ir_thread_id  | varchar(100) | YES  |     | ʘ                 |                                               |
+| esp_type      | varchar(100) | NO   |     | ʘ                 |                                               |
+| created_by    | varchar(100) | YES  |     | ʘ                 |                                               |
+| updated_by    | varchar(100) | YES  |     | ʘ                 |                                               |
++---------------+--------------+------+-----+-------------------+-----------------------------------------------+
