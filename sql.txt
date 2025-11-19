@@ -1,119 +1,53 @@
--- Overall counts by advertiser for Oct 2025
+-- DS: r_ds_ircm
+-- List all promo codes configured in Impact for these Motatos programs
+SELECT
+  ircm_campaign_id,
+  LOWER(code)     AS code_lower,
+  code            AS code_original,
+  description,
+  status
+FROM ircm_promocode
+WHERE ircm_campaign_id IN (30720, 30723)
+ORDER BY ircm_campaign_id, code_lower;
+
+
+-- DS: singlestore
+-- Look up the sample OIDs from the Motatos CSVs (DACH + Nordics)
 SELECT
   advertiser_id,
-  SUM(CASE WHEN promo_code IS NULL OR promo_code='' THEN 1 ELSE 0 END) AS actions_without_code,
-  SUM(CASE WHEN promo_code IS NOT NULL AND promo_code<>'' THEN 1 ELSE 0 END) AS actions_with_code,
-  COUNT(*) AS total_actions
-FROM conversion_fact
-WHERE advertiser_id IN (30720, 30723)
-  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
-GROUP BY advertiser_id
-ORDER BY advertiser_id;
-+---------------+----------------------+-------------------+---------------+
-| advertiser_id | actions_without_code | actions_with_code | total_actions |
-+---------------+----------------------+-------------------+---------------+
-+---------------+----------------------+-------------------+---------------+
-
--- Gather Impact-issued codes for both programs
-WITH impact_codes AS (
-  SELECT LOWER(code) AS code
-  FROM r_ds_ircm.ircm_promocode
-  WHERE ircm_campaign_id IN (30720, 30723)
-)
--- Count Impact actions that used those Impact-issued codes only
-SELECT
-  cf.advertiser_id,
-  COUNT(*) AS actions_with_impact_issued_code
-FROM conversion_fact cf
-WHERE cf.advertiser_id IN (30720, 30723)
-  AND cf.event_datetime >= '2025-10-01' AND cf.event_datetime < '2025-11-01'
-  AND cf.promo_code IS NOT NULL AND cf.promo_code <> ''
-  AND LOWER(cf.promo_code) IN (SELECT code FROM impact_codes)
-GROUP BY cf.advertiser_id
-ORDER BY cf.advertiser_id;
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
-SELECT LOWER(code) AS code
-FROM r_ds_ircm.ircm_promocode
-' at line 2
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
-SELECT LOWER(code) AS code
-FROM r_ds_ircm.ircm_promocode
-' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
-SELECT LOWER(code) AS code
-FROM r_ds_ircm.ircm_promocode
-' at line 2
-
-
-
--- List codes used in Impact that are NOT in the Impact-issued list (likely the main source of discrepancy)
-WITH impact_codes AS (
-  SELECT LOWER(code) AS code
-  FROM r_ds_ircm.ircm_promocode
-  WHERE ircm_campaign_id IN (30720, 30723)
-)
-SELECT
-  cf.advertiser_id,
-  LOWER(cf.promo_code) AS promo_code_not_in_impact_list,
-  COUNT(*) AS uses
-FROM conversion_fact cf
-WHERE cf.advertiser_id IN (30720, 30723)
-  AND cf.event_datetime >= '2025-10-01' AND cf.event_datetime < '2025-11-01'
-  AND cf.promo_code IS NOT NULL AND cf.promo_code <> ''
-  AND LOWER(cf.promo_code) NOT IN (SELECT code FROM impact_codes)
-GROUP BY cf.advertiser_id, LOWER(cf.promo_code)
-ORDER BY uses DESC
-LIMIT 200;
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
-SELECT code
-FROM ircm_promocode
-WHERE ircm_campaign_id I' at line 2
-You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
-SELECT code
-FROM ircm_promocode
-WHERE ircm_campaign_id I' at line 2; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'impact_codes AS (
-SELECT code
-FROM ircm_promocode
-WHERE ircm_campaign_id I' at line 2
-
-
--- OIDs pulled from the two CSVs you attached (15 DACH + 15 Nordics)
--- DACH
--- 451108AT, 449233AT, 452573AT, 460814AT, 447741AT, 458113AT, 453679AT, 455149AT, 452790AT, 462632AT, 462046AT, 462803AT, 459256AT, 461118AT, 463114AT
--- Nordics
--- 80317382DK, 80333449DK, 80312438DK, 80313760DK, 80293902DK, 80275300DK, 80306407DK, 80297804DK, 80300195DK, 80305232DK, 80286184DK, 80343260DK, 80327932DK, 80305614DK, 80313738DK
-
-SELECT
-  advertiser_id, event_datetime, oid, promo_code, method, action_tracker_id, status
-FROM conversion_fact
-WHERE advertiser_id IN (30720, 30723)
-  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
-  AND oid IN (
-    '451108AT','449233AT','452573AT','460814AT','447741AT','458113AT','453679AT','455149AT','452790AT','462632AT','462046AT','462803AT','459256AT','461118AT','463114AT',
-    '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK','80275300DK','80306407DK','80297804DK','80300195DK','80305232DK','80286184DK','80343260DK','80327932DK','80305614DK','80313738DK'
-  )
-ORDER BY event_datetime;
-The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
-The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
-
-
--- If the merchant enforces “one code per purchase,” this should be clean.
--- We’ll still verify no order has multiple conversions/codes.
-SELECT
-  advertiser_id,
+  event_datetime,
   oid,
-  COUNT(*) AS action_count,
-  COUNT(DISTINCT CASE WHEN promo_code IS NULL OR promo_code='' THEN NULL ELSE LOWER(promo_code) END) AS distinct_codes
+  promo_code,
+  method,
+  action_tracker_id,
+  status
 FROM conversion_fact
-WHERE advertiser_id IN (30720, 30723)
-  AND event_datetime >= '2025-10-01' AND event_datetime < '2025-11-01'
-GROUP BY advertiser_id, oid
-HAVING action_count > 1 OR distinct_codes > 1
-ORDER BY action_count DESC
+WHERE oid IN (
+  '451108AT','449233AT','452573AT','460814AT','447741AT','458113AT','453679AT',
+  '455149AT','452790AT','462632AT','462046AT','462803AT','459256AT','461118AT','463114AT',
+  '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK','80275300DK','80306407DK',
+  '80297804DK','80300195DK','80305232DK','80286184DK','80343260DK','80327932DK','80305614DK','80313738DK'
+)
+ORDER BY event_datetime
+LIMIT 500;
+
+
+
+-- DS: iraction_sharded (or equivalent)
+SELECT
+  action_id,
+  action_date,
+  campaign_id,
+  action_tracker_id,
+  oid,
+  adv_saleamt,
+  pub_saleamt,
+  adv_currency,
+  status
+FROM irac_action2
+WHERE oid IN (
+  '451108AT','449233AT','452573AT','460814AT','447741AT',
+  '80317382DK','80333449DK','80312438DK','80313760DK','80293902DK'
+)
+ORDER BY action_date DESC
 LIMIT 200;
-+---------------+-----+--------------+----------------+
-| advertiser_id | oid | action_count | distinct_codes |
-+---------------+-----+--------------+----------------+
-+---------------+-----+--------------+----------------+
-
-
-
