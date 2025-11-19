@@ -51,3 +51,10 @@ ORDER BY outreach_id;
 +-------------+---------------+
 +-------------+---------------+
 
+
+
+-- r_ds_outreach_snapshot
+SELECT *
+FROM new_email
+WHERE outreach_id = 74055
+LIMIT 1;
