@@ -3,3 +3,42 @@
 SELECT GROUP_CONCAT("'", LOWER(promo_code), "'" ORDER BY promo_code SEPARATOR ',') AS in_list
 FROM ircm_promocode
 WHERE ircm_campaign_id IN (30720, 30723);
+
+-- DS: singlestore
+-- Orders with Impact‑issued codes only (distinct OID) – Oct 2025
+SELECT
+  advertiser_id,
+  COUNT(DISTINCT oid) AS orders_with_registered_codes
+FROM conversion_fact
+WHERE advertiser_id IN (6006417, 6006625)            -- DACH & Nordics in conv logs
+  AND event_datetime >= '2025-10-01'
+  AND event_datetime <  '2025-11-01'
+  AND promo_code IS NOT NULL AND promo_code <> ''
+  AND LOWER(promo_code) IN (
+    -- paste the in_list from the IRCM query here (it can be long)
+  )
+GROUP BY advertiser_id
+ORDER BY advertiser_id;
+
+
+-- DS: singlestore
+-- Distinct orders by code for codes NOT in the Impact‑issued list
+SELECT
+  advertiser_id,
+  code_lower,
+  COUNT(*) AS unique_orders
+FROM (
+  SELECT advertiser_id, oid, MIN(LOWER(promo_code)) AS code_lower
+  FROM conversion_fact
+  WHERE advertiser_id IN (6006417, 6006625)
+    AND event_datetime >= '2025-10-01'
+    AND event_datetime <  '2025-11-01'
+    AND promo_code IS NOT NULL AND promo_code <> ''
+  GROUP BY advertiser_id, oid
+) o
+WHERE code_lower NOT IN (
+  -- paste the same in_list here
+)
+GROUP BY advertiser_id, code_lower
+ORDER BY advertiser_id, unique_orders DESC
+LIMIT 200;
