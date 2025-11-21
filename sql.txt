@@ -1,47 +1,51 @@
-/* DRAFT - TS - Order Processing Latency Lookup (Internal Only)
+/* Order Processing Latency Lookup
    Datasource: r_ds_singlestore
-   Table: datalake_irdwm.action_fact
 */
-
 SELECT
     af.advertiser_id                                  AS advertiser_id,
     af.campaign_id                                    AS campaign_id,
     af.oid                                            AS oid,
     af.action_id                                      AS action_id,
-
-    -- Event / click timestamp
+    -- Event timestamp
     af.ref_datetime                                   AS ClickDateTime_UTC,
-
     -- When the action first hit our system
     af.action_datetime                                AS ConversionDateTime_UTC,
-
     -- When AP finished processing the action
     af.doe                                            AS APProcessedDateTime_UTC,
-
     -- When the action was last adjusted in AP (if ever)
     af.adj_datetime                                   AS LastAdjustmentDateTime_UTC,
-
     -- Latency between conversion event and AP processing
     TIMESTAMPDIFF(
         MINUTE,
         af.action_datetime,
         af.doe
     )                                                 AS APProcessingLatency_Minutes,
-
-    -- Optional: latency from click to AP processing
+    -- latency from click to AP processing
     TIMESTAMPDIFF(
         MINUTE,
         af.ref_datetime,
         af.doe
     )                                                 AS ClickToAPProcessing_Minutes
-
 FROM
     action_fact af
 WHERE
     af.advertiser_id = :advertiser_id
     AND af.campaign_id = :campaign_id
-    AND af.oid = :oid
-    AND af.action_datetime BETWEEN :start_action_datetime AND :end_action_datetime
+    -- AND af.oid = :oid
+    -- AND af.action_datetime BETWEEN :start_action_datetime AND :end_action_datetime
 
 ORDER BY
     af.action_datetime DESC;
+
+
+Example subset of output, when I exclude oid and dates:
+
++---------------+-------------+------------------------+--------------------+---------------------+------------------------+-------------------------+----------------------------+-----------------------------+-----------------------------+
+| advertiser_id | campaign_id | oid                    | action_id          | ClickDateTime_UTC   | ConversionDateTime_UTC | APProcessedDateTime_UTC | LastAdjustmentDateTime_UTC | APProcessingLatency_Minutes | ClickToAPProcessing_Minutes |
++---------------+-------------+------------------------+--------------------+---------------------+------------------------+-------------------------+----------------------------+-----------------------------+-----------------------------+
+|       6300171 |       36912 | parent-20251116T114106 | 36912.6528.1798970 | 2025-11-16 02:37:03 | 2025-11-16 02:41:07    | 2025-11-16 02:48:23     | ʘ                          |                           7 |                          11 |
+|       6300171 |       36912 | child-20251116T114106  | 36912.6528.3708099 | 2025-11-16 02:37:03 | 2025-11-16 02:41:00    | 2025-11-20 04:18:00     | ʘ                          |                        5857 |                        5860 |
+|       6300171 |       36912 | parent-20251116T111201 | 36912.6528.1724703 | 2025-11-16 02:10:27 | 2025-11-16 02:12:01    | 2025-11-16 02:20:30     | ʘ                          |                           8 |                          10 |
+|       6300171 |       36912 | child-20251116T111201  | 36912.6528.3708100 | 2025-11-16 02:10:27 | 2025-11-16 02:12:00    | 2025-11-20 04:18:01     | ʘ                          |                        5886 |                        5887 |
+|       6300171 |       36912 | parent-20251110T112709 | 36912.6522.1706521 | 2025-11-10 02:21:56 | 2025-11-10 02:27:09    | 2025-11-10 02:33:41     | ʘ                          |                           6 |                          11 |
+|       6300171 |       36912 | child-20251110T112709  | 36912.6522.3913577 | 2025-11-10 02:21:56 | 2025-11-10 02:27:00    | 2025-11-20 04:18:00     | ʘ                          |                       14511 |                       14516 |
