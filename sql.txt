@@ -1,255 +1,47 @@
--- DS: r_ds_ircm
--- Build a comma-separated IN list of LOWER(promo_code) for both programs
-SELECT GROUP_CONCAT("'", LOWER(promo_code), "'" ORDER BY promo_code SEPARATOR ',') AS in_list
-FROM ircm_promocode
-WHERE ircm_campaign_id IN (30720, 30723);
--- '10carma','12-andrea','12-christina','12andrea','12jana','15-ana','15-andrea','15-christina','15-christine','15-familiezuhaus','15-janina','15-linda','15andrea','15anne','15bydansku','15camilla','15carina','15carma','15cindie','15ditte','15fanni','15heli','15jana','15jenny','15josefine','15kathrine','15linnea','15malin','15maria','15marjaana','15marlene','15minja','15mirelle','15therese','15trine','15vivi','15wickman','17nykund','20-motatos','adriana-12','adriana-15','adriana15','aglaja15','alina15','alumni-november','anca15','andrea+15','andrea-15','andrea15','andreea-12','andreea-15','andreea15','anni-15','april-student','arjessasi15','barnvagnsgalen','barnvagnsgalen15','benefitsme2025','benify15ny','benifydeal10','benifydk15','benifysyksy','bgxmtts2025','byannina','byjenna','bykrista','camilla','carina10','carina15','carmaliv15','caroline_15','cassandra15','charlotte_15','christina+15','christina-15','christina10','christine+12','christine+15','christine-15','christine15','cindie10','claudia10','claudia15','claudia_15','coubonga10','coubonga15','coubonga18','coupxmtts2025','criss12','criss15','cristina+15','cristina12','cristina15','dani-12','dani-15','dani15','daniela','darumpflanzlich15','dedlith12','dedlith15','diana15','dina+12','dina+15','dina15','drilling12','drilling15','ebbaisacson','ekonomimamman15','elise+12','elise+15','elise15','emiliasmat','emmajennie','emmajennie15','emmi15','emmim','familie12','familie15','familiezuhaus15','fanni10','fixaformen','focusxmotatos25','frokenturkos','fulya+12','fulya+15','fulya15','fyraarstider','gabriella_15','gina15','gutrauxmotatos25','hacer12','hacer15','hagman10','hannatheorin','hej_emilia15','hemmahosmalin','henriikka10','henriikka15','herzenstimme15','ina+12','ina+15','inkamarin','isic2025','iza12','iza15','jan12','jan15','jana+15','jasmin-15','jekku','jenni15','jennifer','jennisanssi','jennisanssi','jenny10','jessica10','jessicaf','josefine','josefine15','josefines15','kaisa_15','kalligrafiaa15','katha10','katha15','kathrine10','katja-15','katja10','katrine15','kaunis15','kaunismaessa','kellyl15','kerroksii','kerroksii15','kim+12','kim+15','kitty12','kitty15','klingskitchen','laerkesejer15','lagom','lapptussan','lara15','lena-15','lena-15','linda-15','linda-marie15','linda10','linda12','linda15','lindamarie10','lindamarie15','lukas+12','lukas+15','madde','mammansmat','mammansmat15','maria10','mariaogemil','marilena-12','marilena-15','marilena15','marjaana10','marjaana15','marlene','marlenehviid','maryna15','matplatsen','matsmart-studentkortet-10','mecenatny16','michelle+12','michelle+15','michelle_15','miiala15','miialafi','minja','minja10','mom12','mom15','mona-15','monique+12','monique+15','monique15','motatoskrone25','mydealz2025','nadine+12','nadine+15','nadine-15','nathalie+12','nathalie+15','nathalie-15','nicola-15','nicole15','nicoline15','ninah','ninnis15','novembermys','olsbo15','patricia15','pernille10','persson15','pia','props12','provkok15','rabatkongen10','rabattxmotatos25','rintalanperhe15','rosa15','roya+12','roya+15','roya15','roz15','sandrashem','sandrashem15','sandy+15','sandy-12','sandy-15','sanja12','sanja15','sannak','sarah+15','saralagom15','sarianna','selinapetronella','septembermys','shin15','shopmate2025','sissi12','sissi15','skafferi12','slice12','slice18','slicehenksu16','smart-familj-12','smart-student-12','smartfrank18','snacksbycaroline','sokrabatt15','sonja-12','sonja-15','sonja15','stepler18alennus','stepler18rabat','stepler18rabatt','stepler2025','stepler80höst','stepler80höst','stepler80rabat','stepler80rabatt','stepler8ale','steplerhöst18','steplerhöst18','student10','studentny16','summer16','sylvia12','sylvia15','terveelliset15','terveellisetherkut','theorin15','tinkerbell-12','tinkerbell-15','tinkerbell15','tjockkocken','toukokuu18','trine','trine10','triner2','trisiaa','trisiaa15','tulin12','tulin15','verena+12','verena+15','verena15','vero-15','veronika12','veronika15','villakotila','vivi-15','vivi_15','wickman10','wiktoria15','wobblybits','wobblybits15','woessichheute10','yespar15','^(logbnc).*','^(logbrc).*','^(logbrcse).*','^(logbuync).*','^(logbuyrc).*','^(nykund18).*','^(nykund18).*','^(smart15).*','^(smart15).*','^(smartdeal).*','^(smartdeal-nc ).*','^(smartdeal-nc).*','^(smartdeal-rc ).*','^(smartdeal-rc).*','^(smartdeallx).*','^(smartdeallxpyjlk8rc).*','^(smartdeallxpyjlk8rcl).*','^(sov-).*','^(sov-dk10).*','^(sov-dk16).*','^(sov-se).*','^(sov-se10).*','^(sov-se16).*'
+/* DRAFT - TS - Order Processing Latency Lookup (Internal Only)
+   Datasource: r_ds_singlestore
+   Table: datalake_irdwm.action_fact
+*/
 
--- DS: singlestore
--- Orders with Impact‑issued codes only (distinct OID) – Oct 2025
 SELECT
-  advertiser_id,
-  COUNT(DISTINCT oid) AS orders_with_registered_codes
-FROM conversion_fact
-WHERE advertiser_id IN (6006417, 6006625)            -- DACH & Nordics in conv logs
-  AND event_datetime >= '2025-10-01'
-  AND event_datetime <  '2025-11-01'
-  AND promo_code IS NOT NULL AND promo_code <> ''
-  AND LOWER(promo_code) IN (
-'10carma','12-andrea','12-christina','12andrea','12jana','15-ana','15-andrea','15-christina','15-christine','15-familiezuhaus','15-janina','15-linda','15andrea','15anne','15bydansku','15camilla','15carina','15carma','15cindie','15ditte','15fanni','15heli','15jana','15jenny','15josefine','15kathrine','15linnea','15malin','15maria','15marjaana','15marlene','15minja','15mirelle','15therese','15trine','15vivi','15wickman','17nykund','20-motatos','adriana-12','adriana-15','adriana15','aglaja15','alina15','alumni-november','anca15','andrea+15','andrea-15','andrea15','andreea-12','andreea-15','andreea15','anni-15','april-student','arjessasi15','barnvagnsgalen','barnvagnsgalen15','benefitsme2025','benify15ny','benifydeal10','benifydk15','benifysyksy','bgxmtts2025','byannina','byjenna','bykrista','camilla','carina10','carina15','carmaliv15','caroline_15','cassandra15','charlotte_15','christina+15','christina-15','christina10','christine+12','christine+15','christine-15','christine15','cindie10','claudia10','claudia15','claudia_15','coubonga10','coubonga15','coubonga18','coupxmtts2025','criss12','criss15','cristina+15','cristina12','cristina15','dani-12','dani-15','dani15','daniela','darumpflanzlich15','dedlith12','dedlith15','diana15','dina+12','dina+15','dina15','drilling12','drilling15','ebbaisacson','ekonomimamman15','elise+12','elise+15','elise15','emiliasmat','emmajennie','emmajennie15','emmi15','emmim','familie12','familie15','familiezuhaus15','fanni10','fixaformen','focusxmotatos25','frokenturkos','fulya+12','fulya+15','fulya15','fyraarstider','gabriella_15','gina15','gutrauxmotatos25','hacer12','hacer15','hagman10','hannatheorin','hej_emilia15','hemmahosmalin','henriikka10','henriikka15','herzenstimme15','ina+12','ina+15','inkamarin','isic2025','iza12','iza15','jan12','jan15','jana+15','jasmin-15','jekku','jenni15','jennifer','jennisanssi','jennisanssi','jenny10','jessica10','jessicaf','josefine','josefine15','josefines15','kaisa_15','kalligrafiaa15','katha10','katha15','kathrine10','katja-15','katja10','katrine15','kaunis15','kaunismaessa','kellyl15','kerroksii','kerroksii15','kim+12','kim+15','kitty12','kitty15','klingskitchen','laerkesejer15','lagom','lapptussan','lara15','lena-15','lena-15','linda-15','linda-marie15','linda10','linda12','linda15','lindamarie10','lindamarie15','lukas+12','lukas+15','madde','mammansmat','mammansmat15','maria10','mariaogemil','marilena-12','marilena-15','marilena15','marjaana10','marjaana15','marlene','marlenehviid','maryna15','matplatsen','matsmart-studentkortet-10','mecenatny16','michelle+12','michelle+15','michelle_15','miiala15','miialafi','minja','minja10','mom12','mom15','mona-15','monique+12','monique+15','monique15','motatoskrone25','mydealz2025','nadine+12','nadine+15','nadine-15','nathalie+12','nathalie+15','nathalie-15','nicola-15','nicole15','nicoline15','ninah','ninnis15','novembermys','olsbo15','patricia15','pernille10','persson15','pia','props12','provkok15','rabatkongen10','rabattxmotatos25','rintalanperhe15','rosa15','roya+12','roya+15','roya15','roz15','sandrashem','sandrashem15','sandy+15','sandy-12','sandy-15','sanja12','sanja15','sannak','sarah+15','saralagom15','sarianna','selinapetronella','septembermys','shin15','shopmate2025','sissi12','sissi15','skafferi12','slice12','slice18','slicehenksu16','smart-familj-12','smart-student-12','smartfrank18','snacksbycaroline','sokrabatt15','sonja-12','sonja-15','sonja15','stepler18alennus','stepler18rabat','stepler18rabatt','stepler2025','stepler80höst','stepler80höst','stepler80rabat','stepler80rabatt','stepler8ale','steplerhöst18','steplerhöst18','student10','studentny16','summer16','sylvia12','sylvia15','terveelliset15','terveellisetherkut','theorin15','tinkerbell-12','tinkerbell-15','tinkerbell15','tjockkocken','toukokuu18','trine','trine10','triner2','trisiaa','trisiaa15','tulin12','tulin15','verena+12','verena+15','verena15','vero-15','veronika12','veronika15','villakotila','vivi-15','vivi_15','wickman10','wiktoria15','wobblybits','wobblybits15','woessichheute10','yespar15','^(logbnc).*','^(logbrc).*','^(logbrcse).*','^(logbuync).*','^(logbuyrc).*','^(nykund18).*','^(nykund18).*','^(smart15).*','^(smart15).*','^(smartdeal).*','^(smartdeal-nc ).*','^(smartdeal-nc).*','^(smartdeal-rc ).*','^(smartdeal-rc).*','^(smartdeallx).*','^(smartdeallxpyjlk8rc).*','^(smartdeallxpyjlk8rcl).*','^(sov-).*','^(sov-dk10).*','^(sov-dk16).*','^(sov-se).*','^(sov-se10).*','^(sov-se16).*'
-  )
-GROUP BY advertiser_id
-ORDER BY advertiser_id;
-+---------------+------------------------------+
-| advertiser_id | orders_with_registered_codes |
-+---------------+------------------------------+
-|       6006417 |                         1507 |
-|       6006625 |                         5446 |
-+---------------+------------------------------+
+    af.advertiser_id                                  AS advertiser_id,
+    af.campaign_id                                    AS campaign_id,
+    af.oid                                            AS oid,
+    af.action_id                                      AS action_id,
 
+    -- Event / click timestamp
+    af.ref_datetime                                   AS ClickDateTime_UTC,
 
--- DS: singlestore
--- Distinct orders by code for codes NOT in the Impact‑issued list
-SELECT
-  advertiser_id,
-  code_lower,
-  COUNT(*) AS unique_orders
-FROM (
-  SELECT advertiser_id, oid, MIN(LOWER(promo_code)) AS code_lower
-  FROM conversion_fact
-  WHERE advertiser_id IN (6006417, 6006625)
-    AND event_datetime >= '2025-10-01'
-    AND event_datetime <  '2025-11-01'
-    AND promo_code IS NOT NULL AND promo_code <> ''
-  GROUP BY advertiser_id, oid
-) o
-WHERE code_lower NOT IN (
-'10carma','12-andrea','12-christina','12andrea','12jana','15-ana','15-andrea','15-christina','15-christine','15-familiezuhaus','15-janina','15-linda','15andrea','15anne','15bydansku','15camilla','15carina','15carma','15cindie','15ditte','15fanni','15heli','15jana','15jenny','15josefine','15kathrine','15linnea','15malin','15maria','15marjaana','15marlene','15minja','15mirelle','15therese','15trine','15vivi','15wickman','17nykund','20-motatos','adriana-12','adriana-15','adriana15','aglaja15','alina15','alumni-november','anca15','andrea+15','andrea-15','andrea15','andreea-12','andreea-15','andreea15','anni-15','april-student','arjessasi15','barnvagnsgalen','barnvagnsgalen15','benefitsme2025','benify15ny','benifydeal10','benifydk15','benifysyksy','bgxmtts2025','byannina','byjenna','bykrista','camilla','carina10','carina15','carmaliv15','caroline_15','cassandra15','charlotte_15','christina+15','christina-15','christina10','christine+12','christine+15','christine-15','christine15','cindie10','claudia10','claudia15','claudia_15','coubonga10','coubonga15','coubonga18','coupxmtts2025','criss12','criss15','cristina+15','cristina12','cristina15','dani-12','dani-15','dani15','daniela','darumpflanzlich15','dedlith12','dedlith15','diana15','dina+12','dina+15','dina15','drilling12','drilling15','ebbaisacson','ekonomimamman15','elise+12','elise+15','elise15','emiliasmat','emmajennie','emmajennie15','emmi15','emmim','familie12','familie15','familiezuhaus15','fanni10','fixaformen','focusxmotatos25','frokenturkos','fulya+12','fulya+15','fulya15','fyraarstider','gabriella_15','gina15','gutrauxmotatos25','hacer12','hacer15','hagman10','hannatheorin','hej_emilia15','hemmahosmalin','henriikka10','henriikka15','herzenstimme15','ina+12','ina+15','inkamarin','isic2025','iza12','iza15','jan12','jan15','jana+15','jasmin-15','jekku','jenni15','jennifer','jennisanssi','jennisanssi','jenny10','jessica10','jessicaf','josefine','josefine15','josefines15','kaisa_15','kalligrafiaa15','katha10','katha15','kathrine10','katja-15','katja10','katrine15','kaunis15','kaunismaessa','kellyl15','kerroksii','kerroksii15','kim+12','kim+15','kitty12','kitty15','klingskitchen','laerkesejer15','lagom','lapptussan','lara15','lena-15','lena-15','linda-15','linda-marie15','linda10','linda12','linda15','lindamarie10','lindamarie15','lukas+12','lukas+15','madde','mammansmat','mammansmat15','maria10','mariaogemil','marilena-12','marilena-15','marilena15','marjaana10','marjaana15','marlene','marlenehviid','maryna15','matplatsen','matsmart-studentkortet-10','mecenatny16','michelle+12','michelle+15','michelle_15','miiala15','miialafi','minja','minja10','mom12','mom15','mona-15','monique+12','monique+15','monique15','motatoskrone25','mydealz2025','nadine+12','nadine+15','nadine-15','nathalie+12','nathalie+15','nathalie-15','nicola-15','nicole15','nicoline15','ninah','ninnis15','novembermys','olsbo15','patricia15','pernille10','persson15','pia','props12','provkok15','rabatkongen10','rabattxmotatos25','rintalanperhe15','rosa15','roya+12','roya+15','roya15','roz15','sandrashem','sandrashem15','sandy+15','sandy-12','sandy-15','sanja12','sanja15','sannak','sarah+15','saralagom15','sarianna','selinapetronella','septembermys','shin15','shopmate2025','sissi12','sissi15','skafferi12','slice12','slice18','slicehenksu16','smart-familj-12','smart-student-12','smartfrank18','snacksbycaroline','sokrabatt15','sonja-12','sonja-15','sonja15','stepler18alennus','stepler18rabat','stepler18rabatt','stepler2025','stepler80höst','stepler80höst','stepler80rabat','stepler80rabatt','stepler8ale','steplerhöst18','steplerhöst18','student10','studentny16','summer16','sylvia12','sylvia15','terveelliset15','terveellisetherkut','theorin15','tinkerbell-12','tinkerbell-15','tinkerbell15','tjockkocken','toukokuu18','trine','trine10','triner2','trisiaa','trisiaa15','tulin12','tulin15','verena+12','verena+15','verena15','vero-15','veronika12','veronika15','villakotila','vivi-15','vivi_15','wickman10','wiktoria15','wobblybits','wobblybits15','woessichheute10','yespar15','^(logbnc).*','^(logbrc).*','^(logbrcse).*','^(logbuync).*','^(logbuyrc).*','^(nykund18).*','^(nykund18).*','^(smart15).*','^(smart15).*','^(smartdeal).*','^(smartdeal-nc ).*','^(smartdeal-nc).*','^(smartdeal-rc ).*','^(smartdeal-rc).*','^(smartdeallx).*','^(smartdeallxpyjlk8rc).*','^(smartdeallxpyjlk8rcl).*','^(sov-).*','^(sov-dk10).*','^(sov-dk16).*','^(sov-se).*','^(sov-se10).*','^(sov-se16).*'
-)
-GROUP BY advertiser_id, code_lower
-ORDER BY advertiser_id, unique_orders DESC
-LIMIT 200;
-+---------------+--------------------+---------------+
-| advertiser_id | code_lower         | unique_orders |
-+---------------+--------------------+---------------+
-|       6006417 | herbst20           |          1360 |
-|       6006417 | sparen17           |          1106 |
-|       6006417 | welt16             |           929 |
-|       6006417 | blitz20            |           738 |
-|       6006417 | rainy30            |           470 |
-|       6006417 | off25              |           423 |
-|       6006417 | 25off              |           318 |
-|       6006417 | mathella+12        |           136 |
-|       6006417 | fitness10          |           111 |
-|       6006417 | hazel15            |            64 |
-|       6006417 | tanja-15           |            62 |
-|       6006417 | zehner             |            58 |
-|       6006417 | vanessa-15         |            58 |
-|       6006417 | mathella+15        |            56 |
-|       6006417 | nc0fi8w4           |            55 |
-|       6006417 | tanja-12           |            53 |
-|       6006417 | rene-15            |            51 |
-|       6006417 | nc0to9t7           |            44 |
-|       6006417 | alina-15           |            43 |
-|       6006417 | nc0sy9o2           |            31 |
-|       6006417 | nc0ad9n3           |            31 |
-|       6006417 | 15gilda            |            30 |
-|       6006417 | nc1tco0g0          |            28 |
-|       6006417 | jana-15            |            27 |
-|       6006417 | nc1dna0l5          |            26 |
-|       6006417 | evelyn-15          |            26 |
-|       6006417 | rene-12            |            24 |
-|       6006417 | nc1toa0k6          |            22 |
-|       6006417 | nc1rt0e2           |            22 |
-|       6006417 | nc1hha0m4          |            19 |
-|       6006417 | nc1ffb0j7          |            17 |
-|       6006417 | nc1ffa0j7          |            16 |
-|       6006417 | 15manuel15         |            15 |
-|       6006417 | nc1hhb0m4          |            14 |
-|       6006417 | impact_oct_50euro  |            13 |
-|       6006417 | 12-malika          |            13 |
-|       6006417 | nc0mi9p1           |            13 |
-|       6006417 | ul48ht3h           |            13 |
-|       6006417 | sophia15           |            13 |
-|       6006417 | nc1dn0y2a          |            13 |
-|       6006417 | nc1dnb0l5          |            12 |
-|       6006417 | sorry              |            11 |
-|       6006417 | prcjelly           |            11 |
-|       6006417 | rebecca15          |            11 |
-|       6006417 | khaled30           |            11 |
-|       6006417 | 12manuel12         |            10 |
-|       6006417 | nc1pa0f1           |            10 |
-|       6006417 | sparzehn           |            10 |
-|       6006417 | nc0fs9r9           |             9 |
-|       6006417 | nc1tob0k6          |             9 |
-|       6006417 | nc0hh9q0           |             8 |
-|       6006417 | 15jan              |             8 |
-|       6006417 | tanja+12           |             8 |
-|       6006417 | nc0ff9s8           |             7 |
-|       6006417 | sorry-10           |             7 |
-|       6006417 | nc0sy9o2f          |             6 |
-|       6006417 | nc0rt8v5           |             6 |
-|       6006417 | 15-malika          |             6 |
-|       6006417 | nc1au0i8           |             5 |
-|       6006417 | nc1dna0l5f         |             5 |
-|       6006417 | nc0dn9u6           |             5 |
-|       6006417 | employee25discount |             4 |
-|       6006417 | nowaste20          |             4 |
-|       6006417 | nc1lh0h9           |             4 |
-|       6006417 | nc0dn8z1           |             3 |
-|       6006417 | fiege15            |             3 |
-|       6006417 | lena+15            |             3 |
-|       6006417 | akufr15            |             3 |
-|       6006417 | koro               |             3 |
-|       6006417 | lena+12            |             3 |
-|       6006417 | nc1fi0z1a          |             3 |
-|       6006417 | motatoskrone       |             2 |
-|       6006417 | nc0ad9n3f          |             2 |
-|       6006417 | marry+12           |             2 |
-|       6006417 | nora12             |             2 |
-|       6006417 | nc1fi0z1af         |             2 |
-|       6006417 | nc1hhb0m4f         |             2 |
-|       6006417 | nc0to9t7f          |             2 |
-|       6006417 | ffez26pe           |             1 |
-|       6006417 | p34kzkva           |             1 |
-|       6006417 | 3sa6x7et           |             1 |
-|       6006417 | pbm36yht           |             1 |
-|       6006417 | lnw3v8pl           |             1 |
-|       6006417 | zfspkm3c           |             1 |
-|       6006417 | u25wdzrx           |             1 |
-|       6006417 | qjqb7h8y           |             1 |
-|       6006417 | 2htdcdm3           |             1 |
-|       6006417 | j2svjh6l           |             1 |
-|       6006417 | z67bprtc           |             1 |
-|       6006417 | k3mfp8jp           |             1 |
-|       6006417 | vhrxkyy8           |             1 |
-|       6006417 | 93guy4rg           |             1 |
-|       6006417 | mzcentfh           |             1 |
-|       6006417 | pwwc5hlq           |             1 |
-|       6006417 | s8krr642           |             1 |
-|       6006417 | yrydd5jj           |             1 |
-|       6006417 | hgu29mpr           |             1 |
-|       6006417 | gwlhs3m9           |             1 |
-|       6006417 | lhaw7dr2           |             1 |
-|       6006417 | a2sev36r           |             1 |
-|       6006417 | wlmuqyhm           |             1 |
-|       6006417 | c8q98czn           |             1 |
-|       6006417 | gsvwkdjn           |             1 |
-|       6006417 | vg8z5ddq           |             1 |
-|       6006417 | unqs5uaj           |             1 |
-|       6006417 | 7fvw4tjn           |             1 |
-|       6006417 | xksz6nc8           |             1 |
-|       6006417 | tjchb9qx           |             1 |
-|       6006417 | ufr4h9ev           |             1 |
-|       6006417 | fusdx8a8           |             1 |
-|       6006417 | yy7pxv7c           |             1 |
-|       6006417 | lsnren4j           |             1 |
-|       6006417 | 4vx436ab           |             1 |
-|       6006417 | 8q2a9yj7           |             1 |
-|       6006417 | hsm5chfl           |             1 |
-|       6006417 | 9yfq3kug           |             1 |
-|       6006417 | ag3g9j9d           |             1 |
-|       6006417 | dfdwbkwv           |             1 |
-|       6006417 | v7mdduhh           |             1 |
-|       6006417 | bl9yr4kp           |             1 |
-|       6006417 | rmvzgkuc           |             1 |
-|       6006417 | y2hkjlfb           |             1 |
-|       6006417 | ph86ulb6           |             1 |
-|       6006417 | b9k5rtrg           |             1 |
-|       6006417 | p8x3b9hj           |             1 |
-|       6006417 | 6kzksvbe           |             1 |
-|       6006417 | 4qutyttt           |             1 |
-|       6006417 | l5lf9c2k           |             1 |
-|       6006417 | l326wmu8           |             1 |
-|       6006417 | t8pdmajg           |             1 |
-|       6006417 | z28ftuqj           |             1 |
-|       6006417 | 54tbkayj           |             1 |
-|       6006417 | ltjrdr3r           |             1 |
-|       6006417 | bev5c7wb           |             1 |
-|       6006417 | 2v8pg9kz           |             1 |
-|       6006417 | 9mac2jbp           |             1 |
-|       6006417 | wm4583k8           |             1 |
-|       6006417 | bm4myuj7           |             1 |
-|       6006417 | ml9b2w38           |             1 |
-|       6006417 | expjsbt9           |             1 |
-|       6006417 | wxgf7d2g           |             1 |
-|       6006417 | c4rzrlpd           |             1 |
-|       6006417 | 7fr3rsjc           |             1 |
-|       6006417 | dbsxgdxq           |             1 |
-|       6006417 | hst5846g           |             1 |
-|       6006417 | pwrq4epp           |             1 |
-|       6006417 | j8pkjxkk           |             1 |
-|       6006417 | v4ywy49a           |             1 |
-|       6006417 | r863yayz           |             1 |
-|       6006417 | nwvz3l6p           |             1 |
-|       6006417 | chxfhuwf           |             1 |
-|       6006417 | 8scag8mv           |             1 |
-|       6006417 | wlsw9694           |             1 |
-|       6006417 | 9zwlj5v7           |             1 |
-|       6006417 | pdu52gm3           |             1 |
-|       6006417 | ujt5sx8q           |             1 |
-|       6006417 | bxh2vpeq           |             1 |
-|       6006417 | 5j98m3fb           |             1 |
-|       6006417 | geqzxdhj           |             1 |
-|       6006417 | f47yq8ss           |             1 |
-|       6006417 | tm5g83gw           |             1 |
-|       6006417 | pwb5hg32           |             1 |
-|       6006417 | nwr97rg7           |             1 |
-|       6006417 | yyk4x24f           |             1 |
-|       6006417 | jbnl2enh           |             1 |
-|       6006417 | vaw72gz4           |             1 |
-|       6006417 | rrug7jrz           |             1 |
-|       6006417 | tvvs9paf           |             1 |
-|       6006417 | b8um98vl           |             1 |
-|       6006417 | 11255nscpq7gb5     |             1 |
-|       6006417 | eqzv7f46           |             1 |
-|       6006417 | z2swrf79           |             1 |
-|       6006417 | hr73b2jm           |             1 |
-|       6006417 | 4suk8762           |             1 |
-|       6006417 | mj88ujff           |             1 |
-|       6006417 | 9pemshpw           |             1 |
-|       6006417 | l9bpfwja           |             1 |
-|       6006417 | 4zyvz3rm           |             1 |
-|       6006417 | wpslh5sn           |             1 |
-|       6006417 | e7s2l6nh           |             1 |
-|       6006417 | vnnn3s5w           |             1 |
-|       6006417 | nn5mbjqq           |             1 |
-|       6006417 | p85rqlsx           |             1 |
-|       6006417 | placzfvp           |             1 |
-|       6006417 | f6rt88jy           |             1 |
-|       6006417 | 8m9nh9v9           |             1 |
-|       6006417 | a6pv36lj           |             1 |
-|       6006417 | cacys9qu           |             1 |
-|       6006417 | lr9hg6yc           |             1 |
-|       6006417 | u9cah78r           |             1 |
-|       6006417 | hd35z3at           |             1 |
-|       6006417 | jba36jee           |             1 |
-|       6006417 | ha8j5p9w           |             1 |
-|       6006417 | 7m3me57j           |             1 |
-|       6006417 | 9f38qysk           |             1 |
-|       6006417 | m9nddly4           |             1 |
-|       6006417 | 6eaxz5r2           |             1 |
-|       6006417 | 42vf27zv           |             1 |
-|       6006417 | jyd4lqp4           |             1 |
-|       6006417 | ych8gl5t           |             1 |
-+---------------+--------------------+---------------+
+    -- When the action first hit our system
+    af.action_datetime                                AS ConversionDateTime_UTC,
+
+    -- When AP finished processing the action
+    af.doe                                            AS APProcessedDateTime_UTC,
+
+    -- When the action was last adjusted in AP (if ever)
+    af.adj_datetime                                   AS LastAdjustmentDateTime_UTC,
+
+    -- Latency between conversion event and AP processing
+    TIMESTAMPDIFF(
+        MINUTE,
+        af.action_datetime,
+        af.doe
+    )                                                 AS APProcessingLatency_Minutes,
+
+    -- Optional: latency from click to AP processing
+    TIMESTAMPDIFF(
+        MINUTE,
+        af.ref_datetime,
+        af.doe
+    )                                                 AS ClickToAPProcessing_Minutes
+
+FROM
+    action_fact af
+WHERE
+    af.advertiser_id = :advertiser_id
+    AND af.campaign_id = :campaign_id
+    AND af.oid = :oid
+    AND af.action_datetime BETWEEN :start_action_datetime AND :end_action_datetime
+
+ORDER BY
+    af.action_datetime DESC;
