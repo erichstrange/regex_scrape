@@ -1,95 +1,40 @@
--- DRAFT – pattern from "Text 1/2/3 etc. parameters show OTHER in Data Lab" article,
--- adapted for text13 and BA campaign 26690.
-SELECT text13, COUNT(*)
-FROM action_fact
-WHERE action_datetime >= '2025-01-01'
-  AND campaign_id = 26690
-GROUP BY 1
-ORDER BY 2 DESC;
-
-+--------+----------+
-| text13 | COUNT(*) |
-+--------+----------+
-| gb     |     8253 |
-| us     |     5780 |
-| dk     |     1086 |
-| de     |     1082 |
-| fr     |      813 |
-| se     |      498 |
-| at     |      425 |
-| es     |      394 |
-| ca     |      388 |
-| it     |      288 |
-| za     |      283 |
-| ch     |      266 |
-| au     |      220 |
-| ie     |      214 |
-| no     |      203 |
-| nl     |      165 |
-| in     |      163 |
-| mx     |      161 |
-| br     |      146 |
-| pt     |      125 |
-| pl     |      108 |
-| ae     |       95 |
-| ro     |       78 |
-| cl     |       65 |
-| be     |       55 |
-| sa     |       52 |
-| nz     |       50 |
-| il     |       50 |
-| hk     |       49 |
-| jp     |       40 |
-| fi     |       38 |
-| sg     |       30 |
-| tr     |       27 |
-| gr     |       26 |
-| cz     |       22 |
-| cy     |       17 |
-| cn     |        9 |
-| eg     |        8 |
-| ng     |        8 |
-| gh     |        7 |
-| qa     |        7 |
-| kw     |        5 |
-| bg     |        4 |
-| jm     |        3 |
-| bm     |        3 |
-| my     |        3 |
-| bs     |        3 |
-| ar     |        2 |
-| hu     |        2 |
-| ee     |        2 |
-| ky     |        2 |
-| bh     |        2 |
-| sk     |        1 |
-| id     |        1 |
-| lu     |        1 |
-| sv     |        1 |
-| al     |        1 |
-| zw     |        1 |
-| az     |        1 |
-| hr     |        1 |
-| th     |        1 |
-| gd     |        1 |
-| mc     |        1 |
-| tw     |        1 |
-| mm     |        1 |
-| cr     |        1 |
-| iq     |        1 |
-| pe     |        1 |
-| kr     |        1 |
-| ua     |        1 |
-+--------+----------+
+-- DRAFT EXAMPLE based on vetted conversion_fact pattern [TS, conversions, singlestore]:contentReference[oaicite:10]{index=10}
+SELECT
+  date_trunc('DAY', event_datetime) AS event_day,
+  date_trunc('DAY', action_datetime) AS action_day,
+  method,
+  count(*) AS conversions
+FROM conversion_fact
+WHERE campaign_id = 27471
+  AND event_datetime >= '2025-11-15'
+  AND event_datetime <  '2025-11-23'
+GROUP BY 1,2,3
+ORDER BY event_day, action_day, method;
 
 
--- DRAFT – same structure as the vetted text-param allowlist query,
--- restricted to text_num = 13 for this campaign.
-SELECT *
-FROM text_event_param_allowed_mappings
-WHERE campaign_id = 26690
-  AND text_num = 13;
-+-------------+----------+-------+------+------------------+----------------+-----+
-| campaign_id | text_num | value | name | date_from_dim_id | date_to_dim_id | dlu |
-+-------------+----------+-------+------+------------------+----------------+-----+
-+-------------+----------+-------+------+------------------+----------------+-----+
+
+-- Based on vetted action_fact detail query [TS, conversions, irdw_imp/singlestore]:contentReference[oaicite:11]{index=11}
+SELECT
+  af.action_datetime,
+  af.advertiser_id,
+  af.campaign_id,
+  af.publisher_id,
+  atr.action_tracker_id,
+  atr.action_tracker_name,
+  af.method,
+  af.batch_id,
+  af.oid,
+  af.adv_saleamt,
+  af.adv_commission,
+  af.adv_original_commission,
+  af.ref_domain,
+  af.ref_landingpage_url,
+  af.pubsubid1,
+  af.pubsubid2
+FROM action_fact af
+LEFT JOIN action_tracker_dim atr
+  ON atr.id = af.action_tracker_dim_id
+WHERE af.campaign_id = 27471
+  AND af.action_datetime >= '2025-11-18'
+  AND af.action_datetime <  '2025-11-19'
+LIMIT 2000;
