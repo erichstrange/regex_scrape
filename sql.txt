@@ -256,16 +256,6 @@ WITH oids (oid) AS (
 
 
 
--- Data Source: r_ds_iraction_sharded
-
-WITH oids (oid) AS (
-  VALUES
-    -- ⬇︎ paste the full VALUES block from section 0 here ⬇︎
-    ('0fb9704f-da6d-49fc-a177-99fc1470d19e'),
-    ...
-    ('fc9b914c-ec5c-43d1-b034-bc05b1075cc7')
-)
-
 SELECT
   a.campaign_id,
   a.action_date,
@@ -276,32 +266,24 @@ SELECT
   a.batch_id,
   a.adj_date
 FROM irac_action2 a
-JOIN oids o
-  ON a.oid = o.oid
-ORDER BY a.action_date DESC;
-
-
-
--- Data Source: r_ds_ods
-
-WITH oids (oid) AS (
-  VALUES
-    -- ⬇︎ paste the same VALUES block from section 0 here ⬇︎
-    ('0fb9704f-da6d-49fc-a177-99fc1470d19e'),
-    ...
-    ('fc9b914c-ec5c-43d1-b034-bc05b1075cc7')
+WHERE a.oid IN (
+'0fb9704f-da6d-49fc-a177-99fc1470d19e',
+'15287082-9dd1-4b0e-86a1-fa3e0d23d08d',
+'4e80ee0b-b352-4572-aa49-370ebb781eb2',
+'e38cbf78-77d7-4cb7-9b82-0efb82a9f85e',
+'d7cf1195-f0fb-40ea-b8af-52ccf8b63bb7',
+'c19693ac-a461-4f8a-9958-2baa7d171bb0',
+'d26381ee-41e4-4c2a-bb5e-df3f626bb8be',
+'756bac16-878d-4fa5-a078-122ce257a7d0',
+'c5e9d088-4193-4b7e-8d05-90e549e2d278',
+'d0f1fc28-4e73-4a1b-ae70-17cc0b3390bd',
+'c5a6b546-f39f-4ef9-8436-ebe7ca9fa4a0',
+'3b2c2717-8c88-47fa-a995-1abb3b3a01b9',
+'14f53da5-d479-4bf7-a6b3-9e9373bc07f9',
+'d34c2582-b50e-49de-b86b-fa798ebcfd7d',
+'8a0f4e93-588f-47db-8b00-ae0b69981efb'
 )
-
-SELECT
-  *
-FROM ir_api_log l
-JOIN oids o
-  ON l.oid = o.oid
-ORDER BY l.created_at DESC;
-
-
-
--- Data Source: r_ds_iraction_sharded
+ORDER BY a.action_date DESC;
 
 WITH oids (oid) AS (
   VALUES
