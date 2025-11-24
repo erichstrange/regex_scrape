@@ -1,61 +1,10 @@
--- DRAFT – Conversions by day & event type around the spike
--- Datasource: singlestore (TS), conversions
-
 SELECT
-  DATE(cf.event_datetime)              AS event_day,
-  cf.action_tracker_id                 AS event_type_id,
-  atd.action_tracker_name,
-  atd.action_type,
-  atd.tracking_method,
-  SUM(COALESCE(cf.conversion_count, 1)) AS conversions
-FROM conversion_fact cf
-LEFT JOIN action_tracker_dim atd
-  ON atd.id = cf.action_tracker_dim_id
-WHERE cf.campaign_id = 27471
-  AND cf.event_datetime >= '2025-11-15'
-  AND cf.event_datetime <  '2025-11-23'
-GROUP BY
-  event_day,
-  event_type_id,
-  atd.action_tracker_name,
-  atd.action_type,
-  atd.tracking_method
-ORDER BY
-  event_day,
-  conversions DESC;
-
-+------------+---------------+---------------------+-------------+-----------------+-------------+
-| event_day  | event_type_id | action_tracker_name | action_type | tracking_method | conversions |
-+------------+---------------+---------------------+-------------+-----------------+-------------+
-| 2025-11-15 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        3223 |
-| 2025-11-15 |         49922 | Subscription        | SALE        | WEBSERVICE      |          13 |
-| 2025-11-16 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        3222 |
-| 2025-11-16 |         49922 | Subscription        | SALE        | WEBSERVICE      |          12 |
-| 2025-11-17 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        3982 |
-| 2025-11-17 |         49922 | Subscription        | SALE        | WEBSERVICE      |          19 |
-| 2025-11-18 |         57037 | Tool activity       | LEAD        | WEBSERVICE      |      326399 |
-| 2025-11-18 |         57038 | Retention           | LEAD        | WEBSERVICE      |      107634 |
-| 2025-11-18 |         57039 | Retention-7days     | LEAD        | WEBSERVICE      |       53908 |
-| 2025-11-18 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        4480 |
-| 2025-11-18 |         49922 | Subscription        | SALE        | WEBSERVICE      |          26 |
-| 2025-11-19 |         57037 | Tool activity       | LEAD        | WEBSERVICE      |        5009 |
-| 2025-11-19 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        2895 |
-| 2025-11-19 |         57038 | Retention           | LEAD        | WEBSERVICE      |        1813 |
-| 2025-11-19 |         57039 | Retention-7days     | LEAD        | WEBSERVICE      |        1043 |
-| 2025-11-19 |         49922 | Subscription        | SALE        | WEBSERVICE      |          22 |
-| 2025-11-20 |         57037 | Tool activity       | LEAD        | WEBSERVICE      |        4168 |
-| 2025-11-20 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        2816 |
-| 2025-11-20 |         57038 | Retention           | LEAD        | WEBSERVICE      |        1886 |
-| 2025-11-20 |         57039 | Retention-7days     | LEAD        | WEBSERVICE      |        1033 |
-| 2025-11-20 |         49922 | Subscription        | SALE        | WEBSERVICE      |          20 |
-| 2025-11-21 |         57037 | Tool activity       | LEAD        | WEBSERVICE      |        4153 |
-| 2025-11-21 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        3167 |
-| 2025-11-21 |         57038 | Retention           | LEAD        | WEBSERVICE      |        1760 |
-| 2025-11-21 |         57039 | Retention-7days     | LEAD        | WEBSERVICE      |         993 |
-| 2025-11-21 |         49922 | Subscription        | SALE        | WEBSERVICE      |          33 |
-| 2025-11-22 |         57037 | Tool activity       | LEAD        | WEBSERVICE      |        4345 |
-| 2025-11-22 |         49921 | Sign-up             | LEAD        | WEBSERVICE      |        3200 |
-| 2025-11-22 |         57038 | Retention           | LEAD        | WEBSERVICE      |        1658 |
-| 2025-11-22 |         57039 | Retention-7days     | LEAD        | WEBSERVICE      |         906 |
-| 2025-11-22 |         49922 | Subscription        | SALE        | WEBSERVICE      |          22 |
-+------------+---------------+---------------------+-------------+-----------------+-------------+
+    l.iram_account_id,
+    l.batch_id,
+    l.submit_date,
+    e.*
+FROM ir_ftp_batch_log_error_detail e
+JOIN ir_ftp_batch_log l
+  ON e.batch_id = l.batch_id
+WHERE l.iram_account_id = 2747591
+  AND e.oid = '1a2f82a7-a217-4b98-81e8-2508a639f99c';
