@@ -1,56 +1,25 @@
--- Data Source: r_ds_ods
--- Skyscanner - FTP batch ERROR DETAIL for provided OrderIds
+-- DRAFT – Conversions by day & event type around the spike
+-- Datasource: singlestore (TS), conversions
 
 SELECT
-    l.iram_account_id,
-    l.batch_id,
-    l.submit_date,
-    e.*
-FROM ir_ftp_batch_log_error_detail e
-JOIN ir_ftp_batch_log l
-  ON e.batch_id = l.batch_id
-WHERE l.iram_account_id = 2747591
-  AND e.oid IN (
-  '0fb9704f-da6d-49fc-a177-99fc1470d19e', '15287082-9dd1-4b0e-86a1-fa3e0d23d08d', '6bf38b23-6b52-4237-bc1a-97cca9d04aaa', '78256b69-6f92-4dd6-a300-1d15265e8fff', '884eb918-9bc0-4bd2-88ee-aaae2aff5849', 'a71d1bef-20df-455b-99b7-80c08b347baa',
-  'c2ee26ca-b103-4cc7-bf52-322f86a6d849', 'cb0743a4-66fc-438b-8ded-cd80e364e7f3', 'f9307751-1429-4323-8468-2bc8ce565771', '32e5c87e-3351-4c74-96c9-d4cbe6c44b69', '37091de6-29f9-4b8a-9809-6f5b70d85ae7', '44c0338f-314c-4ced-8eef-6da57bf3f221',
-  '59176472-1c1d-4221-ad2f-fd2849a139b3', '5e66dd4a-e43e-40da-b0b5-f16eeb15718f', '863711d9-5ddd-40c7-a66d-cae99cdf463e', 'b3edc3ef-af1b-4de2-aaf4-7a6cd673627e', 'ca6b9e3c-041b-43bb-aa41-04392a225d97', 'fa3c3c72-e762-4d03-9ca2-3da3fd70b557',
-  '4d9a381a-4131-4445-ac99-46284027cd11', '860ad0e6-7034-483c-96cb-45a8a6f11b58', 'a89437df-2f05-4242-a9e2-ce3cd3fd85c7', 'b24d5671-8808-400f-a025-412a09b581b9', 'b9deade4-5aef-4202-bd1c-5635ea5210c4', 'e421314f-5062-4d41-8436-3551e6e7ff19',
-  '00649652-8d4e-46ac-af0e-916345c47fb6', '1325b7d8-52de-4562-8a49-99029af71030', '2ecfc068-0726-4315-9f56-a178f6406d5a', '48728a84-229c-4370-9f66-97f261d49bfc', '734bc8b0-4c9a-4c86-9e3d-4564a7af4743', '82ecb778-0983-415e-9d77-46483b68be6d',
-  '9ae94015-d2b4-4aa7-94cf-93a837e91fd7', 'bd03da03-3888-43a7-82fb-0b2a41837f5c', 'fd1cbdbd-5cea-48ed-8372-88f946ec1aef', '0a9ac3ee-1d3c-4441-b549-3d06338a41ee', '28698a57-3ac5-470f-a752-88d4593c09ab', '64d2bf0f-5f28-4719-93bc-0c559b045261',
-  '8b47309b-2fe8-43ee-96ca-12e8b63d5139', 'b992ef60-bbc2-4e72-a8b0-da9b2083e348', 'c3849fcf-fb0e-470c-a5fa-b4db419a1131', 'da651f4f-03eb-4f5b-99d1-a4e1e519ff01', '1133a674-ce79-4427-94d2-1f45d473880e', '17867de6-3002-475b-b845-a24e57fcc045',
-  '3568f589-e38c-4fcb-818f-4d58e1632e63', '4aeaa9bd-5eed-45a9-b602-4a89a37cd3cc', '6bc1d9fc-c512-40b3-8dfc-99f521be3957', '77731fd6-4960-46a7-8b4f-13aac89830bd', '7e832a44-2aa5-4300-b8d3-df34914dbb64', '8005d4d3-a83a-4681-9918-136bbadc9c63',
-  'b5f4a5e8-15c9-4922-99a9-3a6fbe1c4474', 'e009928f-1541-4644-a55c-9b6ed4620690', 'efb7035e-d536-435b-9572-347ba1ef2603', '1be2cd62-23e2-4131-9ab2-5dc78e2fadc8', '2ed314f7-b400-4ff2-887b-793c30aa5a47', '3ad842d6-ec97-48db-a542-0074fbbd6ccb',
-  '62ef39da-46bb-46fc-aaee-5dae9fe69cea', 'a0c063bd-dd12-4339-b00d-80c825d8322f', 'dcfbdb9b-8fc8-42ee-856e-16ec3a7e0319', 'effcb20f-2310-48ed-967b-a5c04df783bd', '1e0794bb-2837-4b1b-b727-caf2986e8bd7', 'c6adb041-ec68-4c47-96a3-855358de8c3b',
-  'fa15e32b-a467-41b9-96ad-1b63e17cad36', '4c2b085f-7eed-4f9a-8db2-eb00ba47c170', '85e63035-e41b-4cc5-8f89-9bcb4905831a', 'e1150c79-d42f-4baf-9e95-eadc4cd3ea54', 'e3fca4b4-450b-4430-b2c0-f3a25fe54ff4', 'f393a9e6-af04-494d-9ad1-e6daf4bdd298',
-  'f6baeefc-15cf-4875-b58d-938c96460057', '38b1f206-9e70-47cb-a5fe-e5b657af5593', '6f88e937-ef34-48db-9bc1-546b0a9df4d2', 'afc13fbd-c310-465b-b46f-3583f4b363e6', 'd935c8c3-0c5e-497f-a0a6-5cf26164604e', 'ee9a0497-0ae5-4cb6-800d-fc8c07cad9bb',
-  'fa24f4bd-772d-41c7-8431-e47017230b66', '19b03076-ec18-4807-948c-f301c3455a26', '4305bd79-d40c-4622-b6b4-75adfdde4bf2', '616019a9-b300-4c82-b963-af05d77aa506', '7c34732d-d10b-4bc3-a3f5-ebe62d6febd1', '8aa11a96-8d7f-489a-847a-2772ea13c4c2',
-  '9a498b2a-ac1e-476f-9d4e-575a1e0ee8fa', 'cecf0619-f446-4735-bc11-8e92949cc3d5', 'd264ccab-343e-424e-a8c8-0430af2f4ddb', 'e1079a21-2bcf-49b7-a33d-8e70b98282ad', 'f9c447af-1940-4d8d-bb65-0b24b0f481d7', '2891898f-f27e-426a-95b4-0c45e7678355',
-  '30dead06-cd69-45c2-bd61-433a74067c60', '61337c50-0565-4a68-8daa-20b5a46d17b4', '6c75f307-553b-40c4-ac5b-1ec459e67cb6', '815a2273-a827-4174-aa1a-1f8aea594f98', '8f8f90d0-e078-45af-9d36-f0c5462e413d', 'c8c1a4c3-e959-462e-98d5-88e5d431ee36',
-  'ce902bef-a429-46a4-b123-ed3c4f523d60', 'd66bbed4-7a14-41af-a368-07f6defea92b', 'f63b1e52-bb5b-4b45-9b1e-641e65c6bdbd', 'fac4b345-123c-4379-b6fa-72c61c4e4077', '2c57e390-4a45-4e90-ba23-a53eab91ec4e', '88973bd4-ace7-4fdf-a4f8-cb2901c52083',
-  '9ef64061-9dc5-4f89-8b53-ade7c283e0e9', 'b409d1ee-5a0a-4291-a507-e3a339c74dc3', 'dd9a3915-3c46-4fd6-a058-88377caaf9df', 'ef08cb17-4a5d-4dc8-b4c4-a71f14ed6fa8', '195f7430-3c42-4a21-9cac-a368b145e589', '3b02a18e-7762-4e31-b8fa-1e0c02b5e2e6',
-  '548ee6a4-dd3b-4a0c-99ed-1f815077a61a', '60f4361d-ace9-48a2-b99b-1c5e85b8bba0', '8a6e9bc2-8a43-4128-9a25-10610e34065e', '1f2c9311-9423-452e-bc5b-6d1b3c75aeda', '3e8c2423-24f1-4401-8a92-01a7d3b82c87', '7c380dba-e1d5-481f-bec4-16139b2fb52d',
-  '9d072fbf-3573-4939-b93c-61cca348b9e5', '23996967-0a18-4dc9-9bdc-147cae342534', '23d12279-fd68-4ab8-adff-a51c092212d3', '2d15953b-9ff7-4e23-879c-041336d858fb', '32032085-60b4-40d1-8a85-fa3963a2ffa3', '75d551ba-875c-4b7f-afdc-cbbe14d35e12',
-  '75e4b432-6679-4fbb-a8b2-efe938837ede', 'a4dd7b32-6188-4df5-a42a-bb8b72d42b45', 'aac68274-4897-4ff9-86f6-24815464b08c', 'b4854ac3-057f-4d30-b95a-0ce38ebed65f', 'e16c4d03-4551-4c8d-b45a-c96477c8e023', 'ee2501a3-d68c-4735-a90b-b269bcac61be',
-  '09a1c8ab-5898-4471-acc0-2bf9b41efd64', '0a3c9582-e64f-4017-b119-c1836314b447', '305a7a8b-8798-43f6-9889-64e07c18fafa', '35ec0253-eb78-4b59-9e80-0d5338a45f69', '3b2773da-dcd8-4058-ab89-196d5fde6fd5', 'b8d7c87a-d30b-4463-97dc-6f70a6db56b2',
-  'f0caf73f-4b8a-4af5-a592-630c92cb227b', 'f8208e7f-21c1-438e-a759-793f3603b6af', '5957270d-ada2-4d06-851d-3c1d7f2b06a9', '6533eb3b-284f-4246-8bb4-8109205236b8', '8cec2fff-5c5d-4fce-9272-eec3b771bf5b', '93c6329e-84a8-4ece-8098-b9bb285bc124',
-  'b63ea4b0-6538-4758-850b-db6f1ccc5936', 'ce017fdc-44db-4270-9656-28907bdaae80', 'ce4a29ec-ebdf-4b8b-8a37-8b08cdcec75a', 'f1f8679b-9498-4d51-a8e1-8c52b49c665d', 'f3965c56-8d45-47d7-bc27-14faf223b28f', 'fcd32791-5fab-44c6-928b-2cf58f85ec8e',
-  '48da26e4-9800-43e6-aebc-36002d6d84d9', '5ecdbb0c-0158-4333-b43d-30cca66deea3', 'c48b2a0c-9f05-419a-a946-567225ed653b', 'e62366e7-45f5-401c-84ef-0dff81f7ce59', 'ff8b4164-6672-42f4-8384-588161cef5a4', '0f9a1f65-cf10-4fbb-8dc0-f13cb5ea3aa6',
-  '2fcc5b11-7bda-4d29-8220-dcfcb121a86a', '47d4b17d-59a6-4261-abb4-6b145a6e2647', '7803c56a-77b9-4b67-897e-eaa5e2602b08', 'c4e6419b-e8b0-4188-8110-9adddb02e71b', 'd29618ac-c9df-4f0d-8fab-8b8f382148e2', 'd983722f-8bc3-4752-baa9-c1be96f9d6a6',
-  'eaa9f185-5f9b-4ce0-b1a3-313afb8c9e67', '0d3f24e0-d4d0-469d-92dd-e7cc140f3348', '1a2f82a7-a217-4b98-81e8-2508a639f99e', '33eb52b4-2df3-467f-a572-50ee59d4095d', '36a6b8f6-996a-4e0c-a903-6fe7cf087e39', '394d7de1-8633-4c15-99b9-9adb19018129',
-  '57af84cb-9f36-4a57-a1e7-c740a65f5102', '78bd9021-4ef5-490e-9ae9-2a224c3a971f', '99b61b76-9277-4563-951f-fb9262067beb', 'a45c0bf7-07c6-4c64-bc09-b0ed32954d4e', 'b91889d2-766a-44b5-84db-52279de07191', 'fbb62b81-5038-4292-ac25-3cbfe23ed256',
-  '2b37dcce-3a60-4003-8d0a-300e64e436d2', '2be4635d-78a8-4c17-80f1-74a04b1e74ff', '3b9f8021-7918-4f28-93c2-52b41542b253', '4945a72f-f71d-4811-acfb-f4df44cf8a4b', '6367da6e-e51c-4d4b-ba19-952504e657e0', '6e34a38b-090c-481d-9160-e3fba65fe355',
-  '71141a4c-02b0-4680-90e5-ecaf1f40a472', 'a92f703b-d679-4a48-8425-478c0a674722', 'b43ecdcc-416a-4ebe-b599-3f2f93a5e617', 'c3aed4a8-6c16-4cb2-9988-6b752ea84922', 'e8dfdfc9-6f60-45cc-82c8-315f61e1389b', 'e8fa115f-091a-4c2f-bc6a-c11d493c6bd1',
-  'f55904c5-39fe-46fb-b611-bae4e0e9b045', '7b775e1a-4384-4ed8-8059-f298a8839b38', '973c9608-10b2-46f0-97cf-293228b482a3', 'bb78a1b2-311c-4ec1-9cd3-cf4e53c0e405', '50b0639a-9364-43ab-9832-78db3067f9ee', '580f481d-ed02-4caa-b807-37f81a935cb0',
-  '7fde366c-d1c9-4b7c-aa4f-8fb832616ee1', '990d35b1-887b-4661-a1a6-4f886cdfc9fc', 'c325da14-ca76-46ba-a37a-75242fee093f', 'd1127238-742e-42e1-b397-488b23979b8b', '00437095-8729-4156-982b-c28ea6e7ae1c', '3bc84656-f331-40c4-b25f-75bd198c2c94',
-  '751e6613-7e79-42b9-bafb-cac1ad97dd21', '89eaa6f1-46c3-4807-b8dc-bea7bd654445', '912b31a6-18c9-431d-be64-93872003e870', '9592ba02-5b74-41b8-bc0e-def288ae578a', 'b246ca53-a78d-4307-b88b-4520b80fff7d', 'd461ff11-498e-4559-aef7-f78d5a2bebd5',
-  'e8b8528c-b898-4ce7-97df-260ed789d103', 'f19e6fee-c2c5-452f-a870-e1d2a76ef3c6', '2d6cccfe-81eb-4b3c-9094-64c8e0930b01', '4f8b905f-b88a-493c-ab61-222508c50f8b', '5adceb7e-5c6b-496d-8d05-d620d264bc80', '91846e37-d0d9-477f-9c41-361475b6050d',
-  '9d0949e5-4f5e-4271-8d7b-1286213295f0', 'b4951d2b-928c-43f6-b3ab-ee47c20e9bc8', '0ddad8a8-afe9-4814-a02b-03e61a9bdd8d', '1fbc2ee3-1bea-4325-a46a-7ab82f1bb540', '39034ccb-e4ce-44d7-ba75-a7da5d606d4b', 'bdd612fc-3d32-4194-93e6-136033a99cfa',
-  'bdeacfcd-6b0c-4bce-b53c-38b321e1bc4d', 'e2a4912d-7a78-4722-a346-b73524badb75', 'efbc417b-9c65-4198-bc33-c61e7e5828ea', 'a6d8d8d4-5509-42eb-aeb1-2f88fe36599e', 'd6068240-89aa-4ead-9742-67388326da13', 'd7b374e2-8628-452b-bbaa-73dd4e96b2d5',
-  'de9aeef2-77b5-45a9-b2ac-3e894b4741b1', '0e6d8752-8d70-4e26-b3cb-813a0fdf9d64', '36c4da9b-e2ea-4997-9974-5487bc15543b', '4036d5de-8271-4f1a-9db1-ed3b6854303a', '58c7d0f2-e28a-48ef-b411-773c41a59e43', '7775d6ac-e0ff-461b-947d-973c5372a434',
-  'ba99daf6-ac1d-4739-b352-446fa3dbf75f', 'fcfc1845-bcf9-4136-92fb-f890445803ad', '00231efa-a5c2-4ef0-9d8a-dddbf8d6931b', '080f7634-0fea-4613-b9b6-e94c72bfb83b', '30f31d69-a724-4391-af87-d62dfcd316e9', '4e7827e5-bb8c-4c21-9f37-4924bee0a684',
-  '50a86631-94c6-4d8c-bcc3-a2416001c7b8', 'af1354b7-92a6-45c9-b795-0b15c70fed25', 'd9275576-5ed9-4e42-bc37-0b088464f047', 'fc1e9509-8208-4fe2-96b7-fb5188c41b58', '236ecc5e-3a26-449c-bda5-5e8f4c2d66a0', '49c8a748-726c-4e84-8f1c-c8df2bc600dd',
-  '5f7a0f04-a16b-4dcc-ad56-683e617e3339', '886df73b-c8f6-420f-9ef8-b36bd23764be', 'd9f3ad3e-4a34-4339-aed7-d9f95dd5062d', 'e0526945-0f78-4abd-8fcf-0c00b7c583df', '21c2cd59-c0b7-4916-8e1b-7f094d1f2936', '3d7aacd2-df28-4ca3-bf4d-373d42d0fc76',
-  '452890bb-1515-4f05-82eb-56c3c93f208d', 'a35239b8-bf54-4280-95b0-1de2ba18d1c6', 'ca3ebdac-6a29-43ac-974d-993e731e6cce', 'fc9b914c-ec5c-43d1-b034-bc05b1075cc7'
-)
-ORDER BY l.submit_date DESC, l.batch_id, e.oid;
-
+  DATE(cf.event_datetime)              AS event_day,
+  cf.action_tracker_id                 AS event_type_id,
+  atd.action_tracker_name,
+  atd.action_type,
+  atd.tracking_method,
+  SUM(COALESCE(cf.conversion_count, 1)) AS conversions
+FROM conversion_fact cf
+LEFT JOIN action_tracker_dim atd
+  ON atd.id = cf.action_tracker_dim_id
+WHERE cf.campaign_id = 27471
+  AND cf.event_datetime >= '2025-11-15'
+  AND cf.event_datetime <  '2025-11-23'
+GROUP BY
+  event_day,
+  event_type_id,
+  atd.action_tracker_name,
+  atd.action_type,
+  atd.tracking_method
+ORDER BY
+  event_day,
+  conversions DESC;
