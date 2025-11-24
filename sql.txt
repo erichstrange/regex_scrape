@@ -41,3 +41,25 @@ GROUP BY
 ORDER BY
   event_day,
   conversions DESC;
+
+
+-- DRAFT – 18 Nov revenue/commission by event type
+-- Datasource: singlestore (TS), conversions
+
+SELECT
+  af.action_tracker_id         AS event_type_id,
+  atr.action_tracker_name,
+  COUNT(*)                     AS actions,
+  SUM(af.adv_saleamt)          AS total_sale_amount,
+  SUM(af.adv_commission)       AS total_commission,
+  SUM(af.adv_original_commission) AS total_original_commission
+FROM action_fact af
+LEFT JOIN action_tracker_dim atr
+  ON atr.id = af.action_tracker_dim_id
+WHERE af.campaign_id = 27471
+  AND af.action_datetime >= '2025-11-18'
+  AND af.action_datetime <  '2025-11-19'
+GROUP BY
+  af.action_tracker_id,
+  atr.action_tracker_name
+ORDER BY actions DESC;
