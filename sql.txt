@@ -1,10 +1,43 @@
+-- DRAFT – First conversion date for the new event types
+-- Datasource: singlestore (TS), conversions
+
 SELECT
-    l.iram_account_id,
-    l.batch_id,
-    l.submit_date,
-    e.*
-FROM ir_ftp_batch_log_error_detail e
-JOIN ir_ftp_batch_log l
-  ON e.batch_id = l.batch_id
-WHERE l.iram_account_id = 2747591
-  AND e.oid = '1a2f82a7-a217-4b98-81e8-2508a639f99c';
+  cf.action_tracker_id           AS event_type_id,
+  atd.action_tracker_name,
+  MIN(DATE(cf.event_datetime))   AS first_event_day,
+  MAX(DATE(cf.event_datetime))   AS last_event_day,
+  SUM(COALESCE(cf.conversion_count, 1)) AS total_conversions
+FROM conversion_fact cf
+LEFT JOIN action_tracker_dim atd
+  ON atd.id = cf.action_tracker_dim_id
+WHERE cf.campaign_id = 27471
+  AND cf.action_tracker_id IN (57037, 57038, 57039)
+  AND cf.event_datetime >= '2025-01-01'
+  AND cf.event_datetime <  '2025-12-01'
+GROUP BY
+  cf.action_tracker_id,
+  atd.action_tracker_name
+ORDER BY first_event_day;
+
+
+-- DRAFT – 60 days of conversions by day & event type
+-- Datasource: singlestore (TS), conversions
+
+SELECT
+  DATE(cf.event_datetime)              AS event_day,
+  cf.action_tracker_id                 AS event_type_id,
+  atd.action_tracker_name,
+  SUM(COALESCE(cf.conversion_count, 1)) AS conversions
+FROM conversion_fact cf
+LEFT JOIN action_tracker_dim atd
+  ON atd.id = cf.action_tracker_dim_id
+WHERE cf.campaign_id = 27471
+  AND cf.event_datetime >= '2025-10-01'
+  AND cf.event_datetime <  '2025-12-01'
+GROUP BY
+  event_day,
+  cf.action_tracker_id,
+  atd.action_tracker_name
+ORDER BY
+  event_day,
+  conversions DESC;
