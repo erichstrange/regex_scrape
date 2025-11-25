@@ -12,9 +12,38 @@ SELECT change_date,
 FROM m_audit_log_entry
 WHERE core_account_id = 1374555              -- The Farmer's Dog advertiser id
   AND (
-       reference_id LIKE '%Ad%'              -- Needs refinement based on IRDW guidance
+       reference_id LIKE '%Ad%'
        OR objectclassname LIKE '%Ad%'
       )
   AND (previousval LIKE '%3273108%'
        OR newval LIKE '%3273108%')
 ORDER BY change_date;
++-------------+----------+-----------------+----------+-----------------+-------------+--------+--------------+
+| change_date | username | objectclassname | objectid | auditedvariable | previousval | newval | reference_id |
++-------------+----------+-----------------+----------+-----------------+-------------+--------+--------------+
++-------------+----------+-----------------+----------+-----------------+-------------+--------+--------------+
+
+
+
+
+Describe m_audit_log_entry
++-----------------+------------------+------+-----+---------+----------------+
+| Field           | Type             | Null | Key | Default | Extra          |
++-----------------+------------------+------+-----+---------+----------------+
+| id              | int unsigned     | NO   | PRI | ʘ       | auto_increment |
+| objectid        | int unsigned     | NO   | MUL | ʘ       |                |
+| objectclassname | varchar(255)     | NO   | MUL | ʘ       |                |
+| auditedvariable | varchar(255)     | NO   | MUL | ʘ       |                |
+| previousval     | varchar(255)     | NO   |     | ʘ       |                |
+| newval          | varchar(255)     | NO   |     | ʘ       |                |
+| meta_data       | text             | YES  |     | ʘ       |                |
+| application     | varchar(255)     | YES  |     | ʘ       |                |
+| username        | varchar(255)     | YES  |     | ʘ       |                |
+| change_date     | datetime         | NO   |     | ʘ       |                |
+| core_account_id | int unsigned     | YES  | MUL | ʘ       |                |
+| reference_id    | varchar(255)     | YES  |     | ʘ       |                |
+| ip_address      | varchar(255)     | YES  |     | ʘ       |                |
+| server_name     | varchar(255)     | YES  |     | ʘ       |                |
+| appversion      | varchar(255)     | YES  |     | ʘ       |                |
+| network_id      | tinyint unsigned | NO   |     | 1       |                |
++-----------------+------------------+------+-----+---------+----------------+
