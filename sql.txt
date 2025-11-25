@@ -50,3 +50,17 @@ Describe m_audit_log_entry
 
 IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1
 qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u
+
+curl 'https://api.impact.com/Mediapartners/IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1/Ads' \
+  -G \
+  -u 'IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1:qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u' \
+  -H 'Accept: application/json' \
+  -d 'CampaignId=9488' \
+  -d 'Page=1' \
+  -d 'PageSize=1000'
+
+  curl 'https://api.impact.com/Mediapartners/IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1/Ads/3273108' \
+  -X GET \
+  -u 'IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1:qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u' \
+  -H 'Accept: application/json'
+
