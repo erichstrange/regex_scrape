@@ -47,3 +47,6 @@ Describe m_audit_log_entry
 | appversion      | varchar(255)     | YES  |     | ʘ       |                |
 | network_id      | tinyint unsigned | NO   |     | 1       |                |
 +-----------------+------------------+------+-----+---------+----------------+
+
+IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1
+qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u
