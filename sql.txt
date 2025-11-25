@@ -64,3 +64,26 @@ curl 'https://api.impact.com/Mediapartners/IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1/Ad
   -u 'IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1:qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u' \
   -H 'Accept: application/json'
 
+-- DRAFT: see what kinds of objects are audited for this advertiser
+-- Datasource: r_ds_ods
+
+SELECT DISTINCT objectclassname
+FROM m_audit_log_entry
+WHERE core_account_id = 1374555
+ORDER BY objectclassname;
+
+
+-- DRAFT: sample recent entries that smell like ads
+SELECT change_date,
+       username,
+       objectclassname,
+       objectid,
+       auditedvariable,
+       previousval,
+       newval,
+       reference_id
+FROM m_audit_log_entry
+WHERE core_account_id = 1374555
+  AND (objectclassname LIKE '%Ad%' OR reference_id LIKE '%Ad%')
+ORDER BY change_date DESC
+LIMIT 200;
