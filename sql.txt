@@ -1,319 +1,81 @@
--- DRAFT: Ad audit trail for The Farmer's Dog ad 3273108
--- Datasource: r_ds_ods
-
-SELECT change_date,
-       username,
-       objectclassname,
-       objectid,
-       auditedvariable,
-       previousval,
-       newval,
-       reference_id
-FROM m_audit_log_entry
-WHERE core_account_id = 1374555              -- The Farmer's Dog advertiser id
-  AND (
-       reference_id LIKE '%Ad%'
-       OR objectclassname LIKE '%Ad%'
-      )
-  AND (previousval LIKE '%3273108%'
-       OR newval LIKE '%3273108%')
-ORDER BY change_date;
-+-------------+----------+-----------------+----------+-----------------+-------------+--------+--------------+
-| change_date | username | objectclassname | objectid | auditedvariable | previousval | newval | reference_id |
-+-------------+----------+-----------------+----------+-----------------+-------------+--------+--------------+
-+-------------+----------+-----------------+----------+-----------------+-------------+--------+--------------+
-
-
-
-
-Describe m_audit_log_entry
-+-----------------+------------------+------+-----+---------+----------------+
-| Field           | Type             | Null | Key | Default | Extra          |
-+-----------------+------------------+------+-----+---------+----------------+
-| id              | int unsigned     | NO   | PRI | ʘ       | auto_increment |
-| objectid        | int unsigned     | NO   | MUL | ʘ       |                |
-| objectclassname | varchar(255)     | NO   | MUL | ʘ       |                |
-| auditedvariable | varchar(255)     | NO   | MUL | ʘ       |                |
-| previousval     | varchar(255)     | NO   |     | ʘ       |                |
-| newval          | varchar(255)     | NO   |     | ʘ       |                |
-| meta_data       | text             | YES  |     | ʘ       |                |
-| application     | varchar(255)     | YES  |     | ʘ       |                |
-| username        | varchar(255)     | YES  |     | ʘ       |                |
-| change_date     | datetime         | NO   |     | ʘ       |                |
-| core_account_id | int unsigned     | YES  | MUL | ʘ       |                |
-| reference_id    | varchar(255)     | YES  |     | ʘ       |                |
-| ip_address      | varchar(255)     | YES  |     | ʘ       |                |
-| server_name     | varchar(255)     | YES  |     | ʘ       |                |
-| appversion      | varchar(255)     | YES  |     | ʘ       |                |
-| network_id      | tinyint unsigned | NO   |     | 1       |                |
-+-----------------+------------------+------+-----+---------+----------------+
-
-IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1
-qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u
-
-curl 'https://api.impact.com/Mediapartners/IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1/Ads' \
-  -G \
-  -u 'IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1:qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u' \
-  -H 'Accept: application/json' \
-  -d 'CampaignId=9488' \
-  -d 'Page=1' \
-  -d 'PageSize=1000'
-
-  curl 'https://api.impact.com/Mediapartners/IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1/Ads/3273108' \
-  -X GET \
-  -u 'IR5oApFxW9mm34844icmYa6KZbfSjG8Dc1:qZoFsZtAjqvQBDkcg6FPm56BEvXDGU6u' \
-  -H 'Accept: application/json'
-
--- DRAFT: see what kinds of objects are audited for this advertiser
--- Datasource: r_ds_ods
-
-SELECT DISTINCT objectclassname
-FROM m_audit_log_entry
-WHERE core_account_id = 1374555
-ORDER BY objectclassname;
-+------------------------------------------------------------------------+
-| objectclassname                                                        |
-+------------------------------------------------------------------------+
-| estalea.accountmanagement.account.Account                              |
-| estalea.accountmanagement.user.EstaleaUser                             |
-| estalea.finance.account.FinanceAccount                                 |
-| estalea.finance.bankaccountinfo.domain.BankAccountInfo                 |
-| estalea.finance.clearing.domain.Clearing                               |
-| estalea.finance.invoice.domain.Invoice                                 |
-| estalea.finance.legalentity.domain.LegalEntity                         |
-| estalea.finance.paymentsystem.setting.PaymentSetting                   |
-| estalea.ir.accounting.invoice.domain.InvoiceSettings                   |
-| estalea.ir.am.mediamanager.domain.MediaManagerConfiguration            |
-| estalea.ir.am.member.domain.Member                                     |
-| estalea.ir.am.publisher.domain.mediakit.WebsiteProperty                |
-| estalea.ir.am.publisher.domain.Publisher                               |
-| estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship      |
-| estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship      |
-| estalea.ir.am.webservice.domain.WebserviceUser                         |
-| estalea.ir.cm.actiontracker.domain.OnlineActionTracker                 |
-| estalea.ir.cm.campaign.domain.Campaign                                 |
-| estalea.ir.cm.campaign.domain.TechnicalIntegration                     |
-| estalea.ir.cm.insertionorder.terms.domain.MasterTermsConfiguration     |
-| estalea.ir.cm.insertionorder.terms.domain.MasterTermsConfigurationItem |
-| estalea.ir.cm.piggybacksetting.domain.ConversionPiggybackCode          |
-+------------------------------------------------------------------------+
+/* DRAFT - TS - Pixel Order Processing Latency (Internal Only)
+   Datasource: r_ds_singlestore
+   Table: datalake_irdwm.action_fact
+*/
+Internal-only lookup for a single order action in action_fact.
+Given advertiser, campaign, action ID, and a narrow action date range, returns conversion time, AP processed time, last adjustment time, and latency in minutes.
+For TS/CS internal use only – not exposed to customers.
+SELECT
+    advertiser_id                                  AS advertiser_id,
+    campaign_id                                    AS campaign_id,
+    oid                                            AS oid,
+    action_id                                      AS action_id,
+    action_datetime                                AS ConversionDateTime_UTC,
+    doe                                            AS APProcessedDateTime_UTC,
+    adj_datetime                                   AS LastAdjustmentDateTime_UTC,
+    TIMESTAMPDIFF(
+        MINUTE,
+        action_datetime,
+        doe
+    )                                              AS APProcessingLatency_Minutes
+FROM
+    action_fact
+WHERE
+    advertiser_id      = [[ADVERTISER_ID]]
+    AND campaign_id    = [[CAMPAIGN_ID]]
+    AND action_id      = [[ACTION_ID]]
+    AND action_datetime BETWEEN [[ACTION_START_DATETIME]]
+                           AND [[ACTION_END_DATETIME]]
+ORDER BY
+    action_datetime DESC;
 
 
--- DRAFT: sample recent entries that smell like ads
-SELECT change_date,
-       username,
-       objectclassname,
-       objectid,
-       auditedvariable,
-       previousval,
-       newval,
-       reference_id
-FROM m_audit_log_entry
-WHERE core_account_id = 1374555
-  AND (objectclassname LIKE '%Ad%' OR reference_id LIKE '%Ad%')
-ORDER BY change_date DESC
-LIMIT 200;
-+---------------------+------------+-------------------------------------------------------------------+----------+-----------------+-------------+--------+--------------+
-| change_date         | username   | objectclassname                                                   | objectid | auditedvariable | previousval | newval | reference_id |
-+---------------------+------------+-------------------------------------------------------------------+----------+-----------------+-------------+--------+--------------+
-| 2023-08-31 17:59:22 | ktribble   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  4127711 | saasPartner     | NODATA      | true   |              |
-| 2023-08-31 17:59:22 | ktribble   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  4157895 | saasPartner     | NODATA      | true   |              |
-| 2023-08-29 18:54:14 | ktribble   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  4118450 | saasPartner     | NODATA      | true   |              |
-| 2023-08-29 18:54:14 | ktribble   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  4148628 | saasPartner     | NODATA      | true   |              |
-| 2023-08-01 14:21:28 | vsondors   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  4011120 | saasPartner     | NODATA      | false  |              |
-| 2023-08-01 14:21:28 | vsondors   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  4041022 | saasPartner     | NODATA      | false  |              |
-| 2023-07-17 20:24:28 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3956825 | saasPartner     | NODATA      | true   |              |
-| 2023-07-17 20:24:28 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3986502 | saasPartner     | NODATA      | true   |              |
-| 2023-06-29 18:01:27 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3899261 | saasPartner     | NODATA      | false  |              |
-| 2023-06-29 18:01:27 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3928576 | saasPartner     | NODATA      | false  |              |
-| 2023-06-05 16:46:11 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3811558 | saasPartner     | NODATA      | true   |              |
-| 2023-06-05 16:46:11 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3840734 | saasPartner     | NODATA      | true   |              |
-| 2023-06-02 21:07:13 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3805685 | saasPartner     | NODATA      | true   |              |
-| 2023-06-02 21:07:13 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3834817 | saasPartner     | NODATA      | true   |              |
-| 2023-06-02 21:06:51 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3805684 | saasPartner     | NODATA      | true   |              |
-| 2023-06-02 21:06:51 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3834816 | saasPartner     | NODATA      | true   |              |
-| 2023-06-01 20:43:08 | strand1730 | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3801833 | saasPartner     | NODATA      | false  |              |
-| 2023-06-01 20:43:08 | strand1730 | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3830940 | saasPartner     | NODATA      | false  |              |
-| 2023-05-31 20:56:38 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3797707 | saasPartner     | NODATA      | true   |              |
-| 2023-05-31 20:56:38 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3826805 | saasPartner     | NODATA      | true   |              |
-| 2023-05-18 14:50:06 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3748272 | saasPartner     | NODATA      | true   |              |
-| 2023-05-18 14:50:06 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3749032 | saasPartner     | NODATA      | true   |              |
-| 2023-05-15 19:51:45 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3736224 | saasPartner     | NODATA      | true   |              |
-| 2023-05-15 19:51:45 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3736984 | saasPartner     | NODATA      | true   |              |
-| 2023-05-15 19:51:26 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3736221 | saasPartner     | NODATA      | true   |              |
-| 2023-05-15 19:51:26 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3736981 | saasPartner     | NODATA      | true   |              |
-| 2023-05-15 19:49:53 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3736208 | saasPartner     | NODATA      | true   |              |
-| 2023-05-15 19:49:53 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3736968 | saasPartner     | NODATA      | true   |              |
-| 2023-05-04 22:18:56 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3709452 | saasPartner     | NODATA      | false  |              |
-| 2023-05-04 22:18:56 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3710212 | saasPartner     | NODATA      | false  |              |
-| 2023-05-01 18:39:10 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3698840 | saasPartner     | NODATA      | true   |              |
-| 2023-05-01 18:39:10 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3699600 | saasPartner     | NODATA      | true   |              |
-| 2023-04-27 21:45:32 | ktribble   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3692789 | saasPartner     | NODATA      | true   |              |
-| 2023-04-27 21:45:32 | ktribble   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3693528 | saasPartner     | NODATA      | true   |              |
-| 2023-04-26 15:35:26 | ktribble   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3687888 | saasPartner     | NODATA      | true   |              |
-| 2023-04-26 15:35:26 | ktribble   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3688627 | saasPartner     | NODATA      | true   |              |
-| 2023-04-24 22:01:04 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3677802 | saasPartner     | NODATA      | true   |              |
-| 2023-04-24 22:01:04 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3678541 | saasPartner     | NODATA      | true   |              |
-| 2023-04-24 16:15:53 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3676817 | saasPartner     | NODATA      | true   |              |
-| 2023-04-24 16:15:53 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3677556 | saasPartner     | NODATA      | true   |              |
-| 2023-04-21 17:30:21 | ktribble   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3672748 | saasPartner     | NODATA      | true   |              |
-| 2023-04-21 17:30:21 | ktribble   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3673484 | saasPartner     | NODATA      | true   |              |
-| 2023-03-30 17:52:00 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3616150 | saasPartner     | NODATA      | true   |              |
-| 2023-03-30 17:52:00 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3616868 | saasPartner     | NODATA      | true   |              |
-| 2023-03-29 14:23:08 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3611614 | saasPartner     | NODATA      | true   |              |
-| 2023-03-29 14:23:08 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3612332 | saasPartner     | NODATA      | true   |              |
-| 2023-03-29 14:21:55 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3611587 | saasPartner     | NODATA      | true   |              |
-| 2023-03-29 14:21:55 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3612305 | saasPartner     | NODATA      | true   |              |
-| 2023-03-29 14:21:46 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3611584 | saasPartner     | NODATA      | true   |              |
-| 2023-03-29 14:21:46 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3612302 | saasPartner     | NODATA      | true   |              |
-| 2023-03-27 19:50:57 | ktribble   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3604942 | saasPartner     | NODATA      | true   |              |
-| 2023-03-27 19:50:57 | ktribble   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3605660 | saasPartner     | NODATA      | true   |              |
-| 2023-03-16 17:54:40 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3576861 | saasPartner     | NODATA      | true   |              |
-| 2023-03-16 17:54:40 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3577575 | saasPartner     | NODATA      | true   |              |
-| 2023-03-02 18:09:08 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3539605 | saasPartner     | NODATA      | false  |              |
-| 2023-03-02 18:09:08 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3540319 | saasPartner     | NODATA      | false  |              |
-| 2023-02-23 19:12:40 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3522948 | saasPartner     | NODATA      | true   |              |
-| 2023-02-23 19:12:40 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3523655 | saasPartner     | NODATA      | true   |              |
-| 2023-02-17 22:09:12 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3505723 | saasPartner     | NODATA      | true   |              |
-| 2023-02-17 22:09:12 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3506408 | saasPartner     | NODATA      | true   |              |
-| 2023-02-14 16:38:07 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3494283 | saasPartner     | NODATA      | true   |              |
-| 2023-02-14 16:38:07 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3494965 | saasPartner     | NODATA      | true   |              |
-| 2023-02-06 19:42:30 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3472674 | saasPartner     | NODATA      | true   |              |
-| 2023-02-06 19:42:30 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3473356 | saasPartner     | NODATA      | true   |              |
-| 2023-02-06 17:08:37 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3472145 | saasPartner     | NODATA      | true   |              |
-| 2023-02-06 17:08:37 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3472827 | saasPartner     | NODATA      | true   |              |
-| 2023-02-06 17:08:16 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3472144 | saasPartner     | NODATA      | true   |              |
-| 2023-02-06 17:08:16 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3472826 | saasPartner     | NODATA      | true   |              |
-| 2023-02-03 17:07:01 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3466806 | saasPartner     | NODATA      | true   |              |
-| 2023-02-03 17:07:01 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3467488 | saasPartner     | NODATA      | true   |              |
-| 2023-02-02 19:01:59 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3463670 | saasPartner     | NODATA      | true   |              |
-| 2023-02-02 19:01:59 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3464352 | saasPartner     | NODATA      | true   |              |
-| 2023-02-02 18:58:41 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3463665 | saasPartner     | NODATA      | true   |              |
-| 2023-02-02 18:58:41 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3464347 | saasPartner     | NODATA      | true   |              |
-| 2023-02-01 22:54:54 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3461594 | saasPartner     | NODATA      | true   |              |
-| 2023-02-01 22:54:54 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3462276 | saasPartner     | NODATA      | true   |              |
-| 2023-01-23 21:58:43 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3440633 | saasPartner     | NODATA      | true   |              |
-| 2023-01-23 21:58:43 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3441297 | saasPartner     | NODATA      | true   |              |
-| 2023-01-20 19:55:33 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3436237 | saasPartner     | NODATA      | true   |              |
-| 2023-01-20 19:55:33 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3436899 | saasPartner     | NODATA      | true   |              |
-| 2023-01-18 22:30:34 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3432062 | saasPartner     | NODATA      | true   |              |
-| 2023-01-18 22:30:34 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3432721 | saasPartner     | NODATA      | true   |              |
-| 2023-01-18 01:14:37 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3429537 | saasPartner     | NODATA      | true   |              |
-| 2023-01-18 01:14:37 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3430195 | saasPartner     | NODATA      | true   |              |
-| 2023-01-17 18:17:35 | strand1730 | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3428318 | saasPartner     | NODATA      | true   |              |
-| 2023-01-17 18:17:35 | strand1730 | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3428976 | saasPartner     | NODATA      | true   |              |
-| 2023-01-17 18:17:06 | strand1730 | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3428317 | saasPartner     | NODATA      | true   |              |
-| 2023-01-17 18:17:06 | strand1730 | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3428975 | saasPartner     | NODATA      | true   |              |
-| 2023-01-13 17:42:04 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3421447 | saasPartner     | NODATA      | true   |              |
-| 2023-01-13 17:42:04 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3422103 | saasPartner     | NODATA      | true   |              |
-| 2023-01-10 21:27:17 | skyganz    | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3413295 | saasPartner     | NODATA      | true   |              |
-| 2023-01-10 21:27:17 | skyganz    | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3413944 | saasPartner     | NODATA      | true   |              |
-| 2023-01-10 20:18:44 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3413061 | saasPartner     | NODATA      | true   |              |
-| 2023-01-10 20:18:44 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3413710 | saasPartner     | NODATA      | true   |              |
-| 2023-01-10 20:18:08 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3413059 | saasPartner     | NODATA      | false  |              |
-| 2023-01-10 20:18:08 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3413708 | saasPartner     | NODATA      | false  |              |
-| 2023-01-09 17:37:44 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3409945 | saasPartner     | NODATA      | true   |              |
-| 2023-01-09 17:37:44 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3410594 | saasPartner     | NODATA      | true   |              |
-| 2023-01-09 17:37:09 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3409943 | saasPartner     | NODATA      | false  |              |
-| 2023-01-09 17:37:09 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3410592 | saasPartner     | NODATA      | false  |              |
-| 2023-01-09 17:36:35 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3409941 | saasPartner     | NODATA      | true   |              |
-| 2023-01-09 17:36:35 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3410590 | saasPartner     | NODATA      | true   |              |
-| 2023-01-09 17:35:00 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3409935 | saasPartner     | NODATA      | true   |              |
-| 2023-01-09 17:35:00 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3410584 | saasPartner     | NODATA      | true   |              |
-| 2023-01-06 18:53:59 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3405927 | saasPartner     | NODATA      | true   |              |
-| 2023-01-06 18:53:59 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3406570 | saasPartner     | NODATA      | true   |              |
-| 2023-01-06 16:09:25 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3405604 | saasPartner     | NODATA      | true   |              |
-| 2023-01-06 16:09:25 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3406247 | saasPartner     | NODATA      | true   |              |
-| 2023-01-06 02:19:14 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3404526 | saasPartner     | NODATA      | true   |              |
-| 2023-01-06 02:19:14 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3405169 | saasPartner     | NODATA      | true   |              |
-| 2023-01-05 16:34:17 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3403401 | saasPartner     | NODATA      | true   |              |
-| 2023-01-05 16:34:17 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3404043 | saasPartner     | NODATA      | true   |              |
-| 2023-01-05 16:33:16 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3403395 | saasPartner     | NODATA      | true   |              |
-| 2023-01-05 16:33:16 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3404037 | saasPartner     | NODATA      | true   |              |
-| 2023-01-04 21:24:44 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3401319 | saasPartner     | NODATA      | false  |              |
-| 2023-01-04 21:24:44 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3401956 | saasPartner     | NODATA      | false  |              |
-| 2023-01-04 21:23:22 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3401316 | saasPartner     | NODATA      | true   |              |
-| 2023-01-04 21:23:22 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3401953 | saasPartner     | NODATA      | true   |              |
-| 2023-01-03 17:49:55 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3397828 | saasPartner     | NODATA      | true   |              |
-| 2023-01-03 17:49:55 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3398465 | saasPartner     | NODATA      | true   |              |
-| 2023-01-03 16:41:08 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3397383 | saasPartner     | NODATA      | true   |              |
-| 2023-01-03 16:41:08 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3398020 | saasPartner     | NODATA      | true   |              |
-| 2022-12-30 15:11:25 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3392902 | saasPartner     | NODATA      | true   |              |
-| 2022-12-30 15:11:25 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3393531 | saasPartner     | NODATA      | true   |              |
-| 2022-12-30 15:10:42 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3392901 | saasPartner     | NODATA      | true   |              |
-| 2022-12-30 15:10:42 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3393530 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 21:11:51 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3380732 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 21:11:51 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3381348 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 21:10:09 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3380728 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 21:10:09 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3381344 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 21:06:00 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3380703 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 21:06:00 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3381319 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 16:06:12 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3380077 | saasPartner     | NODATA      | true   |              |
-| 2022-12-21 16:06:12 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3380693 | saasPartner     | NODATA      | true   |              |
-| 2022-12-19 16:50:24 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3375715 | saasPartner     | NODATA      | true   |              |
-| 2022-12-19 16:50:24 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3376326 | saasPartner     | NODATA      | true   |              |
-| 2022-12-19 16:50:01 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3375714 | saasPartner     | NODATA      | true   |              |
-| 2022-12-19 16:50:01 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3376325 | saasPartner     | NODATA      | true   |              |
-| 2022-12-19 16:22:58 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3375640 | saasPartner     | NODATA      | true   |              |
-| 2022-12-19 16:22:58 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3376251 | saasPartner     | NODATA      | true   |              |
-| 2022-12-15 16:50:46 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3370626 | saasPartner     | NODATA      | true   |              |
-| 2022-12-15 16:50:46 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3371234 | saasPartner     | NODATA      | true   |              |
-| 2022-12-15 14:40:44 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3370344 | saasPartner     | NODATA      | true   |              |
-| 2022-12-15 14:40:44 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3370952 | saasPartner     | NODATA      | true   |              |
-| 2022-12-08 19:10:24 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3358823 | saasPartner     | NODATA      | false  |              |
-| 2022-12-08 19:10:24 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3359430 | saasPartner     | NODATA      | false  |              |
-| 2022-12-07 14:34:35 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3356209 | saasPartner     | NODATA      | true   |              |
-| 2022-12-07 14:34:35 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3356816 | saasPartner     | NODATA      | true   |              |
-| 2022-12-07 14:34:02 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3356208 | saasPartner     | NODATA      | true   |              |
-| 2022-12-07 14:34:02 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3356815 | saasPartner     | NODATA      | true   |              |
-| 2022-12-06 20:55:56 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3354964 | saasPartner     | NODATA      | true   |              |
-| 2022-12-06 20:55:56 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3355571 | saasPartner     | NODATA      | true   |              |
-| 2022-12-05 22:49:44 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3352897 | saasPartner     | NODATA      | true   |              |
-| 2022-12-05 22:49:44 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3353504 | saasPartner     | NODATA      | true   |              |
-| 2022-12-05 16:24:20 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3352070 | saasPartner     | NODATA      | true   |              |
-| 2022-12-05 16:24:20 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3352677 | saasPartner     | NODATA      | true   |              |
-| 2022-12-02 19:07:05 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3348839 | saasPartner     | NODATA      | true   |              |
-| 2022-12-02 19:07:05 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3349446 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 21:51:31 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3347161 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 21:51:31 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3347768 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 20:52:42 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3347014 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 20:52:42 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3347621 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 20:52:31 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3347012 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 20:52:31 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3347619 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 20:52:22 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3347011 | saasPartner     | NODATA      | true   |              |
-| 2022-12-01 20:52:22 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3347618 | saasPartner     | NODATA      | true   |              |
-| 2022-11-30 23:08:12 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3344963 | saasPartner     | NODATA      | true   |              |
-| 2022-11-30 23:08:12 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3345570 | saasPartner     | NODATA      | true   |              |
-| 2022-11-29 15:41:42 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3341531 | saasPartner     | NODATA      | false  |              |
-| 2022-11-29 15:41:42 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3342138 | saasPartner     | NODATA      | false  |              |
-| 2022-11-29 15:41:12 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3341530 | saasPartner     | NODATA      | true   |              |
-| 2022-11-29 15:41:12 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3342137 | saasPartner     | NODATA      | true   |              |
-| 2022-11-28 19:06:08 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3339282 | saasPartner     | NODATA      | false  |              |
-| 2022-11-28 19:06:08 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3339889 | saasPartner     | NODATA      | false  |              |
-| 2022-11-23 15:58:34 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3331142 | saasPartner     | NODATA      | false  |              |
-| 2022-11-23 15:58:34 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3331749 | saasPartner     | NODATA      | false  |              |
-| 2022-11-22 20:36:35 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3329150 | saasPartner     | NODATA      | true   |              |
-| 2022-11-22 20:36:35 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3329757 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 21:12:29 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3326690 | saasPartner     | NODATA      | false  |              |
-| 2022-11-21 21:12:29 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3327297 | saasPartner     | NODATA      | false  |              |
-| 2022-11-21 17:40:34 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3325833 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:40:34 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3326440 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:32:27 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3325746 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:32:27 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3326353 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:32:17 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3325745 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:32:17 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3326352 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:31:37 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3325743 | saasPartner     | NODATA      | true   |              |
-| 2022-11-21 17:31:37 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3326350 | saasPartner     | NODATA      | true   |              |
-| 2022-11-17 17:20:15 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3318373 | saasPartner     | NODATA      | true   |              |
-| 2022-11-17 17:20:15 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3318980 | saasPartner     | NODATA      | true   |              |
-| 2022-11-17 17:05:08 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3318327 | saasPartner     | NODATA      | true   |              |
-| 2022-11-17 17:05:08 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3318934 | saasPartner     | NODATA      | true   |              |
-| 2022-11-15 20:24:30 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3313310 | saasPartner     | NODATA      | true   |              |
-| 2022-11-15 20:24:30 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3313917 | saasPartner     | NODATA      | true   |              |
-| 2022-11-14 16:11:29 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3309595 | saasPartner     | NODATA      | true   |              |
-| 2022-11-14 16:11:29 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3310202 | saasPartner     | NODATA      | true   |              |
-| 2022-11-14 16:11:05 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3309593 | saasPartner     | NODATA      | true   |              |
-| 2022-11-14 16:11:05 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3310200 | saasPartner     | NODATA      | true   |              |
-| 2022-11-11 21:57:26 | jzachary   | estalea.ir.am.relationship.domain.PublisherAdvertiserRelationship |  3305823 | saasPartner     | NODATA      | true   |              |
-| 2022-11-11 21:57:26 | jzachary   | estalea.ir.am.relationship.domain.AdvertiserPublisherRelationship |  3306430 | saasPartner     | NODATA      | true   |              |
-+---------------------+------------+-------------------------------------------------------------------+----------+-----------------+-------------+--------+--------------+
+
+
+/* DRAFT - TS - FTP Submission Log Lookup (Internal Only)
+   Datasource: r_ds_ods
+   Table: ir_ftp_batch_log
+*/
+
+Internal-only lookup of FTP batch submissions for a given account.
+Shows when FTP files were submitted to Impact (submit_date) so TS/CS can compare FTP submit timing with AP processing timing in the pixel latency report.
+For TS/CS only – not customer-facing.
+
+SELECT
+    iram_account_id,
+    batch_id,
+    submit_date
+FROM
+    ir_ftp_batch_log
+WHERE
+    iram_account_id = [[ACCOUNT_ID]]
+    AND submit_date BETWEEN [[SUBMIT_START_DATETIME]]
+                         AND [[SUBMIT_END_DATETIME]]
+    -- Optional extra narrow filter if needed:
+    -- AND batch_id = [[BATCH_ID]]
+ORDER BY
+    submit_date DESC
+LIMIT 500;
+
+
+
+/* DRAFT - TS - API Submission Log Lookup (Internal Only)
+   Datasource: r_ds_ods
+   Table: ir_api_log
+   NOTE: Column names (oid, doe) must be verified in QA/with Wade before broad use.
+*/
+Internal-only lookup of API submissions for a given account and order ID.
+Shows when the API request was logged (doe) so TS/CS can compare API submission timing with AP processing timing in the pixel latency report.
+For TS/CS only – not exposed to customers.
+SELECT
+    *
+FROM
+    ir_api_log
+WHERE
+    iram_account_id = [[ACCOUNT_ID]]
+    AND doe BETWEEN [[API_START_DATETIME]]
+                AND [[API_END_DATETIME]]
+    AND oid = [[ORDER_ID]]
+ORDER BY
+    doe DESC
+LIMIT 500;
