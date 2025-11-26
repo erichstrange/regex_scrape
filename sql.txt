@@ -23,8 +23,8 @@ WHERE
     advertiser_id      = [[ADVERTISER_ID]]
     AND campaign_id    = [[CAMPAIGN_ID]]
     AND action_id      = [[ACTION_ID]]
-    AND action_datetime BETWEEN [[ACTION_START_DATETIME]]
-                           AND [[ACTION_END_DATETIME]]
+    AND action_datetime BETWEEN [[start_date]]
+                           AND [[end_date]]
 ORDER BY
     action_datetime DESC;
 
@@ -47,8 +47,8 @@ FROM
     ir_ftp_batch_log
 WHERE
     iram_account_id = [[ACCOUNT_ID]]
-    AND submit_date BETWEEN [[SUBMIT_START_DATETIME]]
-                         AND [[SUBMIT_END_DATETIME]]
+    AND submit_date BETWEEN [[start_date]]
+                         AND [[end_date]]
     AND batch_id = [[BATCH_ID]]
 ORDER BY
     submit_date DESC
@@ -68,9 +68,13 @@ FROM
     ir_api_log
 WHERE
     iram_account_id = [[ACCOUNT_ID]]
-    AND doe BETWEEN [[API_START_DATETIME]]
-                AND [[API_END_DATETIME]]
+    AND doe BETWEEN [[start_date]]
+                AND [[end_date]]
     AND oid = [[ORDER_ID]]
 ORDER BY
     doe DESC
 LIMIT 500;
+
+
+[[start_date]] and [[end_date]]
+[[SUBMIT_START_DATETIME]], [[SUBMIT_END_DATETIME]], [[API_START_DATETIME]], [[API_END_DATETIME]]
