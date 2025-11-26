@@ -1,81 +1,58 @@
-/* DRAFT - TS - Pixel Order Processing Latency (Internal Only)
-   Datasource: r_ds_singlestore
-   Table: datalake_irdwm.action_fact
-*/
-Internal-only lookup for a single order action in action_fact.
-Given advertiser, campaign, action ID, and a narrow action date range, returns conversion time, AP processed time, last adjustment time, and latency in minutes.
-For TS/CS internal use only – not exposed to customers.
+-- [VETTED] Promo codes for Creator campaigns 31202 & 31203
+-- DS: r_ds_ircm
 SELECT
-    advertiser_id                                  AS advertiser_id,
-    campaign_id                                    AS campaign_id,
-    oid                                            AS oid,
-    action_id                                      AS action_id,
-    action_datetime                                AS ConversionDateTime_UTC,
-    doe                                            AS APProcessedDateTime_UTC,
-    adj_datetime                                   AS LastAdjustmentDateTime_UTC,
-    TIMESTAMPDIFF(
-        MINUTE,
-        action_datetime,
-        doe
-    )                                              AS APProcessingLatency_Minutes
-FROM
-    action_fact
-WHERE
-    advertiser_id      = [[ADVERTISER_ID]]
-    AND campaign_id    = [[CAMPAIGN_ID]]
-    AND action_id      = [[ACTION_ID]]
-    AND action_datetime BETWEEN [[ACTION_START_DATETIME]]
-                           AND [[ACTION_END_DATETIME]]
-ORDER BY
-    action_datetime DESC;
+  ircm_campaign_id,
+  iram_publisher_id,
+  date_last_assigned,
+  end_date,
+  LOWER(promo_code) AS code_lower,
+  promo_code        AS code_original,
+  state
+FROM ircm_promocode
+WHERE ircm_campaign_id IN (31202, 31203)
+ORDER BY ircm_campaign_id, code_lower
+LIMIT 1000;
 
 
-
-
-/* DRAFT - TS - FTP Submission Log Lookup (Internal Only)
-   Datasource: r_ds_ods
-   Table: ir_ftp_batch_log
-*/
-
-Internal-only lookup of FTP batch submissions for a given account.
-Shows when FTP files were submitted to Impact (submit_date) so TS/CS can compare FTP submit timing with AP processing timing in the pixel latency report.
-For TS/CS only – not customer-facing.
-
+-- [DRAFT] Distinct orders in Oct‑2025 using Creator promo codes
+-- DS: singlestore
+WITH creator_codes AS (
+  SELECT DISTINCT LOWER(promo_code) AS code_lower
+  FROM ircm_promocode
+  WHERE ircm_campaign_id IN (31202, 31203)
+)
 SELECT
-    iram_account_id,
-    batch_id,
-    submit_date
-FROM
-    ir_ftp_batch_log
-WHERE
-    iram_account_id = [[ACCOUNT_ID]]
-    AND submit_date BETWEEN [[SUBMIT_START_DATETIME]]
-                         AND [[SUBMIT_END_DATETIME]]
-    -- Optional extra narrow filter if needed:
-    -- AND batch_id = [[BATCH_ID]]
-ORDER BY
-    submit_date DESC
-LIMIT 500;
+  advertiser_id,
+  COUNT(DISTINCT oid) AS orders_with_creator_codes
+FROM conversion_fact
+WHERE advertiser_id IN (6006417, 6006625)  -- Motatos DACH + Nordics
+  AND event_datetime >= '2025-10-01'
+  AND event_datetime <  '2025-11-01'
+  AND promo_code IS NOT NULL
+  AND promo_code <> ''
+  AND LOWER(promo_code) IN (SELECT code_lower FROM creator_codes)
+GROUP BY advertiser_id
+ORDER BY advertiser_id;
 
 
-
-/* DRAFT - TS - API Submission Log Lookup (Internal Only)
-   Datasource: r_ds_ods
-   Table: ir_api_log
-   NOTE: Column names (oid, doe) must be verified in QA/with Wade before broad use.
-*/
-Internal-only lookup of API submissions for a given account and order ID.
-Shows when the API request was logged (doe) so TS/CS can compare API submission timing with AP processing timing in the pixel latency report.
-For TS/CS only – not exposed to customers.
+-- [DRAFT] Distinct orders with Creator promo + Creator campaign actions
+-- DS: singlestore + r_ds_ircm / irac_action2
+WITH creator_codes AS (...same as above...),
+creator_oids AS (
+  SELECT DISTINCT oid
+  FROM irac_action2
+  WHERE campaign_id IN (31202, 31203)
+    AND action_date >= '2025-10-01'
+    AND action_date <  '2025-11-01'
+)
 SELECT
-    *
-FROM
-    ir_api_log
-WHERE
-    iram_account_id = [[ACCOUNT_ID]]
-    AND doe BETWEEN [[API_START_DATETIME]]
-                AND [[API_END_DATETIME]]
-    AND oid = [[ORDER_ID]]
-ORDER BY
-    doe DESC
-LIMIT 500;
+  advertiser_id,
+  COUNT(DISTINCT oid) AS creator_orders
+FROM conversion_fact
+WHERE advertiser_id IN (6006417, 6006625)
+  AND event_datetime >= '2025-10-01'
+  AND event_datetime <  '2025-11-01'
+  AND promo_code IS NOT NULL AND promo_code <> ''
+  AND LOWER(promo_code) IN (SELECT code_lower FROM creator_codes)
+  AND oid IN (SELECT oid FROM creator_oids)
+GROUP BY advertiser_id;
