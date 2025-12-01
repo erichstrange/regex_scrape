@@ -54,3 +54,19 @@ WHERE prev_date_to IS NOT NULL
 | campaign_id | sku | version | date_from | date_to | prev_date_to |
 +-------------+-----+---------+-----------+---------+--------------+
 +-------------+-----+---------+-----------+---------+--------------+
+
+
+WITH ranked AS (
+  SELECT
+    d.*,
+    ROW_NUMBER() OVER (
+      PARTITION BY campaign_id, sku
+      ORDER BY date_from DESC
+    ) AS rn
+  FROM action_sku_dim d
+  WHERE campaign_id = 35023
+    AND sku IN ('B08K3LZ4KL', 'B09SFFJP1P')
+)
+SELECT *
+FROM ranked
+WHERE rn = 1;
