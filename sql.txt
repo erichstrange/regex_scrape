@@ -1,80 +1,14 @@
-/* Pixel Order Processing Latency 
-   Datasource: r_ds_singlestore
-
-*/
-Internal-only lookup for a single order action in action_fact.
-Given advertiser, campaign, action ID, and a narrow action date range, returns conversion time, AP processed time, last adjustment time, and latency in minutes.
-SELECT
-    advertiser_id                                  AS advertiser_id,
-    campaign_id                                    AS campaign_id,
-    oid                                            AS oid,
-    action_id                                      AS action_id,
-    action_datetime                                AS ConversionDateTime_UTC,
-    doe                                            AS APProcessedDateTime_UTC,
-    adj_datetime                                   AS LastAdjustmentDateTime_UTC,
-    TIMESTAMPDIFF(
-        MINUTE,
-        action_datetime,
-        doe
-    )                                              AS APProcessingLatency_Minutes
-FROM
-    action_fact
-WHERE
-    advertiser_id      = [[ADVERTISER_ID]]
-    AND campaign_id    = [[CAMPAIGN_ID]]
-    AND action_id      = [[ACTION_ID]]
-    AND action_datetime BETWEEN [[start_date]]
-                           AND [[end_date]]
-ORDER BY
-    action_datetime DESC;
+-- VETTED: Retrieve all SKU actions for a specific campaign and SKU
+-- Datasource: singlestore (action_sku_dim)
+SELECT *
+FROM action_sku_dim
+WHERE campaign_id = {campaign_id}       -- Nutricost Amazon Seller campaign id
+  AND sku = "{sku]"
+ORDER BY date_from DESC;
 
 
+{campaign_id} = Nutricost Amazon Seller campaign (likely 35023 from the UI).
 
+{sku]} = "B08K3LZ4KL"
 
-/* FTP Submission Log Lookup (Internal Only)
-   Datasource: r_ds_ods
-
-*/
-
-Shows when FTP files were submitted to Impact (submit_date) so TS/CS can compare FTP submit timing with AP processing timing in the pixel latency report.
-
-
-SELECT
-    iram_account_id,
-    batch_id,
-    submit_date
-FROM
-    ir_ftp_batch_log
-WHERE
-    iram_account_id = [[ACCOUNT_ID]]
-    AND submit_date BETWEEN [[start_date]]
-                         AND [[end_date]]
-    AND batch_id = [[BATCH_ID]]
-ORDER BY
-    submit_date DESC
-LIMIT 500;
-
-
-
-/* API Submission Log Lookup (Internal Only)
-   Datasource: r_ds_ods
-
-*/
-Shows when the API request was logged (doe) so TS/CS can compare API submission timing with AP processing timing in the pixel latency report.
-
-SELECT
-    *
-FROM
-    ir_api_log
-WHERE
-    iram_account_id = [[ACCOUNT_ID]]
-    AND doe BETWEEN [[start_date]]
-                AND [[end_date]]
-    AND oid = [[ORDER_ID]]
-ORDER BY
-    doe DESC
-LIMIT 500;
-
-
-[[start_date]] and [[end_date]]
-[[SUBMIT_START_DATETIME]], [[SUBMIT_END_DATETIME]], [[API_START_DATETIME]], [[API_END_DATETIME]]
+{sku]} = "B09SFFJP1P"
