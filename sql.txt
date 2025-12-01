@@ -1,126 +1,51 @@
-SELECT    id,version, campaign_id, sku,
-is_default_record, api_status, source_latest,
-date_from, date_to, api_id, api_rev, api_type,
-catalog_id, catalog_ad_id, catalog_item_id, name, description
+SELECT
+    id,
+    version,
+    campaign_id,
+    sku,
+    is_default_record,
+    api_status,
+    source_latest,
+    date_from,
+    date_to,
+    api_id,
+    api_rev,
+    api_type,
+    catalog_id,
+    catalog_ad_id,
+    catalog_item_id,
+    name,
+    description
 FROM action_sku_dim
 WHERE campaign_id = 35023
-  AND sku in ("B08K3LZ4KL", "B09SFFJP1P")
-ORDER BY date_from DESC;
+  AND sku IN ('B08K3LZ4KL', 'B09SFFJP1P')
+  AND date_to = '2199-12-31 23:59:59';
 
-*************************** 1. row ***************************
-               id: 654205838
-          version: 3
-      campaign_id: 35023
-              sku: B09SFFJP1P
-is_default_record: 0
-       api_status: 0
-    source_latest: A
-        date_from: 2025-09-07 01:24:31
-          date_to: 2199-12-31 23:59:59
-           api_id:
-          api_rev:
-         api_type:
-       catalog_id: 23788
-    catalog_ad_id: 2963567
-  catalog_item_id: B09SFFJP1P
-             name: Nutricost Beet Root 2400mg, 180 Capsules - CCOF Certified Made with Organic Beet Root, Superfood, 60 Servings
-      description: Nutricost's beet root capsules are certified made with organic and contain 2,400mg of organic beet root powder per serving. With 180 capsules, each bottle contains around a 2 month supply (60 servings). It is vegetarian friendly, non-gmo, gluten free, and soy free.
-All Nutricost products are made in a GMP Compliant, FDA Registered Facility and all ingredients and finished products are tested by 3rd party, iso-accredited laboratories. Only What You Need, Nothing You Don't! We've simplified our entire philosophy down to that single concept. This motto is what drives us to find the highest quality sources of the purest ingredients for each supplement we offer. From single ingredients to our simple formulations for targeted effects, each of our supplements stays clear and simple with what they provide.
-Keywords: vegan beat caps cap supplement concentrated super food juice
-*************************** 2. row ***************************
-               id: 652742929
-          version: 2
-      campaign_id: 35023
-              sku: B09SFFJP1P
-is_default_record: 0
-       api_status: 0
-    source_latest: A
-        date_from: 2025-09-04 01:32:35
-          date_to: 2025-09-07 01:24:31
-           api_id:
-          api_rev:
-         api_type:
-       catalog_id: 23788
-    catalog_ad_id: 2963567
-  catalog_item_id: B09SFFJP1P
-             name: Nutricost Beet Root 2400mg, 180 Capsules - CCOF Certified Made with Organic Beet Root, Superfood, 60 Servings
-      description: Nutricost's beet root capsules are certified made with organic and contain 2,400mg of organic beet root powder per serving. With 180 capsules, each bottle contains around a 2 month supply (60 servings). It is vegetarian friendly, non-gmo, gluten free, and soy free.
-All Nutricost products are made in a GMP Compliant, FDA Registered Facility and all ingredients and finished products are tested by 3rd party, iso-accredited laboratories. Only What You Need, Nothing You Don't! We've simplified our entire philosophy down to that single concept. This motto is what drives us to find the highest quality sources of the purest ingredients for each supplement we offer. From single ingredients to our simple formulations for targeted effects, each of our supplements stays clear and simple with what they provide.
-Keywords: vegan beat caps cap supplement concentrated super food juice
-*************************** 3. row ***************************
-               id: 648896764
-          version: 3
-      campaign_id: 35023
-              sku: B08K3LZ4KL
-is_default_record: 0
-       api_status: 0
-    source_latest: A
-        date_from: 2025-08-27 01:33:33
-          date_to: 2199-12-31 23:59:59
-           api_id:
-          api_rev:
-         api_type:
-       catalog_id: 23788
-    catalog_ad_id: 2963567
-  catalog_item_id: B08K3LZ4KL
-             name: Nutricost Organic Beet Root Powder 1 LB - Vegan, Superfood, Certified USDA Organic
-      description: Nutricost's beet root powder is USDA certified organic and contains 1 pound of high quality beet root powder. It is vegetarian friendly, non-gmo, gluten free, soy free, and made in a GMP compliant, FDA registered facility. Please be aware that beet root can easily stain.
-Keywords: vegan beat pwd concentrated super food juice nitros oxide beetjuice powder nirtic oxide supplements nitous nitic bulk lower high blood pressure blood sugar inflammation liver weight loss erectile dysfunction cardiovascular health
-*************************** 4. row ***************************
-               id: 647564758
-          version: 2
-      campaign_id: 35023
-              sku: B08K3LZ4KL
-is_default_record: 0
-       api_status: 0
-    source_latest: A
-        date_from: 2025-08-24 01:28:33
-          date_to: 2025-08-27 01:33:33
-           api_id:
-          api_rev:
-         api_type:
-       catalog_id: 23788
-    catalog_ad_id: 2963567
-  catalog_item_id: B08K3LZ4KL
-             name: Nutricost Organic Beet Root Powder 1 LB - Vegan, Superfood, Certified USDA Organic
-      description: Nutricost's beet root powder is USDA certified organic and contains 1 pound of high quality beet root powder. It is vegetarian friendly, non-gmo, gluten free, soy free, and made in a GMP compliant, FDA registered facility. Please be aware that beet root can easily stain.
-Keywords: vegan beat pwd concentrated super food juice nitros oxide beetjuice powder nirtic oxide supplements nitous nitic bulk lower high blood pressure blood sugar inflammation liver weight loss erectile dysfunction cardiovascular health
-*************************** 5. row ***************************
-               id: 645796364
-          version: 1
-      campaign_id: 35023
-              sku: B08K3LZ4KL
-is_default_record: 0
-       api_status: 0
-    source_latest: A
-        date_from: 2000-01-01 00:00:00
-          date_to: 2025-08-24 01:28:33
-           api_id:
-          api_rev:
-         api_type:
-       catalog_id: 23788
-    catalog_ad_id: 2963567
-  catalog_item_id: B08K3LZ4KL
-             name: Nutricost Organic Beet Root Powder 1 LB - Vegan, Superfood, Certified USDA Organic
-      description: Nutricost's beet root powder is USDA certified organic and contains 1 pound of high quality beet root powder. It is vegetarian friendly, non-gmo, gluten free, soy free, and made in a GMP compliant, FDA registered facility. Please be aware that beet root can easily stain.
-Keywords: vegan beat pwd concentrated super food juice nitros oxide beetjuice powder nirtic oxide supplements nitous nitic bulk lower high blood pressure blood sugar inflammation liver weight loss erectile dysfunction cardiovascular health
-*************************** 6. row ***************************
-               id: 645796853
-          version: 1
-      campaign_id: 35023
-              sku: B09SFFJP1P
-is_default_record: 0
-       api_status: 0
-    source_latest: A
-        date_from: 2000-01-01 00:00:00
-          date_to: 2025-09-04 01:32:35
-           api_id:
-          api_rev:
-         api_type:
-       catalog_id: 23788
-    catalog_ad_id: 2963567
-  catalog_item_id: B09SFFJP1P
-             name: Nutricost Beet Root 2400mg, 180 Capsules - CCOF Certified Made with Organic Beet Root, Superfood, 60 Servings
-      description: Nutricost's beet root capsules are certified made with organic and contain 2,400mg of organic beet root powder per serving. With 180 capsules, each bottle contains around a 2 month supply (60 servings). It is vegetarian friendly, non-gmo, gluten free, and soy free.
-All Nutricost products are made in a GMP Compliant, FDA Registered Facility and all ingredients and finished products are tested by 3rd party, iso-accredited laboratories. Only What You Need, Nothing You Don't! We've simplified our entire philosophy down to that single concept. This motto is what drives us to find the highest quality sources of the purest ingredients for each supplement we offer. From single ingredients to our simple formulations for targeted effects, each of our supplements stays clear and simple with what they provide.
-Keywords: vegan beat caps cap supplement concentrated super food juice
+
+SELECT *
+FROM action_sku_dim
+WHERE campaign_id = 35023
+  AND sku IN ('B08K3LZ4KL', 'B09SFFJP1P')
+  AND '2025-09-05 00:00:00' >= date_from
+  AND '2025-09-05 00:00:00' <  date_to;
+
+
+WITH ordered AS (
+  SELECT
+    campaign_id,
+    sku,
+    version,
+    date_from,
+    date_to,
+    LAG(date_to) OVER (
+      PARTITION BY campaign_id, sku
+      ORDER BY date_from
+    ) AS prev_date_to
+  FROM action_sku_dim
+  WHERE campaign_id = 35023
+    AND sku IN ('B08K3LZ4KL', 'B09SFFJP1P')
+)
+SELECT *
+FROM ordered
+WHERE prev_date_to IS NOT NULL
+  AND prev_date_to <> date_from;
