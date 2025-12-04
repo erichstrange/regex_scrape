@@ -47,3 +47,9 @@ WHERE iram_account_id = 2346528;
 | unique_id | event | sub_event | iram_account_id | ircm_campaign_id | ircm_tracker_id | integration | template_vars_json | user_vals_json | state | lookup_key | url | payload_template | file_name_template | http_header_template | http_header_custom | exclude_filters | method | mime_type | min_delay_sec | max_req_sec | response_success | response_error | oauth_token_url | oauth_client_id | oauth_client_secret | oauth_scopes | doe | dlu | uoe | ulu | core_estaleanetwork_id | version | archived |
 +-----------+-------+-----------+-----------------+------------------+-----------------+-------------+--------------------+----------------+-------+------------+-----+------------------+--------------------+----------------------+--------------------+-----------------+--------+-----------+---------------+-------------+------------------+----------------+-----------------+-----------------+---------------------+--------------+-----+-----+-----+-----+------------------------+---------+----------+
 +-----------+-------+-----------+-----------------+------------------+-----------------+-------------+--------------------+----------------+-------+------------+-----+------------------+--------------------+----------------------+--------------------+-----------------+--------+-----------+---------------+-------------+------------------+----------------+-----------------+-----------------+---------------------+--------------+-----+-----+-----+-----+------------------------+---------+----------+
+-- [IRDW] DRAFT – irac_action2_by_date.sql
+SELECT action_id, oid, campaign_id, adv_tot_revenue, doe
+FROM irac_action2
+WHERE campaign_id = 11703
+  AND doe BETWEEN '2025-11-10 00:00:00' AND '2025-11-11 00:00:00'
+ORDER BY doe;
