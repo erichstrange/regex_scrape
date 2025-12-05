@@ -1,65 +1,62 @@
--- DS: r_ds_actionlogging_sharded
+/* Pixel Order Processing Latency 
+   Datasource: r_ds_singlestore
+*/
+Internal-only lookup for a single order action in action_fact.
+Given advertiser, campaign, action ID, and a narrow action date range, returns conversion time, AP processed time, last adjustment time, and latency in minutes.
 SELECT
-  r.oid,
-  r.action_id,
-  r.campaign_id,
-  r.action_tracker_id,
-  r.publisher_id,
-  r.ref_date,
-  r.ref_domain,
-  r.ref_url,
-  r.subid,
-  r.ip,
-  r.user_agent
-FROM ir_referrer r
-WHERE r.campaign_id = 2092
-  AND r.action_tracker_id = 4666
-  AND r.oid IN (
-    '922003051869206',
-    '922003051822484',
-    '922003051820775',
-    '922003051699911',
-    '922003051469966',
-    '922003051450209',
-    '922003051397796',
-    '922003051252056',
-    '922003050872202',
-    '922003051804247',
-    '922003051634352',
-    '922003052463010',
-    '922003051873841'
-  )
-ORDER BY r.oid, r.action_id, r.ref_date;
-
-
-
--- DS: r_ds_actionlogging_sharded
+    advertiser_id                                  AS advertiser_id,
+    campaign_id                                    AS campaign_id,
+    oid                                            AS oid,
+    action_id                                      AS action_id,
+    action_datetime                                AS ConversionDateTime_UTC,
+    doe                                            AS APProcessedDateTime_UTC,
+    adj_datetime                                   AS LastAdjustmentDateTime_UTC,
+    TIMESTAMPDIFF(
+        MINUTE,
+        action_datetime,
+        doe
+    )                                              AS APProcessingLatency_Minutes
+FROM
+    action_fact
+WHERE
+    advertiser_id      = [[ADVERTISER_ID]]
+    AND campaign_id    = [[CAMPAIGN_ID]]
+    AND action_id      = [[ACTION_ID]]
+    AND action_datetime BETWEEN [[ACTION_START_DATETIME]]
+                           AND [[ACTION_END_DATETIME]]
+ORDER BY
+    action_datetime DESC;
+/* FTP Submission Log Lookup (Internal Only)
+   Datasource: r_ds_ods
+*/
+Shows when FTP files were submitted to Impact (submit_date) so TS/CS can compare FTP submit timing with AP processing timing in the pixel latency report.
 SELECT
-  oid,
-  COUNT(*) AS api_event_count,
-  GROUP_CONCAT(DISTINCT
-    SUBSTRING_INDEX(
-      SUBSTRING_INDEX(payload, 'EventTypeId=', -1),
-      '&',
-      1
-    )
-  ) AS event_type_ids
-FROM ir_api_log
-WHERE iram_account_id = 59720
-  AND oid IN (
-    '922003051869206',
-    '922003051822484',
-    '922003051820775',
-    '922003051699911',
-    '922003051469966',
-    '922003051450209',
-    '922003051397796',
-    '922003051252056',
-    '922003050872202',
-    '922003051804247',
-    '922003051634352',
-    '922003052463010',
-    '922003051873841'
-  )
-GROUP BY oid
-ORDER BY oid;
+    iram_account_id,
+    batch_id,
+    submit_date
+FROM
+    ir_ftp_batch_log
+WHERE
+    iram_account_id = [[ACCOUNT_ID]]
+    AND submit_date BETWEEN [[SUBMIT_START_DATETIME]]
+                         AND [[SUBMIT_END_DATETIME]]
+    AND batch_id = [[BATCH_ID]]
+ORDER BY
+    submit_date DESC
+LIMIT 500;
+/* API Submission Log Lookup (Internal Only)
+   Datasource: r_ds_ods
+*/
+Shows when the API request was logged (doe) so TS/CS can compare API submission timing with AP processing timing in the pixel latency report.
+SELECT
+    *
+FROM
+    ir_api_log
+WHERE
+    iram_account_id = [[ACCOUNT_ID]]
+    AND doe BETWEEN [[API_START_DATETIME]]
+                AND [[API_END_DATETIME]]
+    AND oid = [[ORDER_ID]]
+ORDER BY
+    doe DESC
+LIMIT 500;
