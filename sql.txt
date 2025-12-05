@@ -23,9 +23,6 @@ WHERE oid IN (
 SELECT
   oid,
   COUNT(*) AS total_irac_rows
-  -- Optional: uncomment these if your datasource supports GROUP_CONCAT
-  -- , GROUP_CONCAT(DISTINCT action_tracker_id) AS tracker_ids
-  -- , GROUP_CONCAT(DISTINCT ref_type)         AS ref_types
 FROM irac_action2
 WHERE oid IN (
   '922003051869206',
@@ -44,4 +41,20 @@ WHERE oid IN (
 )
 GROUP BY oid
 ORDER BY oid;
-
++-----------------+-----------------+
+| oid             | total_irac_rows |
++-----------------+-----------------+
+| 922003050872202 |               2 |
+| 922003051252056 |               2 |
+| 922003051397796 |               2 |
+| 922003051450209 |               3 |
+| 922003051634352 |               2 |
+| 922003051699911 |               2 |
+| 922003051804247 |               2 |
+| 922003051820775 |               3 |
+| 922003051822484 |               3 |
+| 922003051869206 |               4 |
+| 922003051873841 |               6 |
+| 922003052463010 |               2 |
+| 922003051469966 |               1 |
++-----------------+-----------------+
