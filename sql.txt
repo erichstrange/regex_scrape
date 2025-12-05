@@ -1,4 +1,31 @@
 SELECT
+  cf.event_datetime,
+  cf.landing_page_url
+FROM click_fact cf
+WHERE cf.advertiser_id = 4012120
+  AND cf.publisher_id = 10078
+  AND cf.campaign_id  = <GH_CAMPAIGN_ID>
+  AND cf.event_datetime >= '2025-11-30'
+  AND cf.event_datetime <  '2025-12-02'
+  AND cf.landing_page_url LIKE '%bestcodes.org%'
+ORDER BY cf.event_datetime DESC
+LIMIT 200;
+
+SELECT
+  cf.event_datetime,
+  cf.campaign_id,
+  cf.landing_page_url
+FROM click_fact cf
+WHERE cf.advertiser_id = 4012120
+  AND cf.publisher_id = 10078
+  AND cf.event_datetime >= '2025-11-30'
+  AND cf.event_datetime <  '2025-12-02'
+ORDER BY cf.event_datetime DESC
+LIMIT 100;
+
+
+
+SELECT
     cf.event_datetime,
     cf.advertiser_id,
     cf.campaign_id,
