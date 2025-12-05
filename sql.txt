@@ -94,13 +94,12 @@ SELECT
     r.action_id,
     r.ref_date,
     r.publisher_id,
-    r.referrer,
     r.url,
     r.subid,
     r.ip,
     r.user_agent
 FROM (
-    SELECT '922003050872202' AS oid, '2092.6535.849083'  AS action_id
+    SELECT '922003050872202' AS oid, '2092.6535.849083'   AS action_id
     UNION ALL
     SELECT '922003051252056' AS oid, '2092.6535.1118416' AS action_id
     UNION ALL
@@ -127,4 +126,3 @@ FROM (
 LEFT JOIN ir_referrer r
       ON r.action_id = a.action_id
 ORDER BY a.oid, r.ref_date;
-
