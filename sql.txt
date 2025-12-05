@@ -1,23 +1,99 @@
--- Order audit / click path for all Target sample orders
+-- Target 59720 – all actions for the sample OIDs
+SELECT
+  advertiser_id,
+  campaign_id,
+  action_tracker_id,
+  ref_type,
+  oid,
+  action_id,
+  doe,
+  uoe,
+  adv_saleamt,
+  adv_commission
+FROM irac_action2
+WHERE advertiser_id = 59720
+  AND oid IN (
+    '922003051869206',
+    '922003051822484',
+    '922003051820775',
+    '922003051699911',
+    '922003051469966',
+    '922003051450209',
+    '922003051397796',
+    '922003051252056',
+    '922003050872202',
+    '922003051804247',
+    '922003051634352',
+    '922003052463010',
+    '922003051873841'
+  )
+ORDER BY oid, doe;
+
+
+-- DRAFT summary – how many actions + trackers per OID
 SELECT
   oid,
-  clickids
-FROM irer_conversion
-WHERE oid IN (
-  '922003051869206',
-  '922003051822484',
-  '922003051820775',
-  '922003051699911',
-  '922003051469966',
-  '922003051450209',
-  '922003051397796',
-  '922003051252056',
-  '922003050872202',
-  '922003051804247',
-  '922003051634352',
-  '922003052463010',
-  '922003051873841'
-);
+  COUNT(*)                                      AS total_actions,
+  COUNT(DISTINCT action_tracker_id)             AS distinct_trackers,
+  GROUP_CONCAT(DISTINCT action_tracker_id)      AS tracker_ids,
+  GROUP_CONCAT(DISTINCT ref_type)               AS ref_types
+FROM irac_action2
+WHERE advertiser_id = 59720
+  AND oid IN (
+    '922003051869206',
+    '922003051822484',
+    '922003051820775',
+    '922003051699911',
+    '922003051469966',
+    '922003051450209',
+    '922003051397796',
+    '922003051252056',
+    '922003050872202',
+    '922003051804247',
+    '922003051634352',
+    '922003052463010',
+    '922003051873841'
+  )
+GROUP BY oid
+ORDER BY oid;
+
+
+
+-- Click path for all actions tied to the sample OIDs
+SELECT
+  r.action_id,
+  r.ref_date,
+  r.publisher_id,
+  r.referrer,
+  r.url,
+  r.subid,
+  r.ip,
+  r.user_agent
+FROM ir_referrer r
+WHERE r.action_id IN (
+  SELECT action_id
+  FROM irac_action2
+  WHERE advertiser_id = 59720
+    AND oid IN (
+      '922003051869206',
+      '922003051822484',
+      '922003051820775',
+      '922003051699911',
+      '922003051469966',
+      '922003051450209',
+      '922003051397796',
+      '922003051252056',
+      '922003050872202',
+      '922003051804247',
+      '922003051634352',
+      '922003052463010',
+      '922003051873841'
+    )
+)
+ORDER BY r.action_id, r.ref_date;
+
+
+
 
 -- DRAFT: Actions we have per Target OID in irac_action2
 SELECT
