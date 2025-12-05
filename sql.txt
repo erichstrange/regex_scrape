@@ -1,4 +1,21 @@
--- [IRDW][DRAFT] ts_search_compliance_garnet_hill_bestcodes.sql
+SELECT
+    cf.event_datetime,
+    cf.advertiser_id,
+    cf.campaign_id,
+    cf.publisher_id,
+    cf.landing_page_url,
+    cf.classification,
+    cf.method
+FROM click_fact cf
+WHERE cf.advertiser_id = 4012120          -- Garnet Hill
+  AND cf.publisher_id = 10078             -- Skimlinks
+  AND cf.campaign_id = 18590 -- only campign Garnet Hill has
+  AND cf.event_datetime >= '2025-11-24'   -- start_date
+  AND cf.event_datetime <  '2025-12-04'   -- end_date (exclusive)
+  AND cf.landing_page_url LIKE '%bestcodes.org%'
+ORDER BY cf.event_datetime DESC;
+
+
 
 SELECT
     cf.event_datetime,
@@ -9,10 +26,14 @@ SELECT
     cf.classification,
     cf.method
 FROM click_fact cf
-WHERE cf.advertiser_id = 4012120          -- Garnet Hill advertiser id
+WHERE cf.advertiser_id = 4012120          -- Garnet Hill
   AND cf.publisher_id = 10078             -- Skimlinks
-  -- AND cf.campaign_id = <GARNET_HILL_CAMPAIGN_ID>  -- optional if you know it
-  AND cf.event_datetime >= '2025-11-24'   -- start_date
-  AND cf.event_datetime <  '2025-12-04'   -- end_date (exclusive)
-  AND cf.landing_page_url ILIKE '%bestcodes.org%'
+  AND cf.campaign_id = 18590 -- only campign Garnet Hill has
+  AND cf.event_datetime >= '2025-11-30'   -- start_date
+  AND cf.event_datetime <  '2025-12-02'   -- end_date (exclusive)
+  AND cf.landing_page_url LIKE '%bestcodes.org%'
 ORDER BY cf.event_datetime DESC;
++----------------+---------------+-------------+--------------+------------------+----------------+--------+
+| event_datetime | advertiser_id | campaign_id | publisher_id | landing_page_url | classification | method |
++----------------+---------------+-------------+--------------+------------------+----------------+--------+
++----------------+---------------+-------------+--------------+------------------+----------------+--------+
