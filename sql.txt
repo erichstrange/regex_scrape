@@ -1,62 +1,17 @@
-/* Pixel Order Processing Latency 
-   Datasource: r_ds_singlestore
-*/
-Internal-only lookup for a single order action in action_fact.
-Given advertiser, campaign, action ID, and a narrow action date range, returns conversion time, AP processed time, last adjustment time, and latency in minutes.
-SELECT
-    advertiser_id                                  AS advertiser_id,
-    campaign_id                                    AS campaign_id,
-    oid                                            AS oid,
-    action_id                                      AS action_id,
-    action_datetime                                AS ConversionDateTime_UTC,
-    doe                                            AS APProcessedDateTime_UTC,
-    adj_datetime                                   AS LastAdjustmentDateTime_UTC,
-    TIMESTAMPDIFF(
-        MINUTE,
-        action_datetime,
-        doe
-    )                                              AS APProcessingLatency_Minutes
-FROM
-    action_fact
-WHERE
-    advertiser_id      = [[ADVERTISER_ID]]
-    AND campaign_id    = [[CAMPAIGN_ID]]
-    AND action_id      = [[ACTION_ID]]
-    AND action_datetime BETWEEN [[ACTION_START_DATETIME]]
-                           AND [[ACTION_END_DATETIME]]
-ORDER BY
-    action_datetime DESC;
-/* FTP Submission Log Lookup (Internal Only)
-   Datasource: r_ds_ods
-*/
-Shows when FTP files were submitted to Impact (submit_date) so TS/CS can compare FTP submit timing with AP processing timing in the pixel latency report.
-SELECT
-    iram_account_id,
-    batch_id,
-    submit_date
-FROM
-    ir_ftp_batch_log
-WHERE
-    iram_account_id = [[ACCOUNT_ID]]
-    AND submit_date BETWEEN [[SUBMIT_START_DATETIME]]
-                         AND [[SUBMIT_END_DATETIME]]
-    AND batch_id = [[BATCH_ID]]
-ORDER BY
-    submit_date DESC
-LIMIT 500;
-/* API Submission Log Lookup (Internal Only)
-   Datasource: r_ds_ods
-*/
-Shows when the API request was logged (doe) so TS/CS can compare API submission timing with AP processing timing in the pixel latency report.
-SELECT
-    *
-FROM
-    ir_api_log
-WHERE
-    iram_account_id = [[ACCOUNT_ID]]
-    AND doe BETWEEN [[API_START_DATETIME]]
-                AND [[API_END_DATETIME]]
-    AND oid = [[ORDER_ID]]
-ORDER BY
-    doe DESC
-LIMIT 500;
+-- Active publishers joined to this advertiser (Revzilla)
+SELECT DISTINCT 
+  ap.iram_publisher_id,
+  ca.taxclass,
+  ca.organizationname
+FROM iram_advertiser_publisher AS ap
+INNER JOIN iram.core_account AS ca
+  ON ap.iram_publisher_id = ca.id 
+INNER JOIN iram.iram_account AS ia
+  ON ap.iram_publisher_id = ia.id
+WHERE ap.iram_advertiser_id = <ADV_ID>
+  AND ap.date_expired IS NULL 
+  AND ca.state = 'ACTIVE'
+  AND ca.taxclass IS NOT NULL
+  AND ca.taxclass <> ' '
+  AND ia.state = 'ACTIVE'
+ORDER BY organizationname;
