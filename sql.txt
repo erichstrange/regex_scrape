@@ -1,17 +1,29 @@
-/* DRAFT – cross-schema join test between iram and ircm
-   Datasource: r_ds_singlestore
-*/
+-- DRAFT – Publisher country history
+-- DS: r_ds_irdw
 
 SELECT
-    ap.iram_account_id,
-    ap.ircm_campaign_id,
-    c.campaign_name            AS campaign_name,
-    c.ircm_campaign_id         AS ircm_campaign_id
-FROM
-    iram_advertiser_publisher ap
-JOIN
-    ircm_campaign c
-      ON c.ircm_campaign_id = ap.ircm_campaign_id
-WHERE
-    ap.iram_account_id = [[ACCOUNT_ID]]
-LIMIT 50;
+  publisher_id,
+  date_from,
+  date_to,
+  country,
+  state
+FROM publisher_dim
+WHERE publisher_id = 6564108
+ORDER BY date_from;
+
+
+-- DRAFT – Current billing/company country + last update
+-- DS: r_ds_ods
+
+SELECT
+  publisher_id,
+  publisher_name,
+  country,
+  state,
+  city,
+  source_doe,
+  source_dlu,
+  doe,
+  dlu
+FROM publisher_account
+WHERE publisher_id = 6564108;
