@@ -1,5 +1,5 @@
 -- DRAFT – Publisher country history
--- DS: r_ds_irdw
+-- DS: single_store
 
 SELECT
   publisher_id,
@@ -10,6 +10,14 @@ SELECT
 FROM publisher_dim
 WHERE publisher_id = 6564108
 ORDER BY date_from;
++--------------+---------------------+---------------------+---------+---------+
+| publisher_id | date_from           | date_to             | country | state   |
++--------------+---------------------+---------------------+---------+---------+
+|      6564108 | 1900-01-01 00:00:00 | 2025-09-23 10:24:52 | US      | ALABAMA |
+|      6564108 | 2025-09-23 10:24:52 | 2025-09-30 10:54:46 | US      | ALABAMA |
+|      6564108 | 2025-09-30 10:54:46 | 2025-10-03 13:15:22 | US      | ALABAMA |
+|      6564108 | 2025-10-03 13:15:22 | 2199-12-31 23:59:59 | INDIA   | ʘ       |
++--------------+---------------------+---------------------+---------+---------+
 
 
 -- DRAFT – Current billing/company country + last update
@@ -27,3 +35,5 @@ SELECT
   dlu
 FROM publisher_account
 WHERE publisher_id = 6564108;
+Table 'irods.publisher_account' doesn't exist
+Table 'irods.publisher_account' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'irods.publisher_account' doesn't exist
