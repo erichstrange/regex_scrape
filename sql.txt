@@ -1,11 +1,3 @@
-SELECT
-  DISTINCT publisher_id
-FROM click_fact
-WHERE advertiser_id = 5725673
-  AND campaign_id  = 27291
-  AND event_datetime >= '2025-11-25'
-  AND event_datetime <  '2025-12-11'
-ORDER BY publisher_id;
 
 
 SELECT
