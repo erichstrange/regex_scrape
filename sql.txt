@@ -12,3 +12,18 @@ WHERE iram_feature_auth_account_id IN (
    JOIN core_account AS e ON d.id = e.id
    WHERE d.id = 6737279  -- MP account id
 );
+
+
+-- VETTED: "Roles by User"
+-- Replace account_user_id & irAccount_id with Charly's user id + 6737279
+SELECT *
+FROM core__role
+WHERE id IN (
+    SELECT core__role_id
+    FROM core__ap__role
+    WHERE core__ap__id = (
+        SELECT authorizationPrincipal_id
+        FROM iram__usership
+        WHERE irAccount_id    = 6737279
+    )
+);
