@@ -1,39 +1,8 @@
-
-
 SELECT
-  campaign_id,
-  publisher_id,
-  event_datetime,
-  JSON_EXTRACT_STRING(json, 'inboundLink') AS tracking_link,
-  landing_page_url,
-  JSON_EXTRACT_STRING(json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(json, 'ruleName')     AS rule_name
+  DISTINCT publisher_id
 FROM click_fact
 WHERE advertiser_id = 5725673
-  AND campaign_id   = 27291
+  AND campaign_id  = 27291
   AND event_datetime >= '2025-11-25'
   AND event_datetime <  '2025-12-11'
-ORDER BY event_datetime DESC
-LIMIT 500;
-The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
-The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
-
-
-SELECT
-  campaign_id,
-  publisher_id,
-  event_datetime,
-  JSON_EXTRACT_STRING(json, 'inboundLink') AS tracking_link,
-  landing_page_url,
-  JSON_EXTRACT_STRING(json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(json, 'ruleName')     AS rule_name
-FROM click_fact
-WHERE advertiser_id = 5725673
-  AND campaign_id   = 27291
-  AND JSON_EXTRACT_STRING(json, 'inboundLink') LIKE '%sjv.io%'
-  AND event_datetime >= '2025-11-25'
-  AND event_datetime <  '2025-12-11'
-ORDER BY event_datetime DESC
-LIMIT 500;
-The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
-The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+ORDER BY publisher_id;
