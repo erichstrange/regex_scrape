@@ -1,70 +1,44 @@
 SELECT
-  campaign_id,
-  publisher_id,
-  event_datetime,
-  JSON_EXTRACT_STRING(json, 'inboundLink') AS tracking_link,
-  landing_page_url,
-  JSON_EXTRACT_STRING(json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(json, 'ruleName')     AS rule_name
-FROM click_fact
-WHERE advertiser_id = 5725673
-  AND campaign_id   = 27291
-  AND event_datetime >= '2025-12-10'
-  AND event_datetime <  '2025-12-11'
-LIMIT 200;
--- result in query(7).csv
+    u.account_user_id,
+    u.irAccount_Id      AS account_id,
+    ce.username,
+    ce.email,
+    ce.firstname,
+    ce.lastname,
+    u.state,
+    ce.lastlogin_date
+FROM iram_usership u
+JOIN core_estaleauser ce
+  ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = 6737279
+  AND ce.email = 'visiteralicante@gmail.com';
 
 
--- using one of the publisher ids
-SELECT
-  campaign_id,
-  publisher_id,
-  event_datetime,
-  JSON_EXTRACT_STRING(json, 'inboundLink') AS tracking_link,
-  landing_page_url,
-  JSON_EXTRACT_STRING(json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(json, 'ruleName')     AS rule_name
-FROM click_fact
-WHERE advertiser_id = 5725673
-  AND campaign_id   = 27291
-  AND publisher_id  = 352960
-  AND event_datetime >= '2025-12-10'
-  AND event_datetime <  '2025-12-11'
-LIMIT 200;
-+-------------+--------------+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------+
-| campaign_id | publisher_id | event_datetime      | tracking_link                                                                                                                                                                                                                                                   | landing_page_url                                                                                                                                                                                                 | blocking_rule | rule_name |
-+-------------+--------------+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------+
-|       27291 |       352960 | 2025-12-10 16:15:37 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xad22445c2a685bcb&svlink=11946508&level=1&srcref=https%3A%2F%2Frefermate.com%2Fr%2F54590%2F23&brwsr=76f670e5-d5e3-11f0-9448-1f7a015b5a05&brwsrsig=1l2W7HTjlUpWUHLTiuVUxTue0DuWrh | https://displate.com?irclickid=yDfyztVirxycRhUx9%3A01D1M1UkpT-JWouyPO3s0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=yDfyztVirxycRhUx9%3A01D1M1UkpT-JWouyPO3s0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:18:02 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508                                                                                                                                                | https://displate.com?irclickid=QdrUslVirxycR1rTlsUc8Q5pUkpT-OzMuym0w80&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=QdrUslVirxycR1rTlsUc8Q5pUkpT-OzMuym0w80&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:21:21 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-L034VguUc0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-L034VguUc0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 17:07:47 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa09d8f5abd69d081&svlink=11946508&level=1&srcref=https%3A%2F%2Frefermate.com%2Fr%2F54590%2F23&brwsr=c09fff63-d5ea-11f0-a78f-f330a960abd4&brwsrsig=UqlWtt0oK3s4x8PRsowRP3s3w5MR1J | https://displate.com?irclickid=Q2CS9rViOxycWHSSQcWtsWKgUkpT-dXSVWoq0Y0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=Q2CS9rViOxycWHSSQcWtsWKgUkpT-dXSVWoq0Y0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:17:58 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508&level=1&brwsr=caaea185-d5e3-11f0-9448-1f7a015b5a05&brwsrsig=XI8VkJ3OISoMyC2XEe23xw4eWwxU0F                                                     | https://displate.com?irclickid=QOPW31VirxycRhUx9%3A01D1M1UkpT-OzBMQl1yQ0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=QOPW31VirxycRhUx9%3A01D1M1UkpT-OzBMQl1yQ0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:15:41 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-JWYuym9Qc0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-JWYuym9Qc0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:15:50 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-DWEVzN7Rw0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-DWEVzN7Rw0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:18:12 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508                                                                                                                                                | https://displate.com?irclickid=VVn1K-VirxycR1rTlsUc8Q5pUkpT-Owkuym0w80&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=VVn1K-VirxycR1rTlsUc8Q5pUkpT-Owkuym0w80&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:15:57 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xc7ca775715bb0ecc&svlink=11946508&level=1&brwsr=20cf3597-d5db-11f0-ac00-65236b699eae&brwsrsig=3%3A70L7RqMQaRVlg0QdxEXw9YXQDRpZ                                                   | https://displate.com?irclickid=2zSzniViDxycWc03gr3NJR%3APUkpT-DWa0XS6Sk0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=2zSzniViDxycWc03gr3NJR%3APUkpT-DWa0XS6Sk0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:16:53 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4b5cf8e9da9bc82&svlink=11946508&level=1&brwsr=426e8a76-d5db-11f0-a166-c5a0686be5d4&brwsrsig=2-gUEIxwY3mGQ6ERzPzLv20%3A25dzYx                                                   | https://displate.com?irclickid=wRPUJfViDxycW1vQns3pLXigUkpT-DXnMQdTSs0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=wRPUJfViDxycW1vQns3pLXigUkpT-DXnMQdTSs0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:17:29 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590x2452acad683a90ce&svlink=11946508&level=1&brwsr=57069b23-d5db-11f0-ac00-65236b699eae&brwsrsig=WQpSKj1Zx3fh1gi27Fz%3Au2ER2SryXm                                                   | https://displate.com?irclickid=1A3RIrViDxycWc03gr3NJR%3APUkpT-A0qhSTDQU0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=1A3RIrViDxycWc03gr3NJR%3APUkpT-A0qhSTDQU0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:15:29 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-JWwuyPO3s0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-JWwuyPO3s0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:15:27 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-JR4uyOjXg0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-JR4uyOjXg0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:16:10 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-JQOTzPhwk0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-JQOTzPhwk0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 17:06:30 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-dRDVWoq0Y0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-dRDVWoq0Y0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:54:23 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xe750c39fe8499ae2&svlink=11946508&level=1&brwsr=e141a5b4-d5e8-11f0-a2ce-53f02ccca5ca&brwsrsig=0VJxypzN6R-Ryfaw330uk16vx2UwAf                                                     | https://displate.com?irclickid=X1xWnYViMxycWTX1Sc2bQWiWUkpT-eT6VWoqw00&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=X1xWnYViMxycWTX1Sc2bQWiWUkpT-eT6VWoqw00&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:18:05 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508&level=1&brwsr=ce84fe4d-d5e3-11f0-a882-cb2043a34af2&brwsrsig=xDNVLYVnpS-Xwmt2ZxwMkUpf3RZz9U                                                     | https://displate.com?irclickid=Q%3AwS5VVirxycWu2QIswXrwLeUkpT-OzfTzPhwk0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=Q%3AwS5VVirxycWu2QIswXrwLeUkpT-OzfTzPhwk0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:22:30 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508&level=1&brwsr=69c7b1ea-d5e4-11f0-bd57-f966f5353d25&brwsrsig=xS43AJVA1SYB1lvyrPVAkwsTwKqTow                                                     | https://displate.com?irclickid=3qyTyOVioxycTdiStvSgdzYtUkpT-LwGNSkZzA0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=3qyTyOVioxycTdiStvSgdzYtUkpT-LwGNSkZzA0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 20:41:47 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590x274f59f7c2cab874&svlink=11946508                                                                                                                                                | https://displate.com?irclickid=TctwO8VE0xycR5RyCLy3cRtwUkpT6M0Nxx3f0g0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=TctwO8VE0xycR5RyCLy3cRtwUkpT6M0Nxx3f0g0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:17:09 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-DSguwHnS00&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-DSguwHnS00&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:15:23 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-DUIzU%3A13Q0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-DUIzU%3A13Q0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:15:34 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-JWEuym9Qc0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-JWEuym9Qc0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:16:21 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590x3261a01256e9789d&svlink=11946508&level=1&brwsr=2f2dcc3a-d5db-11f0-be22-fd59ddf1c78d&brwsrsig=Rd7RG1yksSLXw350-E32TT9TxoeQGQ                                                     | https://displate.com?irclickid=24NQc%3AViDxycT8uSdBVaZQHVUkpT-DQn5Rsq0I0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=24NQc%3AViDxycT8uSdBVaZQHVUkpT-DQn5Rsq0I0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:15:24 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa03ccdd867e69aa8&svlink=11946508&level=1&brwsr=0cfa751c-d5db-11f0-a0d7-3173735879d0&brwsrsig=VrNWF7RPCWRIRtJT9w3-IQ0KQ27QAI                                                     | https://displate.com?irclickid=0b%3AygAViDxycWziz1byVEyqkUkpT-DUcfwEdzc0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=0b%3AygAViDxycWziz1byVEyqkUkpT-DUcfwEdzc0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:19:57 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508&level=1&brwsr=afd19f3b-d5db-11f0-853d-2fe1b745a014&brwsrsig=RBoTWWTr-Uj7wfs2LQ0L1Ved1fCxZR                                                     | https://displate.com?irclickid=W6hR47ViDxycUg926pTF1W0gUkpT-ARfU3NRQo0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=W6hR47ViDxycUg926pTF1W0gUkpT-ARfU3NRQo0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:22:34 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-LwJMWmHSI0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-LwJMWmHSI0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:17:55 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508&level=1&brwsr=c8d28ef3-d5e3-11f0-9448-1f7a015b5a05&brwsrsig=05Ay6PRYBzx3yIzTzDSpj0RC2lYXXU                                                     | https://displate.com?irclickid=QrmU7bVirxycRhUx9%3A01D1M1UkpT-OzQuwucUw0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=QrmU7bVirxycRhUx9%3A01D1M1UkpT-OzQuwucUw0&utm_id=US&irgwc=1&afsrc=1 | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:54:27 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590x88664e208cf19d1d&svlink=11946508&level=1&srcref=https%3A%2F%2Frefermate.com%2Fr%2F54590%2F23&brwsr=e3cf2e6a-d5e8-11f0-a2ce-53f02ccca5ca&brwsrsig=0GT1PU3GMzwaxPNxKz3qt2T7QrdWx9 | https://displate.com?irclickid=XSS25OViMxycWTX1Sc2bQWiWUkpT-eQSVWoqw00&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=XSS25OViMxycWTX1Sc2bQWiWUkpT-eQSVWoqw00&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:18:05 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590x936108e419d5cf7d&svlink=11946508&level=1&brwsr=6ce53579-d5db-11f0-9d4c-ebf8cb7c392e&brwsrsig=2oe1WJXqhVx%3AVGRVPJXSu1RizOGTdG                                                   | https://displate.com?irclickid=3btzl5ViDxycRdQXK8QN4zoPUkpT-A2YN14E0g0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=3btzl5ViDxycRdQXK8QN4zoPUkpT-A2YN14E0g0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 16:22:57 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd86778861af8d1e6&svlink=11946508&level=1&srcref=https://refermate.com/r/54590/23&brwsr=801ad424-d5c9-11f0-853d-2fe1b745a014&brwsrsig=wGfSbRVszQEjw0cyBvT3BWchwV4zFc             | https://displate.com?irclickid=U0GVkoViRxycUg926pTF1W0gUkpT-L312Wcuwo0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=U0GVkoViRxycUg926pTF1W0gUkpT-L312Wcuwo0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 17:08:53 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xa4bec165824a1846&svlink=11946508&level=1&srcref=https%3A%2F%2Fbing.com%2F&brwsr=e7ae2b75-d5ea-11f0-97f8-bdd8bb76d0a5&brwsrsig=3-By7eXKgXnlQ5WR0Fyg03q8x6BWL7                    | https://displate.com?irclickid=XHP2NdViOxycRC8TaETNfV2tUkpT-f2iVWoq2I0&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=XHP2NdViOxycRC8TaETNfV2tUkpT-f2iVWoq2I0&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-|       27291 |       352960 | 2025-12-10 15:18:11 | https://gwdconceptspzoo.sjv.io/c/352960/2145550/27291?&subId1=23xcoxszwebx54590xd7e73a46ba0e54f6&svlink=11946508                                                                                                                                                | https://displate.com?irclickid=yzY0GcViDxycT6jw94xIX3TbUkpT-AzQuwHnS00&utm_source=impact&utm_medium=affiliate&utm_campaign=352960&utm_term=yzY0GcViDxycT6jw94xIX3TbUkpT-AzQuwHnS00&utm_id=US&irgwc=1&afsrc=1     | ʘ             | ʘ         |
-+-------------+--------------+---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------+
+SELECT *
+FROM core_role
+WHERE id IN (
+    SELECT core_role_id
+    FROM core_ap_role
+    WHERE core_ap_id = (
+        SELECT authorizationPrincipal_id
+        FROM iram_usership
+        WHERE account_user_id = (
+            SELECT id
+            FROM core_estaleauser
+            WHERE email = 'visiteralicante@gmail.com'
+        )
+        AND irAccount_id = 6737279
+    )
+);
+
+SELECT *
+FROM iram_account a
+JOIN core_account ca ON a.id = ca.id
+WHERE a.id = 6737279;
+
+
+SELECT *
+FROM iram_media_property
+WHERE iram_publisher_id = 6737279
+ORDER BY doe DESC;
 
