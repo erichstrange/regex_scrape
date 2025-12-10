@@ -1,29 +1,43 @@
--- VETTED: "Account Features"
-SELECT a.feature_key AS "Key",
-       a.name        AS "Feature Name"
-FROM iram_feature AS a
-JOIN iram_feature_auth_account_feature AS b
-  ON a.id = b.iram_feature_id
-JOIN iram_feature_auth_account AS c
-  ON c.id = b.iram_feature_auth_account_id
-WHERE iram_feature_auth_account_id IN (
-   SELECT iram_feature_auth_account_id
-   FROM iram_account AS d
-   JOIN core_account AS e ON d.id = e.id
-   WHERE d.id = 6737279  -- MP account id
-);
+SELECT
+  DISTINCT publisher_id
+FROM click_fact
+WHERE advertiser_id = 5725673
+  AND campaign_id  = 27291
+  AND event_datetime >= '2025-11-25'
+  AND event_datetime <  '2025-12-11'
+ORDER BY publisher_id;
 
 
--- VETTED: "Roles by User"
--- Replace account_user_id & irAccount_id with Charly's user id + 6737279
-SELECT *
-FROM core__role
-WHERE id IN (
-    SELECT core__role_id
-    FROM core__ap__role
-    WHERE core__ap__id = (
-        SELECT authorizationPrincipal_id
-        FROM iram__usership
-        WHERE irAccount_id    = 6737279
-    )
-);
+SELECT
+  campaign_id,
+  publisher_id,
+  event_datetime,
+  JSON_EXTRACT_STRING(json, 'inboundLink') AS tracking_link,
+  landing_page_url,
+  JSON_EXTRACT_STRING(json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(json, 'ruleName')     AS rule_name
+FROM click_fact
+WHERE advertiser_id = 5725673
+  AND campaign_id   = 27291
+  AND event_datetime >= '2025-11-25'
+  AND event_datetime <  '2025-12-11'
+ORDER BY event_datetime DESC
+LIMIT 500;
+
+SELECT
+  campaign_id,
+  publisher_id,
+  event_datetime,
+  JSON_EXTRACT_STRING(json, 'inboundLink') AS tracking_link,
+  landing_page_url,
+  JSON_EXTRACT_STRING(json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(json, 'ruleName')     AS rule_name
+FROM click_fact
+WHERE advertiser_id = 5725673
+  AND campaign_id   = 27291
+  AND JSON_EXTRACT_STRING(json, 'inboundLink') LIKE '%sjv.io%'
+  AND event_datetime >= '2025-11-25'
+  AND event_datetime <  '2025-12-11'
+ORDER BY event_datetime DESC
+LIMIT 500;
+
