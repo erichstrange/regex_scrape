@@ -1,17 +1,17 @@
--- Active publishers joined to this advertiser (Revzilla)
-SELECT DISTINCT 
-  ap.iram_publisher_id,
-  ca.taxclass,
-  ca.organizationname
-FROM iram_advertiser_publisher AS ap
-INNER JOIN iram.core_account AS ca
-  ON ap.iram_publisher_id = ca.id 
-INNER JOIN iram.iram_account AS ia
-  ON ap.iram_publisher_id = ia.id
-WHERE ap.iram_advertiser_id = <ADV_ID>
-  AND ap.date_expired IS NULL 
-  AND ca.state = 'ACTIVE'
-  AND ca.taxclass IS NOT NULL
-  AND ca.taxclass <> ' '
-  AND ia.state = 'ACTIVE'
-ORDER BY organizationname;
+/* DRAFT – cross-schema join test between iram and ircm
+   Datasource: r_ds_singlestore
+*/
+
+SELECT
+    ap.iram_account_id,
+    ap.ircm_campaign_id,
+    c.campaign_name            AS campaign_name,
+    c.ircm_campaign_id         AS ircm_campaign_id
+FROM
+    iram_advertiser_publisher ap
+JOIN
+    ircm_campaign c
+      ON c.ircm_campaign_id = ap.ircm_campaign_id
+WHERE
+    ap.iram_account_id = [[ACCOUNT_ID]]
+LIMIT 50;
