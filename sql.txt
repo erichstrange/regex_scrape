@@ -1,5 +1,24 @@
-SELECT * 
-FROM irbase_postback_config
-WHERE iram_account_id = {PublisherId}
-  AND ircm_campaign_id = {AdvProgramId}
--- ds iraction_general
+SELECT action_id,
+       oid,
+       campaign_id,
+       ircm_terms_id,
+       payout_trace,
+       sku,
+       ircm_category_list_id,
+       doe
+FROM irac_action2
+WHERE campaign_id = 30258
+  AND oid IN ('103541','108942','339429')
+ORDER BY oid, doe;
+
+
+SELECT *
+FROM irac_test_action
+WHERE program_id = 30258
+  AND oid IN ('103541','108942','339429');
+
+
+SELECT *
+FROM ir_noreferrer_event
+WHERE campaign_id = 30258
+  AND oid IN ('103541','108942','339429');
