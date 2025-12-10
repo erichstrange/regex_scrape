@@ -15,7 +15,8 @@ WHERE advertiser_id = 5725673
   AND event_datetime <  '2025-12-11'
 ORDER BY event_datetime DESC
 LIMIT 500;
-
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
 
 
 SELECT
@@ -34,4 +35,5 @@ WHERE advertiser_id = 5725673
   AND event_datetime <  '2025-12-11'
 ORDER BY event_datetime DESC
 LIMIT 500;
-
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
+The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.; nested exception is java.sql.SQLException: The query has reached the timeout set for this connection's resource pool. See https://docs.singlestore.com/docs/setting-resource-limits/ for more information.
