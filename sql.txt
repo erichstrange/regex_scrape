@@ -24,6 +24,8 @@ WHERE advertiser_id = 5725673
 ORDER BY event_datetime DESC
 LIMIT 500;
 
+
+
 SELECT
   campaign_id,
   publisher_id,
