@@ -1,3 +1,20 @@
+-- DRAFT – Daily conversion counts for Quest API sales
+-- DS: iraction_sharded
+
+SELECT
+  DATE(doe) AS action_date,
+  COUNT(DISTINCT action_id) AS actions
+FROM irac_action2
+WHERE campaign_id = 17024
+  AND doe >= DATEADD(day, -90, CURRENT_DATE)
+GROUP BY DATE(doe)
+ORDER BY action_date;
+
+
+
+
+
+
 -- DS: r_ds_iraction_general
 -- Check if a specific test OID exists as a test action
 SELECT *
