@@ -4,3 +4,8 @@ WHERE event_datetime >= '2025-10-15'
   AND event_datetime <  '2025-12-15'
   AND click_id LIKE 'Ve:2uJ3Jixy%'
 LIMIT 50;
+
+SELECT click_id, event_datetime, classification, publisher_id, campaign_id
+FROM click_fact
+WHERE click_id = 'Ve:2uJ3JixyNRSFzqLxs:QD7UkpRoO2IMxehzY0'
+LIMIT 10;
