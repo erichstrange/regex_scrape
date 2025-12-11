@@ -1,15 +1,5 @@
 SELECT click_id, event_datetime, classification, publisher_id, campaign_id
 FROM click_fact
-WHERE campaign_id = 37552
-  AND click_id IN (
-    'XrPzKmX7DxyKWXwRYR3BuWUgUkpTKbVP8Wkv3I0',
-    'Ve:2uJ3JixyNRSFzqLxs:QD7UkpRoO2IMxehzY0',
-    '3mZTqMwZixycTpUWo7SW8V1zUkpRkpRJu3wUUY0'
-  )
-ORDER BY event_datetime;
-+-----------------------------------------+---------------------+----------------+--------------+-------------+
-| click_id                                | event_datetime      | classification | publisher_id | campaign_id |
-+-----------------------------------------+---------------------+----------------+--------------+-------------+
-| 3mZTqMwZixycTpUWo7SW8V1zUkpRkpRJu3wUUY0 | 2025-11-07 15:47:38 | U              |        36345 |       37552 |
-| XrPzKmX7DxyKWXwRYR3BuWUgUkpTKbVP8Wkv3I0 | 2025-12-07 20:43:07 | U              |        36345 |       37552 |
-+-----------------------------------------+---------------------+----------------+--------------+-------------+
+WHERE click_id LIKE 'Ve:2uJ3Jixy%'
+ORDER BY event_datetime DESC
+LIMIT 50;
