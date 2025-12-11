@@ -1,184 +1,59 @@
+-- DRAFT: sample recent Online Leads for Paychex and see if customer_id is populated
+-- DataSource: r_ds_iraction_sharded
 SELECT
-    u.account_user_id,
-    u.irAccount_Id      AS account_id,
-    ce.username,
-    ce.email,
-    ce.firstname,
-    ce.lastname,
-    u.state,
-    ce.lastlogin_date
-FROM iram_usership u
-JOIN core_estaleauser ce
-  ON u.account_user_id = ce.id
-WHERE u.irAccount_Id = 6737279
-  AND ce.email = 'visiteralicante@gmail.com';
-
-  +-----------------+------------+---------------------------+---------------------------+-------------------+----------+--------+---------------------+
-| account_user_id | account_id | username                  | email                     | firstname         | lastname | state  | lastlogin_date      |
-+-----------------+------------+---------------------------+---------------------------+-------------------+----------+--------+---------------------+
-|         7471490 |    6737279 | visiteralicante@gmail.com | visiteralicante@gmail.com | Charly Christophe | Bedouet  | ACTIVE | 2025-12-09 19:19:03 |
-+-----------------+------------+---------------------------+---------------------------+-------------------+----------+--------+---------------------+
+  action_date,
+  doe,
+  oid,
+  customer_id,
+  action_tracker_id
+FROM irac_action2
+WHERE campaign_id = 16636         -- Paychex
+  AND action_tracker_id = 31842   -- Online Lead
+  AND action_date >= '2025-12-08' -- adjust date to "since they deployed fix"
+ORDER BY doe DESC
+LIMIT 200;
 
 
-SELECT *
-FROM core_role
-WHERE id IN (
-    SELECT core_role_id
-    FROM core_ap_role
-    WHERE core_ap_id = (
-        SELECT authorizationPrincipal_id
-        FROM iram_usership
-        WHERE account_user_id = (
-            SELECT id
-            FROM core_estaleauser
-            WHERE email = 'visiteralicante@gmail.com'
-        )
-        AND irAccount_id = 6737279
-    )
-);
-
-+----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-| id | iram_account_id | permissionType | name                   | description            | userType_id | doe                 | dlu                 | uoe | ulu | archived | version |
-+----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-|  3 |               1 | SYSTEM         | Publisher System Role  | Publisher System Role  |           3 | 2009-07-20 17:22:11 | 2009-07-20 17:22:11 | ʘ   | ʘ   | false    |       0 |
-| 64 |               1 | ACCESS_RIGHT   | Messaging              | Messaging              |           3 | 2022-03-25 12:55:00 | 2022-03-25 12:55:00 | ʘ   | ʘ   | false    |       0 |
-| 12 |               1 | ACCESS_RIGHT   | Account Administration | Account Administration |           3 | 2009-07-20 17:22:37 | 2009-07-20 17:22:37 | ʘ   | ʘ   | false    |       ʘ |
-| 15 |               1 | ACCESS_RIGHT   | Technical              | Technical              |           3 | 2009-07-20 17:22:43 | 2009-07-20 17:22:43 | ʘ   | ʘ   | false    |       ʘ |
-| 13 |               1 | ACCESS_RIGHT   | Advertiser Management  | Advertiser Management  |           3 | 2009-07-20 17:22:39 | 2009-07-20 17:22:39 | ʘ   | ʘ   | false    |       ʘ |
-| 14 |               1 | ACCESS_RIGHT   | Finance                | Finance                |           3 | 2009-07-20 17:22:41 | 2009-07-20 17:22:41 | ʘ   | ʘ   | false    |       ʘ |
-| 16 |               1 | ACCESS_RIGHT   | Creative Management    | Creative Management    |           3 | 2009-07-20 17:22:44 | 2009-07-20 17:22:44 | ʘ   | ʘ   | false    |       ʘ |
-+----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-
-SELECT *
-FROM iram_account a
-JOIN core_account ca ON a.id = ca.id
-WHERE a.id = 6737279;
-
-*************************** 1. row ***************************
-                                                    id: 6737279
-                                                  uuid: A6737279-60ac-43b1-ae86-2c20f76d37061
-                                                 state: ACTIVE
-                                partner_approval_state: ACTIVE
-                                 rejection_reason_type: ʘ
-                                      rejection_reason: ʘ
-                                             type_desc: PUBLISHER
-                                   phoneNumber_country: SPAIN
-                            phoneNumber_domesticNumber: 617923294
-                                 phoneNumber_MinRating: 1
-                                    phoneNumber_Hidden: false
-                                     secondary_country: ʘ
-                              secondary_domesticNumber: ʘ
-                                             ir_rating: 1.9
-                                      date_last_scored: 2025-12-02 21:30:00
-                                           description: Je suis créateur de contenu spécialisé dans le voyage, le tourisme local et le style de vie en Espagne, principalement dans la région d’Alicante.
-Mon objectif est de partager des recommandations utiles et authentiques avec ma communauté : idées d’activités, lieux à découvrir, expériences, services et produits liés au voyage.
-
-Je publie régulièrement du contenu sur mon site et mes réseaux sociaux : guides pratiques, conseils, photos, vidéos et avis.
-Je souhaite collaborer avec des marques qui correspondent aux besoins de mon audience et qui proposent des produits ou services de qualité afin d’apporter une réelle valeur à mes abonnés.
-                                          year_founded:
-                                            promo_code: ʘ
-                           country_business_registered: ʘ
-                                vat_registered_country: ʘ
-                             parent_funding_account_id: ʘ
-                                          brand_loaded: false
-                             branded_signup_account_id: ʘ
-                    original_branded_signup_account_id: 224723
-                            branded_signup_campaign_id: ʘ
-                   original_branded_signup_campaign_id: ʘ
-                                           approved_by: ʘ
-                                          approve_date: 2025-12-02 13:32:01
-                                           reject_date: ʘ
-                                   partner_reject_date: ʘ
-                                          suspend_date: ʘ
-                                       deactivate_date: ʘ
-                              deactivation_reason_type: ʘ
-                                   deactivation_reason: ʘ
-                                            close_date: ʘ
-                                 disable_join_platform: false
-                                        is_blacklisted: false
-                                               is_test: false
-                                            risk_level: YELLOW
-                                         general_notes: ʘ
-                                             seo_alias: visiteralicante-at-gmailcom
-                                                ipaddr: 34.86.161.99
-                               platform_terms_accepted: true
-                        platform_terms_accepted_signer: Charly ChristopheBedouet
-                          internal_business_review_url: ʘ
-                       operational_business_review_url: ʘ
-                                  strategic_review_url: ʘ
-                                           zendesk_url: ʘ
-                         require_device_authentication: false
-           require_partner_funds_transfer_verification: false
-  partner_funds_transfer_verification_threshold_amount: ʘ
-partner_funds_transfer_verification_threshold_currency: ʘ
-                              prevent_recent_passwords: false
-                             recent_passwords_to_check: ʘ
-                              require_password_updates: false
-                                    password_life_time: ʘ
-                          iram_feature_auth_account_id: 6004005
-                                         account_level: ʘ
-                                          idp_metadata: ʘ
-                                        peer_entity_id: ʘ
-                                         idp_param_key: ʘ
-                                              idp_name: ʘ
-                                                   doe: 2025-11-28 12:36:39
-                                                   dlu: 2025-12-02 21:30:00
-                                                   uoe: visiteralicante@gmail.com
-                                                   ulu: estalea.ir.am.account.job.StarRatingSyncJob[app-22.gcp.inf-impact.net:13680]
-                                core_estaleanetwork_id: 1
-                                              archived: false
-                                               version: 13
-                                        manual_suspend: ʘ
-                                 manual_suspend_reason: ʘ
-                                          linkedin_url: ʘ
-                                      auto_review_date: 2025-12-02 13:32:01
-                             auto_review_evaluation_id: 1f0cf834-4c48-62fd-ab75-83aeff3f7975
-                              auto_review_result_state: APPROVED
-                          manual_review_override_state: ʘ
-                                      pca_result_state: ʘ
-                                                    id: 6737279
-                                core_estaleanetwork_id: 1
-                                                 taxid: ʘ
-                                      tax_id_encrypted: ʘ
-                                              taxclass: NONP_GOV
-                                      organizationname: visiteralicante@gmail.com
-                                             faxnumber: ʘ
-                                                  type: PUBLISHER
-                                                   url: https://visiteralicante.com/
-                                                 state: ACTIVE
-                                       core_content_id: 2235968
-                                   core_preferences_id: ʘ
-                                                 refid: rtas-1f0cf834-4c48-62fd-ab75-83aeff3f7975-APPROVED
-                                           affiliateid: ʘ
-                                       activation_date: 2025-11-28 12:36:40
-                                               country: SPAIN
-                                country_vat_registered: ʘ
-                                              currency: EUR
-                                              timezone: Europe/Amsterdam
-                                       language_locale: en_ES
-                                         format_locale: en_ES
-                                       datetimepattern: MMM d, yyyy HH:mm:ss
-                                 year_min_date_pattern: MMM d, yyyy HH:mm
-                                 year_day_date_pattern: MMM d, yyyy
-                                month_day_date_pattern: MMM d
-                               year_month_date_pattern: MMM, yyyy
-                                 hour_min_date_pattern: HH:mm
-                                              sourceid: ʘ
-                                        promotion_code: ʘ
-                                                   doe: 2025-11-28 12:36:39
-                                                   dlu: 2025-12-02 16:50:12
-                                                   ulu: visiteralicante@gmail.com
-                                                   uoe: visiteralicante@gmail.com
+-- DRAFT: for recent children, see if there is a matching 31842 parent by customer_id
+-- DataSource: r_ds_iraction_sharded
+SELECT
+  child.action_date        AS child_date,
+  child.doe                AS child_doe,
+  child.oid                AS child_oid,
+  child.action_tracker_id  AS child_tracker,
+  child.customer_id,
+  parent.action_date       AS parent_date,
+  parent.doe               AS parent_doe,
+  parent.oid               AS parent_oid
+FROM irac_action2 child
+LEFT JOIN irac_action2 parent
+  ON parent.campaign_id = child.campaign_id
+ AND parent.action_tracker_id = 31842     -- Online Lead
+ AND parent.customer_id = child.customer_id
+WHERE child.campaign_id = 16636
+  AND child.action_tracker_id IN (31843, 31844)   -- Qualified / Recycles
+  AND child.action_date >= '2025-12-08'           -- adjust as needed
+ORDER BY child.doe DESC
+LIMIT 200;
 
 
-SELECT *
-FROM iram_media_property
-WHERE iram_publisher_id = 6737279
-ORDER BY doe DESC;
+-- DRAFT: find recent events whose landing_page_url is the dev LP
+-- Likely DataSource: r_ds_iraction_sharded (same family as ir_correlated_event usage in vetted queries)
+SELECT
+  oid,
+  campaign_id,
+  event_date,
+  landing_page_url
+FROM ir_correlated_event
+WHERE campaign_id = 16636
+  AND event_date >= '2025-12-08'        -- adjust window
+  AND landing_page_url LIKE '%hefmart-paychex.pantheonsite.io%'
+ORDER BY event_date DESC
+LIMIT 200;
 
-+---------+-------------------+-----------------------------+-----------+-------------+-------------------------------------------+---------------------------------+-----------------+--------------+------------------+----------+------------------+----------+--------------+----------------+--------------------+----------------+---------------------------+---------------------+---------------------+---------------------------+---------------------------+------------------------+----------+---------+-----------+-----------------+-----------------+----------------+---------------------+------------+-----------------+----------------+-------------------+-------------------+------------------------------------+--------------+----------------+-----------------------+---------------------+---------------------------+---------------------------+-------------------------------+------------------+---------------------+---------------------------+-------------------------+-------------------+--------------------------------------+
-|      id | iram_publisher_id | property_type_discriminator | name      | description | url                                       | core_content_id_thumbnail_image | monthly_uniques | alexa_rating | quantcast_rating | installs | app_store_rating | platform | price_amount | price_currency | ownership_verified | failure_reason | last_verification_attempt | doe                 | dlu                 | uoe                       | ulu                       | core_estaleanetwork_id | archived | version | followers | social_platform | social_handle   | follower_count | verification_status | is_primary | send_from_email | email_provider | mailing_list_size | mailing_list_desc | iram_media_property_subcategory_id | offline_type | consumer_reach | verify_ownership_desc | verification_method | verification_user         | verification_request_date | last_verification_review_date | last_reviewed_by | verification_date   | verification_review_notes | verify_ownership_reason | verification_code | token_registry_cred_id               |
-+---------+-------------------+-----------------------------+-----------+-------------+-------------------------------------------+---------------------------------+-----------------+--------------+------------------+----------+------------------+----------+--------------+----------------+--------------------+----------------+---------------------------+---------------------+---------------------+---------------------------+---------------------------+------------------------+----------+---------+-----------+-----------------+-----------------+----------------+---------------------+------------+-----------------+----------------+-------------------+-------------------+------------------------------------+--------------+----------------+-----------------------+---------------------+---------------------------+---------------------------+-------------------------------+------------------+---------------------+---------------------------+-------------------------+-------------------+--------------------------------------+
-| 7721916 |           6737279 | SOCIAL                      | FACEBOOK  | SOCIAL      | https://www.facebook.com/100981118248736  |                               ʘ |               ʘ |            ʘ |                ʘ | ʘ        | ʘ                | ʘ        |            ʘ | ʘ              | true               | ʘ              | ʘ                         | 2025-12-02 13:31:27 | 2025-12-02 13:31:27 | visiteralicante@gmail.com | visiteralicante@gmail.com |                      1 | false    |       0 | ʘ         | FACEBOOK        | ʘ               |           1660 | VERIFIED            | false      | ʘ               | ʘ              |                 ʘ | ʘ                 |                                  ʘ | ʘ            |              ʘ | ʘ                     | OAUTH               | visiteralicante@gmail.com | ʘ                         | ʘ                             | ʘ                | 2025-12-02 13:31:27 | ʘ                         | ʘ                       | ʘ                 | 47cb1b53-2ee9-49c2-aacf-2b013c662d54 |
-| 7706836 |           6737279 | SOCIAL                      | INSTAGRAM | SOCIAL      | https://www.instagram.com/visiteralicante |                               ʘ |               ʘ |            ʘ |                ʘ | ʘ        | ʘ                | ʘ        |            ʘ | ʘ              | true               | ʘ              | ʘ                         | 2025-11-28 12:38:43 | 2025-12-01 16:35:01 | visiteralicante@gmail.com | visiteralicante@gmail.com |                      1 | true     |       1 | HUNDRED   | INSTAGRAM       | visiteralicante |             73 | VERIFIED            | false      | ʘ               | ʘ              |                 ʘ | ʘ                 |                                  ʘ | ʘ            |              ʘ | ʘ                     | OAUTH               | visiteralicante@gmail.com | ʘ                         | ʘ                             | ʘ                | 2025-11-28 12:38:43 | ʘ                         | ʘ                       | ʘ                 | 2622ef79-c21d-42cf-9ca5-7cfc2757dee9 |
-+---------+-------------------+-----------------------------+-----------+-------------+-------------------------------------------+---------------------------------+-----------------+--------------+------------------+----------+------------------+----------+--------------+----------------+--------------------+----------------+---------------------------+---------------------+---------------------+---------------------------+---------------------------+------------------------+----------+---------+-----------+-----------------+-----------------+----------------+---------------------+------------+-----------------+----------------+-------------------+-------------------+------------------------------------+--------------+----------------+-----------------------+---------------------+---------------------------+---------------------------+-------------------------------+------------------+---------------------+---------------------------+-------------------------+-------------------+--------------------------------------+
+
+-- VETTED pattern – failed events
+SELECT * FROM ir_noreferrer_event
+WHERE oid = '<dev_oid_from_above>'
+  AND campaign_id = 16636;
+-- DataSource: r_ds_iraction_sharded
