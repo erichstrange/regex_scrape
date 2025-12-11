@@ -16,3 +16,26 @@ WHERE cf.event_datetime BETWEEN current_date - interval 7 day AND current_date
   AND classification in ('D','E','U','B')
 GROUP BY 1
 ORDER BY total_clicks DESC;
+
+
+SELECT
+  cf.click_id,
+  cf.event_datetime,
+  cf.campaign_id,
+  cf.advertiser_id,
+  cf.publisher_id,
+  cf.classification,
+  cf.data,
+  dlu
+FROM click_fact cf
+WHERE cf.event_datetime BETWEEN CURRENT_DATE - INTERVAL 1 DAY AND CURRENT_DATE
+  AND cf.advertiser_id = 6208189
+  AND cf.publisher_id = 42181
+  AND cf.campaign_id = 27212;
+
+
+SELECT a.iram_advertiser_id, a.iram_advertiser_name, c.ircm_campaign_id, c.ircm_campaign_name, b.action, b.rule_name, b.rule_json, b.doe, b.dlu
+FROM ircm_blockredirect b
+JOIN iram_advertiser a ON b.ircm_advertiser_id = a.iram_advertiser_id
+JOIN ircm_campaign c ON b.ircm_campaign_id = c.ircm_campaign_id
+WHERE b.action = 'EXCLUDE';
