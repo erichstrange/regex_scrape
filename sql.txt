@@ -6,7 +6,7 @@ SELECT
   SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END) AS bot_clicks,
   SUM(
     CASE
-      WHEN JSON_UNQUOTE(JSON_EXTRACT(cf.json, '$.orgdc')) = 'DATACENTER'
+      WHEN JSON_EXTRACT_STRING(cf.json, '$.orgdc') = 'DATACENTER'
       THEN 1 ELSE 0
     END
   ) AS datacenter_clicks
@@ -17,26 +17,82 @@ WHERE cf.event_datetime BETWEEN '2025-11-29' AND '2025-12-10'
   AND cf.campaign_id = 37552
 GROUP BY pd.publisher_name
 ORDER BY total_clicks DESC;
++----------------------------+--------------+------------------+-----------------+------------+-------------------+
+| publisher_name             | total_clicks | duplicate_clicks | excluded_clicks | bot_clicks | datacenter_clicks |
++----------------------------+--------------+------------------+-----------------+------------+-------------------+
+| Sovrn Commerce             |      4403665 |           982065 |          136535 |          0 |                 0 |
+| TechnologyAdvice LLC - FSB |       215514 |             4912 |          172534 |          0 |                 0 |
+| Paved                      |       136620 |             7510 |           87180 |          0 |                 0 |
+| Linkbux                    |        16432 |               48 |            5120 |          0 |                 0 |
+| RetailMeNot.com            |         5248 |              160 |            4128 |          0 |                 0 |
+| Hello Alice                |         1090 |               20 |             660 |          0 |                 0 |
+| Half Baked                 |          894 |               48 |             171 |          0 |                 0 |
+| Linkby Inc                 |          720 |               16 |             336 |          0 |                 0 |
+| CNET Media Inc.            |          506 |               22 |             242 |          0 |                 0 |
+| BusinessLoans.com          |          255 |               40 |              10 |          0 |                 0 |
+| Groupon, Inc               |          184 |                0 |             138 |          0 |                 0 |
+| Skimbit Ltd.               |           74 |                0 |               0 |          0 |                 0 |
+| Entrepreneur Media         |           66 |                0 |              18 |          0 |                 0 |
+| Christian Smith            |           65 |                0 |              30 |          0 |                 0 |
+| Brad's Deals LLC.          |           27 |                0 |               0 |          0 |                 0 |
+| TLDR Media                 |           24 |                0 |              20 |          0 |                 0 |
+| Business Insider.          |           23 |                0 |               0 |          0 |                 0 |
+| VentureBeat                |           20 |                0 |              15 |          0 |                 0 |
++----------------------------+--------------+------------------+-----------------+------------+-------------------+
+
 
 
 SELECT
   cf.click_id,
   cf.event_datetime,
   cf.classification,
-  JSON_UNQUOTE(JSON_EXTRACT(cf.json, '$.orgdc')) AS orgdc
+  JSON_EXTRACT_STRING(cf.json, '$.orgdc') AS orgdc
 FROM click_fact cf
 WHERE cf.campaign_id = 37552
   AND cf.publisher_id = 36345
   AND cf.event_datetime BETWEEN '2025-11-29' AND '2025-12-10'
 ORDER BY cf.event_datetime;
++-----------------------------------------+---------------------+----------------+-------+
+| click_id                                | event_datetime      | classification | orgdc |
++-----------------------------------------+---------------------+----------------+-------+
+| XrPzKmX7DxyKWXwRYR3BuWUgUkpTKbVP8Wkv3I0 | 2025-12-07 20:43:07 | U              | ʘ     |
++-----------------------------------------+---------------------+----------------+-------+
 
 
 SELECT
   b.ircm_campaign_id,
-  b.rule_name,
   b.rule_json,
   b.action,
   b.doe,
   b.dlu
 FROM ircm_blockredirect b
 WHERE b.action = 'EXCLUDE';
++------------------+------------------------------------------------------------------+---------+---------------------+---------------------+
+| ircm_campaign_id | rule_json                                                        | action  | doe                 | dlu                 |
++------------------+------------------------------------------------------------------+---------+---------------------+---------------------+
+|            14792 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-02-17 16:59:05 | 2024-11-06 14:29:26 |
+|            15311 | [[{"variable":"MP_ID","operator":"EQUALS","value":"3261799"}]]   | EXCLUDE | 2023-02-28 19:40:33 | 2023-02-28 19:40:52 |
+|            12572 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-03-29 14:34:12 | 2024-11-06 14:29:26 |
+|             9928 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|             9993 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            11255 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14793 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14794 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14795 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14796 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14798 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14799 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            14800 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|            13476 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 14:41:29 | 2024-11-06 14:29:26 |
+|             4650 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-03 17:27:50 | 2024-11-06 14:29:26 |
+|             7445 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-05-26 14:21:56 | 2024-11-06 14:29:26 |
+|            12148 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-07-10 12:35:26 | 2024-11-06 14:29:26 |
+|             4205 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-08-31 17:04:12 | 2024-11-06 14:29:26 |
+|            11142 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2023-10-31 15:06:18 | 2024-11-06 14:29:26 |
+|            21614 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2024-02-22 15:18:14 | 2024-11-06 14:29:26 |
+|            11190 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2024-03-18 18:49:40 | 2024-11-06 14:29:26 |
+|             4014 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2024-04-02 19:22:37 | 2024-11-06 14:29:26 |
+|            11059 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2024-04-05 13:43:06 | 2024-11-06 14:29:26 |
+|            17910 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2024-04-11 15:11:40 | 2024-11-06 14:29:26 |
+|            22744 | [[{"variable":"DATACENTER","operator":"EQUALS","value":"true"}]] | EXCLUDE | 2024-07-10 16:16:29 | 2024-11-06 14:29:26 |
++------------------+------------------------------------------------------------------+---------+---------------------+---------------------+
