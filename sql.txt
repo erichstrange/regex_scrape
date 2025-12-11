@@ -1,41 +1,42 @@
 SELECT
   pd.publisher_name,
-  count(*) as total_clicks,
-  sum(case when classification = 'D' then 1 else 0 end) as duplicate_clicks,
-  sum(case when classification = 'E' then 1 else 0 end) as excluded_clicks,
-  sum(case when JSON_UNQUOTE(JSON_EXTRACT(cf.data, '$.orgdc')) = 'DATACENTER' then 1 else 0 end) as datacenter_clicks,
-  sum(case when classification = 'B' then 1 else 0 end) as bot_clicks,
-  ROUND((duplicate_clicks / total_clicks) * 100, 2) AS percent_duplicate_clicks,
-  ROUND((excluded_clicks / total_clicks) * 100, 2) AS percent_excluded_clicks,
-  ROUND((datacenter_clicks / total_clicks) * 100, 2) AS percent_datacenter_clicks,
-  ROUND((bot_clicks / total_clicks) * 100, 2) AS percent_bot_clicks
+  COUNT(*) AS total_clicks,
+  SUM(CASE WHEN cf.classification = 'D' THEN 1 ELSE 0 END) AS duplicate_clicks,
+  SUM(CASE WHEN cf.classification = 'E' THEN 1 ELSE 0 END) AS excluded_clicks,
+  SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END) AS bot_clicks,
+  SUM(
+    CASE
+      WHEN JSON_UNQUOTE(JSON_EXTRACT(cf.json, '$.orgdc')) = 'DATACENTER'
+      THEN 1 ELSE 0
+    END
+  ) AS datacenter_clicks
 FROM click_fact cf
-JOIN publisher_dim pd ON cf.publisher_id = pd.publisher_id
-WHERE cf.event_datetime BETWEEN current_date - interval 7 day AND current_date
-  AND cf.campaign_id IN (56738)
-  AND classification in ('D','E','U','B')
-GROUP BY 1
+JOIN publisher_dim pd
+  ON cf.publisher_id = pd.publisher_id
+WHERE cf.event_datetime BETWEEN '2025-11-29' AND '2025-12-10'
+  AND cf.campaign_id = 37552
+GROUP BY pd.publisher_name
 ORDER BY total_clicks DESC;
 
 
 SELECT
   cf.click_id,
   cf.event_datetime,
-  cf.campaign_id,
-  cf.advertiser_id,
-  cf.publisher_id,
   cf.classification,
-  cf.data,
-  dlu
+  JSON_UNQUOTE(JSON_EXTRACT(cf.json, '$.orgdc')) AS orgdc
 FROM click_fact cf
-WHERE cf.event_datetime BETWEEN CURRENT_DATE - INTERVAL 1 DAY AND CURRENT_DATE
-  AND cf.advertiser_id = 6208189
-  AND cf.publisher_id = 42181
-  AND cf.campaign_id = 27212;
+WHERE cf.campaign_id = 37552
+  AND cf.publisher_id = 36345
+  AND cf.event_datetime BETWEEN '2025-11-29' AND '2025-12-10'
+ORDER BY cf.event_datetime;
 
 
-SELECT a.iram_advertiser_id, a.iram_advertiser_name, c.ircm_campaign_id, c.ircm_campaign_name, b.action, b.rule_name, b.rule_json, b.doe, b.dlu
+SELECT
+  b.ircm_campaign_id,
+  b.rule_name,
+  b.rule_json,
+  b.action,
+  b.doe,
+  b.dlu
 FROM ircm_blockredirect b
-JOIN iram_advertiser a ON b.ircm_advertiser_id = a.iram_advertiser_id
-JOIN ircm_campaign c ON b.ircm_campaign_id = c.ircm_campaign_id
 WHERE b.action = 'EXCLUDE';
