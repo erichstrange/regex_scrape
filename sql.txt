@@ -1,11 +1,22 @@
-SELECT click_id, event_datetime, classification, publisher_id, campaign_id
-FROM click_fact
-WHERE event_datetime >= '2025-10-15'
-  AND event_datetime <  '2025-12-15'
-  AND click_id LIKE 'Ve:2uJ3Jixy%'
-LIMIT 50;
-
-SELECT click_id, event_datetime, classification, publisher_id, campaign_id
-FROM click_fact
-WHERE click_id = 'Ve:2uJ3JixyNRSFzqLxs:QD7UkpRoO2IMxehzY0'
-LIMIT 10;
+SELECT
+  cf.campaign_id,
+  cf.publisher_id,
+  pd.publisher_name,
+  SUM(CASE WHEN cf.classification = 'D' THEN 1 ELSE 0 END) AS duplicate_clicks,
+  SUM(CASE WHEN cf.classification = 'E' THEN 1 ELSE 0 END) AS excluded_clicks,
+  SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0)) AS datacenter_clicks,
+  SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END) AS bot_clicks,
+  COUNT(*) AS total_clicks,
+  ROUND((SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0))/COUNT(*))*100,2) AS datacenter_perc,
+  ROUND((SUM(CASE WHEN cf.classification = 'D' THEN 1 ELSE 0 END)/COUNT(*))*100,2) AS duplicate_perc,
+  ROUND((SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END)/COUNT(*))*100,2) AS bot_perc
+FROM click_fact cf
+JOIN publisher_dim pd
+  ON pd.publisher_id = cf.publisher_id
+  AND pd.publisher_type = 'PUBLISHER'
+WHERE cf.campaign_id = 37552
+  AND cf.event_datetime >= '2025-11-29'
+  AND cf.event_datetime <  '2025-12-11'
+  AND cf.classification IN ('D','E','U','B')
+GROUP BY 1,2,3
+ORDER BY total_clicks DESC;
