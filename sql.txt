@@ -1,22 +1,23 @@
-SELECT
-  cf.campaign_id,
-  cf.publisher_id,
-  pd.publisher_name,
-  SUM(CASE WHEN cf.classification = 'D' THEN 1 ELSE 0 END) AS duplicate_clicks,
-  SUM(CASE WHEN cf.classification = 'E' THEN 1 ELSE 0 END) AS excluded_clicks,
-  SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0)) AS datacenter_clicks,
-  SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END) AS bot_clicks,
-  COUNT(*) AS total_clicks,
-  ROUND((SUM(IFNULL(JSON_EXTRACT_BIGINT(cf.json,'orgdc'),0))/COUNT(*))*100,2) AS datacenter_perc,
-  ROUND((SUM(CASE WHEN cf.classification = 'D' THEN 1 ELSE 0 END)/COUNT(*))*100,2) AS duplicate_perc,
-  ROUND((SUM(CASE WHEN cf.classification = 'B' THEN 1 ELSE 0 END)/COUNT(*))*100,2) AS bot_perc
-FROM click_fact cf
-JOIN publisher_dim pd
-  ON pd.publisher_id = cf.publisher_id
-  AND pd.publisher_type = 'PUBLISHER'
-WHERE cf.campaign_id = 37552
-  AND cf.event_datetime >= '2025-11-29'
-  AND cf.event_datetime <  '2025-12-11'
-  AND cf.classification IN ('D','E','U','B')
-GROUP BY 1,2,3
-ORDER BY total_clicks DESC;
+SELECT *
+FROM irbase_postback_config
+WHERE iram_account_id = 3830263;
+
+
+
+SELECT C.iram_advertiser_id,
+       M.ircm_campaign_id,
+       C.name AS "campaign_name",
+       M.id AS "tracker_id",
+       M.name AS "tracker_name",
+       M.codes,
+       M.state,
+       M.trackerType,
+       M.is_parent,
+       M.method,
+       M.activation_date,
+       M.deactivation_date
+FROM ircm_actiontracker AS M
+LEFT JOIN ircm_campaign AS C
+ON M.ircm_campaign_id = C.id
+WHERE M.state = 'ACTIVE'
+AND M.ircm_campaign_id in (41441);
