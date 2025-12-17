@@ -1,9 +1,43 @@
+select id
+from finance_account
+where account_id = 3245306;
+
 select
-  id, state, debit_amount, debit_amount_currency,
+  id, state,
+  debit_amount, debit_amount_currency,
+  credit_amount, credit_amount_currency,
   due_date, charge_date, link_date,
-  description, reference, buyer_finance_account_id, doe
+  description, reference,
+  seller_finance_account_id, buyer_finance_account_id,
+  doe, dlu
 from finance_invoice
-where seller_finance_account_id = 2198017
-  and doe >= '2025-12-01'
-  and doe <  '2025-12-10'
-order by doe desc;
+where
+(
+  (seller_finance_account_id = 2198017 and buyer_finance_account_id = PARTNER_FIN_ID)
+  OR
+  (seller_finance_account_id = PARTNER_FIN_ID and buyer_finance_account_id = 2198017)
+)
+order by coalesce(charge_date, link_date, due_date, doe) desc
+limit 200;
+
+
+select
+  id, state,
+  debit_amount, debit_amount_currency,
+  credit_amount, credit_amount_currency,
+  due_date, charge_date, link_date,
+  description, reference,
+  seller_finance_account_id, buyer_finance_account_id,
+  doe, dlu
+from finance_invoice
+where
+(
+  (seller_finance_account_id = 2198017 and buyer_finance_account_id = PARTNER_FIN_ID)
+  OR
+  (seller_finance_account_id = PARTNER_FIN_ID and buyer_finance_account_id = 2198017)
+)
+and (
+  debit_amount in (5500, 11000)
+  or credit_amount in (5500, 11000)
+)
+order by coalesce(charge_date, link_date, due_date, doe) desc;
