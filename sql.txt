@@ -1,12 +1,7 @@
--- BigQuery (datalake_irdwm): Confirm the advertiser exists in this project
-SELECT
-  advertiser_id,
-  advertiser_name,
-  network_id,
-  status,
-  date_from,
-  date_to
-FROM datalake_irdwm.advertiser_dim
-WHERE advertiser_id = 1207187
-ORDER BY date_from DESC
-LIMIT 25;
+SELECT finance_directdeposit.*
+FROM finance_directdeposit
+JOIN finance_account
+  ON finance_directdeposit.finance_account_id = finance_account.id
+WHERE finance_account.account_id = '2948050'
+  AND finance_directdeposit.doe >= '2024-01-01 00:00:00'
+ORDER BY finance_directdeposit.doe DESC;
