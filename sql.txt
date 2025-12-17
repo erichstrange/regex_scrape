@@ -5,3 +5,59 @@ JOIN finance_account
 WHERE finance_account.account_id = '2948050'
   AND finance_directdeposit.doe >= '2024-01-01 00:00:00'
 ORDER BY finance_directdeposit.doe DESC;
+
+
+Select *
+from iracct.finance_creditcard_transaction cc
+inner join finance_account fa
+  on cc.finance_account_id = fa.id
+Where fa.account_id = 2948050;
+
+
+select
+  id,
+  iram_account_id,
+  sequence_number,
+  date_generated
+from iracct.impactradius_invoice
+where iram_account_id = 2948050
+  and date_generated >= '2025-11-15'
+  and date_generated <  '2025-12-16'
+order by date_generated desc
+limit 200;
+
+
+select
+  header.sequence_number,
+  date(header.date_generated) as invoice_date_generated,
+  line.reference,
+  line.description,
+  line.activity_description,
+  line.net_amount,
+  line.net_amount_currency
+from iracct.impactradius_invoice_lineitem line
+inner join iracct.impactradius_invoice header
+  on header.id = line.iracct_impactradius_invoice_id
+where header.iram_account_id = 2948050
+  and line.net_amount in (5500, 11000)
+order by header.date_generated desc;
+
+
+select
+  header.sequence_number,
+  date(header.date_generated) as invoice_date_generated,
+  line.reference,
+  line.description,
+  line.activity_description,
+  line.net_amount,
+  line.net_amount_currency
+from iracct.impactradius_invoice_lineitem line
+inner join iracct.impactradius_invoice header
+  on header.id = line.iracct_impactradius_invoice_id
+where header.iram_account_id = 2948050
+  and (
+    line.reference like '%3245306%'
+    or line.description like '%3245306%'
+    or line.activity_description like '%3245306%'
+  )
+order by header.date_generated desc;
