@@ -1,13 +1,21 @@
 select id
 from finance_account
 where account_id = 2948050;
-
++---------+
+|      id |
++---------+
+| 2198017 |
++---------+
 
 select debit_amount, state, description, reference
 from finance_invoice
 where seller_finance_account_id = 2198017
   and reversal = 1
   and state = 'PENDING';
+  +--------------+-------+-------------+-----------+
+| debit_amount | state | description | reference |
++--------------+-------+-------------+-----------+
++--------------+-------+-------------+-----------+
 
 
 select
@@ -24,3 +32,5 @@ from iracct.iracctcampaign_mp_funds_transfer a
 inner join iracct.iracctcampaign_mp_funds_transfer_line b on a.iram_id=b.iram_id
 where iram_account_id=95671 and iram_sequence_number in (452119,455939,456765,457869)
 order by iram_sequence_number desc, b.iram_line_item_id desc
+Table 'iracct.iracctcampaign_mp_funds_transfer' doesn't exist
+Table 'iracct.iracctcampaign_mp_funds_transfer' doesn't exist; nested exception is java.sql.SQLSyntaxErrorException: Table 'iracct.iracctcampaign_mp_funds_transfer' doesn't exist
