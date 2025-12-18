@@ -1,16 +1,39 @@
-SELECT DISTINCT 
-  ap.iram_publisher_id,
-  ca.taxclass,
-  ca.organizationname
-FROM iram_advertiser_publisher as ap
-INNER JOIN iram.core_account as ca
-  ON ap.iram_publisher_id=ca.id 
-INNER JOIN iram.iram_account as ia
-  ON ap.iram_publisher_id=ia.id
-WHERE iram_advertiser_id=121062
-  AND ap.date_expired IS NULL 
-  AND ca.state="ACTIVE"
-  AND ca.taxclass IS NOT NULL
-  AND NOT ca.taxclass = " "
-  AND ia.state= "ACTIVE"
-ORDER BY organizationname;
+SELECT st.id               scheduled_term_id,
+       st.name             scheduled_term_name,
+       st.startdate        scheduled_term_startdate,
+       st.enddate          scheduled_term_enddate,
+       st.state            scheduled_term_state,
+       at.id               actiontracker_id,
+       at.name             actiontracker_name,
+       at.state            actiontracker_state,
+       ioterms.iotype      ioterm_iotype,
+       ioterms.state       ioterm_state
+FROM ircm_scheduled_terms st
+JOIN ircm_actiontracker at
+  ON at.id = st.ircm_actiontracker_id
+JOIN ircm_ioterms ioterms
+  ON ioterms.id = st.ircm_ioterms_id
+WHERE st.ircm_campaign_id = 5048
+ORDER BY st.startdate ASC;
+
+
+SELECT u.id, ce.username, ce.email, ce.state, ce.lastlogin_date
+FROM iram_usership u
+JOIN core_estaleauser ce ON u.account_user_id = ce.id
+WHERE u.irAccount_Id = "344628";
+
+
+SELECT a.login_username AS memberUsername, a.event_date AS loginDate, b.ip AS ipAddress, b.city AS city, b.country AS country
+FROM rti.rti_success_login_history a
+INNER JOIN rti.rti_login_ipaddr b ON b.id = a.rti_login_ipaddr_id
+WHERE a.account_id = 344628
+ORDER BY a.event_date DESC
+LIMIT 5000;
+
+
+select cr.id as role_id,cr.name as role_name,cr.description,cr.permissionType
+from core_role cr
+join core_authorization_principal cap on cap.core_role_id = cr.id
+where cap.userType_id = 0
+  and cap.account_user_id = <account_user_id_here>
+  and cap.irAccount_id = 344628;
