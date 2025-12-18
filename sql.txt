@@ -17,6 +17,8 @@ WHERE st.ircm_campaign_id = 5048
 ORDER BY st.startdate ASC;
 
 
+
+
 SELECT u.id, ce.username, ce.email, ce.state, ce.lastlogin_date
 FROM iram_usership u
 JOIN core_estaleauser ce ON u.account_user_id = ce.id
