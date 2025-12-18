@@ -1,109 +1,28 @@
-SELECT
-  id,
-  state,
-  debit_amount,
-  debit_amount_currency,
-  due_date,
-  charge_date,
-  link_date,
-  last_notified_date,
-  description,
-  reference,
-  parent_id,
-  doe,
-  dlu
-FROM finance_invoice
-WHERE seller_finance_account_id = 2198017
-  AND reference = '215785'
-ORDER BY id;
-+----------+---------+--------------+-----------------------+---------------------+-------------+---------------------+--------------------+------------------------------------------------------+-----------+-----------+---------------------+---------------------+
-|       id | state   | debit_amount | debit_amount_currency | due_date            | charge_date | link_date           | last_notified_date | description                                          | reference | parent_id | doe                 | dlu                 |
-+----------+---------+--------------+-----------------------+---------------------+-------------+---------------------+--------------------+------------------------------------------------------+-----------+-----------+---------------------+---------------------+
-| 14377524 | PENDING |         0.27 | USD                   | 2025-12-17 08:34:40 | ʘ           | 2025-12-17 08:34:40 | ʘ                  | Reverse Partial Payment of Impact Invoice 2948050-53 | 215785    |  13756639 | 2025-12-17 08:34:40 | 2025-12-17 08:34:40 |
-+----------+---------+--------------+-----------------------+---------------------+-------------+---------------------+--------------------+------------------------------------------------------+-----------+-----------+---------------------+---------------------+
+-- Datasource: iraction_sharded (irac_action2)
 
-SELECT
-  id,
-  state,
-  debit_amount,
-  debit_amount_currency,
-  credit_amount,
-  credit_amount_currency,
-  due_date,
-  charge_date,
-  description,
-  reference,
-  seller_finance_account_id,
-  buyer_finance_account_id,
-  doe,
-  dlu
-FROM finance_invoice
-WHERE
-(
-  seller_finance_account_id = 2198017
-  OR buyer_finance_account_id = 2198017
+select
+  action_id, action_date, action_type,
+  campaign_id, action_tracker_id, oid, publisher_id, ircm_terms_id,
+  payout_group_id, payout_trace,
+  ref_profile_id, ref_url, ref_domain,
+  pub_subid1, pub_subid2, pub_subid3, pub_subid4,
+  batch_id, metadata, ref_user_agent, adv_note, str1, str2, adj_reason,
+  adv_currency, cart_currency, raw_currency, pub_currency, contract_currency, agency_currency,
+  adv_saleamt, cart_saleamt, pub_saleamt,
+  sku, category, client_cost, item_json, order_json
+from irac_action2
+where action_id IN (
+  'M.41441.6559.1041781',
+  'M.41441.6559.1020032',
+  'M.41441.6559.1020434',
+  'M.41441.6559.923325',
+  'M.41441.6559.896141',
+  'M.41441.6559.896050',
+  'M.41441.6559.893916',
+  'M.41441.6559.874531',
+  'M.41441.6559.872318',
+  'M.41441.6559.863918',
+  'M.41441.6559.854898'
 )
-AND charge_date >= '2025-12-08'
-AND charge_date <  '2025-12-18'
-ORDER BY charge_date DESC, id DESC;
-+----------+---------+--------------+-----------------------+---------------+------------------------+---------------------+---------------------+------------------------------------------------------------------------+------------------------------------------------------------------------+---------------------------+--------------------------+---------------------+---------------------+
-|       id | state   | debit_amount | debit_amount_currency | credit_amount | credit_amount_currency | due_date            | charge_date         | description                                                            | reference                                                              | seller_finance_account_id | buyer_finance_account_id | doe                 | dlu                 |
-+----------+---------+--------------+-----------------------+---------------+------------------------+---------------------+---------------------+------------------------------------------------------------------------+------------------------------------------------------------------------+---------------------------+--------------------------+---------------------+---------------------+
-| 14377523 | CHARGED |         0.27 | USD                   |          0.27 | USD                    | 2025-12-17 08:34:40 | 2025-12-17 08:34:40 | Partial Payment of Impact Invoice 2948050-53                           | 215785                                                                 |                       100 |                  2198017 | 2025-12-17 08:34:40 | 2025-12-17 08:34:40 |
-| 14173732 | CHARGED |         4.00 | USD                   |          4.00 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:10 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(4363900) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(4363900) |                   3611065 |                  2198017 | 2025-12-01 16:17:31 | 2025-12-15 09:11:10 |
-| 14171668 | CHARGED |         0.60 | USD                   |          0.60 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:10 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(5798489) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(5798489) |                   5043503 |                  2198017 | 2025-12-01 15:54:08 | 2025-12-15 09:11:10 |
-| 14174009 | CHARGED |        48.50 | USD                   |         48.50 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:09 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2226425) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2226425) |                   1479564 |                  2198017 | 2025-12-01 16:18:26 | 2025-12-15 09:11:09 |
-| 14173898 | CHARGED |        28.50 | USD                   |         28.50 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:09 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2359971) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2359971) |                   1612390 |                  2198017 | 2025-12-01 16:18:03 | 2025-12-15 09:11:09 |
-| 14173970 | CHARGED |         0.45 | USD                   |          0.45 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2198566) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2198566) |                   5522380 |                  2198017 | 2025-12-01 16:18:18 | 2025-12-15 09:11:08 |
-| 14173958 | CHARGED |         5.05 | USD                   |          5.05 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3737165) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3737165) |                   5522380 |                  2198017 | 2025-12-01 16:18:14 | 2025-12-15 09:11:08 |
-| 14173785 | CHARGED |       867.18 | USD                   |        867.18 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3464845) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3464845) |                   2713510 |                  2198017 | 2025-12-01 16:17:43 | 2025-12-15 09:11:08 |
-| 14173749 | CHARGED |      1879.21 | USD                   |       1879.21 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(290866)  | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(290866)  |                    258861 |                  2198017 | 2025-12-01 16:17:34 | 2025-12-15 09:11:08 |
-| 14163411 | CHARGED |      2210.59 | USD                   |       2210.59 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(12869)   | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(12869)   |                     12618 |                  2198017 | 2025-12-01 11:07:39 | 2025-12-15 09:11:08 |
-| 14163374 | CHARGED |        67.08 | USD                   |         67.08 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(3464845) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(3464845) |                   2713510 |                  2198017 | 2025-12-01 11:07:31 | 2025-12-15 09:11:08 |
-| 14163354 | CHARGED |      1780.70 | USD                   |       1780.70 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(1301558) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(1301558) |                    566507 |                  2198017 | 2025-12-01 11:07:26 | 2025-12-15 09:11:08 |
-| 14158331 | CHARGED |       657.42 | USD                   |        657.42 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:08 | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(290866)  | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(290866)  |                    258861 |                  2198017 | 2025-12-01 09:50:54 | 2025-12-15 09:11:08 |
-| 14174001 | CHARGED |        78.40 | USD                   |         78.40 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(4409785) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(4409785) |                   5522380 |                  2198017 | 2025-12-01 16:18:24 | 2025-12-15 09:11:07 |
-| 14173987 | CHARGED |       225.73 | USD                   |        225.73 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3506978) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3506978) |                   5522380 |                  2198017 | 2025-12-01 16:18:22 | 2025-12-15 09:11:07 |
-| 14173918 | CHARGED |      3275.55 | USD                   |       3275.55 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(4179029) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(4179029) |                   3426523 |                  2198017 | 2025-12-01 16:18:06 | 2025-12-15 09:11:07 |
-| 14173809 | CHARGED |      3059.24 | USD                   |       3059.24 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3586222) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3586222) |                   2834647 |                  2198017 | 2025-12-01 16:17:47 | 2025-12-15 09:11:07 |
-| 14173752 | CHARGED |       571.00 | USD                   |        571.00 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2319786) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2319786) |                   5522380 |                  2198017 | 2025-12-01 16:17:36 | 2025-12-15 09:11:07 |
-| 14170999 | CHARGED |       104.60 | USD                   |        104.60 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(2757201) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(2757201) |                   5522380 |                  2198017 | 2025-12-01 15:07:54 | 2025-12-15 09:11:07 |
-| 14163380 | CHARGED |      1173.63 | USD                   |       1173.63 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(5104699) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(5104699) |                   5522380 |                  2198017 | 2025-12-01 11:07:33 | 2025-12-15 09:11:07 |
-| 14163360 | CHARGED |       846.00 | USD                   |        846.00 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:07 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(1237985) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(1237985) |                   5522380 |                  2198017 | 2025-12-01 11:07:28 | 2025-12-15 09:11:07 |
-| 14173982 | CHARGED |        17.50 | USD                   |         17.50 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3483000) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3483000) |                   4961203 |                  2198017 | 2025-12-01 16:18:20 | 2025-12-15 09:11:06 |
-| 14173965 | CHARGED |        12.50 | USD                   |         12.50 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(1961998) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(1961998) |                   4961203 |                  2198017 | 2025-12-01 16:18:15 | 2025-12-15 09:11:06 |
-| 14173875 | CHARGED |         8.25 | USD                   |          8.25 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2224525) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2224525) |                   4961203 |                  2198017 | 2025-12-01 16:17:59 | 2025-12-15 09:11:06 |
-| 14173775 | CHARGED |         1.05 | USD                   |          1.05 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(1414735) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(1414735) |                   4961203 |                  2198017 | 2025-12-01 16:17:41 | 2025-12-15 09:11:06 |
-| 14170436 | CHARGED |         7.25 | USD                   |          7.25 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(6306622) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(6306622) |                   4961203 |                  2198017 | 2025-12-01 15:06:03 | 2025-12-15 09:11:06 |
-| 14163291 | CHARGED |      3744.07 | USD                   |       3744.07 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(118767)  | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(118767)  |                    110552 |                  2198017 | 2025-12-01 11:06:52 | 2025-12-15 09:11:06 |
-| 14158417 | CHARGED |         4.55 | USD                   |          4.55 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(215803)  | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(215803)  |                   4961203 |                  2198017 | 2025-12-01 09:51:08 | 2025-12-15 09:11:06 |
-| 14158390 | CHARGED |        13.97 | USD                   |         13.97 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:06 | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(2549043) | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(2549043) |                   4961203 |                  2198017 | 2025-12-01 09:51:04 | 2025-12-15 09:11:06 |
-| 14174030 | CHARGED |        28.70 | USD                   |         28.70 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3004829) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3004829) |                   4961203 |                  2198017 | 2025-12-01 16:18:30 | 2025-12-15 09:11:05 |
-| 14172038 | CHARGED |       129.29 | USD                   |        129.29 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(6476617) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(6476617) |                   4961203 |                  2198017 | 2025-12-01 16:08:52 | 2025-12-15 09:11:05 |
-| 14169548 | CHARGED |       220.98 | USD                   |        220.98 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(4273520) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(4273520) |                   4961203 |                  2198017 | 2025-12-01 14:35:44 | 2025-12-15 09:11:05 |
-| 14169390 | CHARGED |        31.35 | USD                   |         31.35 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(385086)  | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(385086)  |                   4961203 |                  2198017 | 2025-12-01 14:34:21 | 2025-12-15 09:11:05 |
-| 14163518 | CHARGED |       521.45 | USD                   |        521.45 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(2197213) | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(2197213) |                   4961203 |                  2198017 | 2025-12-01 11:07:55 | 2025-12-15 09:11:05 |
-| 14163247 | CHARGED |       693.97 | USD                   |        693.97 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(123201)  | Advertiser Id(2948050) - CampaignId(14293) / Media partner Id(123201)  |                   4961203 |                  2198017 | 2025-12-01 11:06:27 | 2025-12-15 09:11:05 |
-| 14158341 | CHARGED |       328.95 | USD                   |        328.95 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:05 | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(1961998) | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(1961998) |                   4961203 |                  2198017 | 2025-12-01 09:50:57 | 2025-12-15 09:11:05 |
-| 14173955 | CHARGED |      7331.87 | USD                   |       7331.87 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(101044)  | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(101044)  |                     93367 |                  2198017 | 2025-12-01 16:18:14 | 2025-12-15 09:11:04 |
-| 14173954 | CHARGED |      1384.62 | USD                   |       1384.62 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(101044)  | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(101044)  |                     93367 |                  2198017 | 2025-12-01 16:18:13 | 2025-12-15 09:11:04 |
-| 14173896 | CHARGED |       829.00 | USD                   |        829.00 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3498774) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(3498774) |                   4961203 |                  2198017 | 2025-12-01 16:18:03 | 2025-12-15 09:11:04 |
-| 14173886 | CHARGED |      9272.00 | USD                   |       9272.00 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(101044)  | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(101044)  |                     93367 |                  2198017 | 2025-12-01 16:18:01 | 2025-12-15 09:11:04 |
-| 14173788 | CHARGED |      1938.41 | USD                   |       1938.41 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2197213) | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(2197213) |                   4961203 |                  2198017 | 2025-12-01 16:17:44 | 2025-12-15 09:11:04 |
-| 14173770 | CHARGED |      5661.34 | USD                   |       5661.34 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(221109)  | Advertiser Id(2948050) - CampaignId(14264) / Media partner Id(221109)  |                   4961203 |                  2198017 | 2025-12-01 16:17:40 | 2025-12-15 09:11:04 |
-| 14158356 | CHARGED |       985.28 | USD                   |        985.28 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(121977)  | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(121977)  |                   4961203 |                  2198017 | 2025-12-01 09:50:59 | 2025-12-15 09:11:04 |
-| 14158266 | CHARGED |      2978.92 | USD                   |       2978.92 | USD                    | 2025-12-15 08:00:00 | 2025-12-15 09:11:04 | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(221109)  | Advertiser Id(2948050) - CampaignId(14291) / Media partner Id(221109)  |                   4961203 |                  2198017 | 2025-12-01 09:50:42 | 2025-12-15 09:11:04 |
-| 14201279 | CHARGED |      5500.00 | USD                   |       5500.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(3245306) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(3245306) |                   2494459 |                  2198017 | 2025-12-03 08:19:06 | 2025-12-08 13:34:31 |
-| 14201278 | CHARGED |      5500.00 | USD                   |       5500.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(3245306) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(3245306) |                   2494459 |                  2198017 | 2025-12-03 08:19:06 | 2025-12-08 13:34:31 |
-| 14201277 | CHARGED |       600.00 | USD                   |        600.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2562878) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2562878) |                   1814338 |                  2198017 | 2025-12-03 08:19:06 | 2025-12-08 13:34:31 |
-| 14201276 | CHARGED |      6000.00 | USD                   |       6000.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2224721) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2224721) |                   1477893 |                  2198017 | 2025-12-03 08:19:05 | 2025-12-08 13:34:31 |
-| 14201275 | CHARGED |       500.00 | USD                   |        500.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1234512) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1234512) |                    501242 |                  2198017 | 2025-12-03 08:19:05 | 2025-12-08 13:34:31 |
-| 14112951 | CHARGED |      1000.00 | USD                   |       1000.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2477713) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2477713) |                   1729692 |                  2198017 | 2025-11-30 08:44:02 | 2025-12-08 13:34:31 |
-| 14080266 | CHARGED |      4500.00 | USD                   |       4500.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1257562) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1257562) |                    523674 |                  2198017 | 2025-11-28 08:19:11 | 2025-12-08 13:34:31 |
-| 14080265 | CHARGED |     10000.00 | USD                   |      10000.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1440378) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1440378) |                    698774 |                  2198017 | 2025-11-28 08:19:11 | 2025-12-08 13:34:31 |
-| 14080263 | CHARGED |      1000.00 | USD                   |       1000.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(5991967) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(5991967) |                   5236543 |                  2198017 | 2025-11-28 08:19:11 | 2025-12-08 13:34:31 |
-| 14080262 | CHARGED |      1000.00 | USD                   |       1000.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2477713) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2477713) |                   1729692 |                  2198017 | 2025-11-28 08:19:11 | 2025-12-08 13:34:31 |
-| 14015398 | CHARGED |      1000.00 | USD                   |       1000.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(5918637) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(5918637) |                   5163351 |                  2198017 | 2025-11-26 08:14:10 | 2025-12-08 13:34:31 |
-| 13965243 | CHARGED |      2500.00 | USD                   |       2500.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1257562) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(1257562) |                    523674 |                  2198017 | 2025-11-19 08:12:11 | 2025-12-08 13:34:31 |
-| 13937424 | CHARGED |      1600.00 | USD                   |       1600.00 | USD                    | 2025-12-06 08:00:00 | 2025-12-08 13:34:31 | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2224555) | Advertiser Id(2948050) - CampaignId(27480) / Media partner Id(2224555) |                   1477727 |                  2198017 | 2025-11-16 08:29:47 | 2025-12-08 13:34:31 |
-+----------+---------+--------------+-----------------------+---------------+------------------------+---------------------+---------------------+------------------------------------------------------------------------+------------------------------------------------------------------------+---------------------------+--------------------------+---------------------+---------------------+
+and campaign_id = '41441'
+order by action_date desc;
