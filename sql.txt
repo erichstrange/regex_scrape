@@ -14,3 +14,4 @@ WHERE iram_advertiser_id=121062
   AND NOT ca.taxclass = " "
   AND ia.state= "ACTIVE"
 ORDER BY organizationname;
+-- result in query(9).csv
