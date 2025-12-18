@@ -1,82 +1,44 @@
--- Datasource: singlestore (click_fact)
 SELECT
-  event_datetime,
-  click_id,
-  campaign_id,
-  publisher_id,
-  pub_subid1,
-  landing_page_url
-FROM click_fact
-WHERE campaign_id = 41441
-  AND publisher_id = 3830263
-  AND pub_subid1 IN (
-    '6941badbf213790001965d26',
-    '6941b6991815a700012da13c',
-    '6941bbb905361c0001544cc9',
-    '6941b8a21815a7000135f4f8',
-    '6941b87cb0e7250001281767',
-    '6941b40d342005000143e5bc',
-    '6941b2376df2660001f99111',
-    '6941b1eead07d80001997531'
-  )
-  AND event_datetime >= '2025-12-16 00:00:00'
-  AND event_datetime <  '2025-12-18 00:00:00'
-ORDER BY event_datetime DESC;
-
-+---------------------+-----------------------------------------+-------------+--------------+--------------------------+------------------------------------------------------------------------------------------------------------------+
-| event_datetime      | click_id                                | campaign_id | publisher_id | pub_subid1               | landing_page_url                                                                                                 |
-+---------------------+-----------------------------------------+-------------+--------------+--------------------------+------------------------------------------------------------------------------------------------------------------+
-| 2025-12-16 20:06:17 | W5FSQzVO:xycW8pVPgRLtUVCUkpQCUTvIXvERY0 |       41441 |      3830263 | 6941bbb905361c0001544cc9 | https://www.snaplii.com?im_ref=W5FSQzVO%3AxycW8pVPgRLtUVCUkpQCUTvIXvERY0&sharedid=&irpid=3830263&irgwc=1&afsrc=1 |
-| 2025-12-16 20:02:35 | 2q5TKsVO:xycRfYQ67xZL1DrUkpQCyVPIXIYyg0 |       41441 |      3830263 | 6941badbf213790001965d26 | https://www.snaplii.com?im_ref=2q5TKsVO%3AxycRfYQ67xZL1DrUkpQCyVPIXIYyg0&sharedid=&irpid=3830263&irgwc=1&afsrc=1 |
-| 2025-12-16 19:53:06 | VD7V0BVO8xycRgbWQ4XZbxvjUkpQC1WWIXvlSw0 |       41441 |      3830263 | 6941b8a21815a7000135f4f8 | https://www.snaplii.com?im_ref=VD7V0BVO8xycRgbWQ4XZbxvjUkpQC1WWIXvlSw0&sharedid=&irpid=3830263&irgwc=1&afsrc=1   |
-| 2025-12-16 19:52:28 | Qxkwo2VO8xycTKe2y41ruy6rUkpQC1yeIXvlTc0 |       41441 |      3830263 | 6941b87cb0e7250001281767 | https://www.snaplii.com?im_ref=Qxkwo2VO8xycTKe2y41ruy6rUkpQC1yeIXvlTc0&sharedid=&irpid=3830263&irgwc=1&afsrc=1   |
-| 2025-12-16 19:44:25 | Wx7ywHVOaxycUVw03d14O0r0UkpQCzRvIXIpwQ0 |       41441 |      3830263 | 6941b6991815a700012da13c | https://www.snaplii.com?im_ref=Wx7ywHVOaxycUVw03d14O0r0UkpQCzRvIXIpwQ0&sharedid=&irpid=3830263&irgwc=1&afsrc=1   |
-| 2025-12-16 19:33:33 | xKUwbvVOfxycRCIWArzQ5XINUkpQCx0fIXb9xc0 |       41441 |      3830263 | 6941b40d342005000143e5bc | https://www.snaplii.com?im_ref=xKUwbvVOfxycRCIWArzQ5XINUkpQCx0fIXb9xc0&sharedid=&irpid=3830263&irgwc=1&afsrc=1   |
-| 2025-12-16 19:25:43 | 0Si3MiVOdxycUv:Ut7yjxRp9UkpQH6zHIXIOVY0 |       41441 |      3830263 | 6941b2376df2660001f99111 | https://www.snaplii.com?im_ref=0Si3MiVOdxycUv%3AUt7yjxRp9UkpQH6zHIXIOVY0&sharedid=&irpid=3830263&irgwc=1&afsrc=1 |
-| 2025-12-16 19:24:30 | VpKQ92VOYxycUyGyAl0Uv0qlUkpQH-X:IXvA2A0 |       41441 |      3830263 | 6941b1eead07d80001997531 | https://www.snaplii.com?im_ref=VpKQ92VOYxycUyGyAl0Uv0qlUkpQH-X%3AIXvA2A0&sharedid=&irpid=3830263&irgwc=1&afsrc=1 |
-+---------------------+-----------------------------------------+-------------+--------------+--------------------------+------------------------------------------------------------------------------------------------------------------+
+  id,
+  state,
+  debit_amount,
+  debit_amount_currency,
+  due_date,
+  charge_date,
+  link_date,
+  last_notified_date,
+  description,
+  reference,
+  parent_id,
+  doe,
+  dlu
+FROM finance_invoice
+WHERE seller_finance_account_id = 2198017
+  AND reference = '215785'
+ORDER BY id;
 
 
--- Datasource: r_ds_iraction_sharded (irac_action2)
 SELECT
-  action_date,
-  action_id,
-  campaign_id,
-  publisher_id,
-  action_tracker_id,
-  oid,
-  action_status,
-  payout_trace,
-  pub_subid1,
-  batch_id
-FROM irac_action2
-WHERE campaign_id = 41441
-  AND publisher_id = 3830263
-  AND pub_subid1 IN (
-    '6941badbf213790001965d26',
-    '6941b6991815a700012da13c',
-    '6941bbb905361c0001544cc9',
-    '6941b8a21815a7000135f4f8',
-    '6941b87cb0e7250001281767',
-    '6941b40d342005000143e5bc',
-    '6941b2376df2660001f99111',
-    '6941b1eead07d80001997531'
-  )
-  AND action_date >= '2025-12-16 00:00:00'
-  AND action_date <  '2025-12-18 00:00:00'
-ORDER BY action_date DESC;
-+---------------------+----------------------+-------------+--------------+-------------------+-----------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+----------------------------------------+
-| action_date         | action_id            | campaign_id | publisher_id | action_tracker_id | oid                   | payout_trace                                                                                                                                                                                                                                                                            | pub_subid1               | batch_id                               |
-+---------------------+----------------------+-------------+--------------+-------------------+-----------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+----------------------------------------+
-| 2025-12-16 20:50:33 | M.41441.6559.1041781 |       41441 |      3830263 |             61706 | 1732921036114-8369353 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941badbf213790001965d26 | A-a7d3fb08-a961-4835-91f4-4f843596186e |
-| 2025-12-16 20:36:33 | M.41441.6559.1020032 |       41441 |      3830263 |             61706 | 1765917266950-2006648 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b6991815a700012da13c | A-c4236135-67ca-4433-9ec3-adfa16356d07 |
-| 2025-12-16 20:36:04 | M.41441.6559.1020434 |       41441 |      3830263 |             61706 | 1765917266950-2006648 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b6991815a700012da13c | A-1011232e-1288-4b7b-8f4f-1ceb69cb5cd8 |
-| 2025-12-16 20:07:22 | M.41441.6559.923325  |       41441 |      3830263 |             61706 | 1675638664000-8393175 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941bbb905361c0001544cc9 | A-14f5a80b-5a3f-4116-b27f-329a7631d3ef |
-| 2025-12-16 19:54:17 | M.41441.6559.896141  |       41441 |      3830263 |             61706 | 1736719437000-7584513 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","PayoutGroup":{"Id":"1685d50c-49fa-4a99-bf9b-f8de70056d98","Rank":1,"Payout":"USD25","Rules":[{"Variable":"CUSTOMER_COUNTRY","Operator":"IS","Values":["CA"],"MatchedValue":"CA"}]}} | 6941b87cb0e7250001281767 | A-c6c36a71-7280-49ab-ba8d-4da94b907a55 |
-| 2025-12-16 19:53:35 | M.41441.6559.896050  |       41441 |      3830263 |             61706 | 1701614839000-1555741 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b8a21815a7000135f4f8 | A-f90a4182-f252-45ae-8c14-894af00999f9 |
-| 2025-12-16 19:53:17 | M.41441.6559.893916  |       41441 |      3830263 |             61706 | 1736719437000-7584513 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b87cb0e7250001281767 | A-57092c4a-76dc-4cd4-8c9a-94ca6b787b35 |
-| 2025-12-16 19:34:38 | M.41441.6559.874531  |       41441 |      3830263 |             61706 | 1731640075487-0297670 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","PayoutGroup":{"Id":"1685d50c-49fa-4a99-bf9b-f8de70056d98","Rank":1,"Payout":"USD25","Rules":[{"Variable":"CUSTOMER_COUNTRY","Operator":"IS","Values":["CA"],"MatchedValue":"CA"}]}} | 6941b40d342005000143e5bc | A-98aca0a0-0d4f-4f35-a4ef-2f2cdba1afa5 |
-| 2025-12-16 19:33:59 | M.41441.6559.872318  |       41441 |      3830263 |             61706 | 1731640075487-0297670 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b40d342005000143e5bc | A-ad7f93d6-a185-4b3c-8d04-1e953ba1c98c |
-| 2025-12-16 19:26:26 | M.41441.6559.863918  |       41441 |      3830263 |             61706 | 1765683866076-0779754 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b2376df2660001f99111 | A-e22d70c8-c4e8-41e9-9f9e-e319500ad775 |
-| 2025-12-16 19:24:39 | M.41441.6559.854898  |       41441 |      3830263 |             61706 | 1734337590000-3189381 | {"ContractId":"S-34281968","EventTypeId":61706,"EventTypeName":"Snaplii-IOS","PayoutLevel":"ORDER","DefaultPayoutRate":"0%"}                                                                                                                                                            | 6941b1eead07d80001997531 | A-b6a8a7b7-af1e-44dc-a2f1-c7fbbe406abd |
-+---------------------+----------------------+-------------+--------------+-------------------+-----------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+----------------------------------------+
+  id,
+  state,
+  debit_amount,
+  debit_amount_currency,
+  credit_amount,
+  credit_amount_currency,
+  due_date,
+  charge_date,
+  description,
+  reference,
+  seller_finance_account_id,
+  buyer_finance_account_id,
+  doe,
+  dlu
+FROM finance_invoice
+WHERE
+(
+  seller_finance_account_id = 2198017
+  OR buyer_finance_account_id = 2198017
+)
+AND charge_date >= '2025-12-08'
+AND charge_date <  '2025-12-18'
+ORDER BY charge_date DESC, id DESC;
