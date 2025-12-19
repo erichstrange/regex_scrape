@@ -45,3 +45,28 @@ ORDER BY st.start_date DESC;
 +--------------------+---------------------+------------+----------+----------------+------------------+----------------+------------------+----------------+------------------+----------------+------------------+----------+-----+-----+-----+-----+
 
 
+
+
+
+
+
+
+SELECT
+  ID,
+  CREATEDATE,
+  USERNAME,
+  EVENT,
+  OBJECTTYPE,
+  OBJECTID,
+  CLIENTID,
+  ATTRIBUTE,
+  OLDVALUE,
+  NEWVALUE
+FROM r_ds_ods.m_audit_log_entry
+WHERE OBJECTTYPE LIKE '%TechnicalIntegration%'
+ORDER BY CREATEDATE DESC;
+
+
+SELECT * ircm_campaign_id,global_url_params,permitted_deeplink_domains,base_site_domain
+from ircm_technicalintegration
+where ircm_campaign_id = 42030
