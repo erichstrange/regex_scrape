@@ -15,7 +15,33 @@ LEFT JOIN ircm_campaign AS C
 WHERE C.iram_advertiser_id = 1268155
   AND M.state = 'ACTIVE'
 ORDER BY M.ircm_campaign_id, M.id;
-
++--------------------+------------------+------------------------------------+------------+-------------------------------------+--------------+--------+--------+---------------------+-------------------+
+| iram_advertiser_id | ircm_campaign_id | campaign_name                      | tracker_id | tracker_name                        | trackerType  | method | state  | activation_date     | deactivation_date |
++--------------------+------------------+------------------------------------+------------+-------------------------------------+--------------+--------+--------+---------------------+-------------------+
+|            1268155 |             8631 | Breville|Sage Appliances           |      15470 | Breville US Sale                    | SALE         | PIXEL  | ACTIVE | 2018-09-12 02:37:17 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      17267 | My test                             | CLICK        | PIXEL  | ACTIVE | ʘ                   | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      26264 | Breville AU Sale                    | SALE         | PIXEL  | ACTIVE | 2021-12-02 04:56:51 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      26265 | Breville Canada Sale                | SALE         | PIXEL  | ACTIVE | 2021-12-03 05:10:05 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      26266 | SageAppliances EMEA Sale            | SALE         | PIXEL  | ACTIVE | 2022-01-07 00:56:52 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      26267 | SageAppliances UK Sale              | SALE         | PIXEL  | ACTIVE | 2022-01-07 00:58:01 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      54957 | CardLinkedTransactions              | SALE         | PIXEL  | ACTIVE | 2025-03-17 03:29:38 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      56963 | Breville Mexico Sale                | SALE         | PIXEL  | ACTIVE | 2025-05-14 01:34:50 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      56967 | Sage Ireland Sale                   | SALE         | PIXEL  | ACTIVE | 2025-05-14 06:23:02 | ʘ                 |
+|            1268155 |             8631 | Breville|Sage Appliances           |      57114 | Sage United Arab Emirates Sale      | SALE         | PIXEL  | ACTIVE | 2025-05-16 01:58:38 | ʘ                 |
+|            1268155 |             9952 | PolyScience                        |      17731 | Online Sale                         | SALE         | PIXEL  | ACTIVE | 2019-05-21 22:10:07 | ʘ                 |
+|            1268155 |            10494 | Breville Remanufactured            |      18840 | Breville-Remanufactured Online Sale | SALE         | PIXEL  | ACTIVE | 2020-05-12 13:38:54 | ʘ                 |
+|            1268155 |            21020 | Baratza                            |      39933 | Baratza US Online Sale              | SALE         | PIXEL  | ACTIVE | 2023-08-16 05:53:24 | ʘ                 |
+|            1268155 |            21020 | Baratza                            |      44893 | Baratza AU Online Sale              | SALE         | PIXEL  | ACTIVE | 2024-03-13 23:20:39 | ʘ                 |
+|            1268155 |            21020 | Baratza                            |      44894 | Baratza UK Online Sale              | SALE         | PIXEL  | ACTIVE | 2024-03-13 23:21:07 | ʘ                 |
+|            1268155 |            21020 | Baratza                            |      47140 | Baratza EU Online Sale              | SALE         | PIXEL  | ACTIVE | 2024-05-30 00:28:48 | ʘ                 |
+|            1268155 |            21020 | Baratza                            |      60500 | Baratza CA Online Sale              | SALE         | PIXEL  | ACTIVE | 2025-08-08 05:57:01 | ʘ                 |
+|            1268155 |            24293 | LELIT                              |      44917 | Lelit US Online Sale                | SALE         | PIXEL  | ACTIVE | 2024-03-14 05:59:34 | ʘ                 |
+|            1268155 |            24293 | LELIT                              |      47150 | Lelit AU Online Sale                | SALE         | PIXEL  | ACTIVE | 2024-05-30 06:06:11 | ʘ                 |
+|            1268155 |            24293 | LELIT                              |      47151 | Lelit UK Online sale                | SALE         | PIXEL  | ACTIVE | 2024-05-30 06:06:41 | ʘ                 |
+|            1268155 |            24293 | LELIT                              |      47152 | Lelit EU Online sale                | SALE         | PIXEL  | ACTIVE | 2024-05-30 06:07:04 | ʘ                 |
+|            1268155 |            42571 | Breville|Sage Appliances - Creator |      62753 | Creator Post                        | PAY_PER_TASK | SYSTEM | ACTIVE | 2025-09-24 23:08:08 | ʘ                 |
+|            1268155 |            42571 | Breville|Sage Appliances - Creator |      62754 | Gift                                | GIFT         | SYSTEM | ACTIVE | 2025-09-24 23:08:08 | ʘ                 |
++--------------------+------------------+------------------------------------+------------+-------------------------------------+--------------+--------+--------+---------------------+-------------------+
 
 select
   iram_advertiser_id,
@@ -31,32 +57,39 @@ from ircm_campaign
 where iram_advertiser_id = 1268155
 order by activation_date desc
 limit 1000;
++--------------------+-------------+------------------------------------+--------+-------------------------+---------------------+-------------------------+---------------------+-------------------+
+| iram_advertiser_id | campaign_id | name                               | state  | platform_approval_state | setup_complete_date | request_activation_date | activation_date     | deactivation_date |
++--------------------+-------------+------------------------------------+--------+-------------------------+---------------------+-------------------------+---------------------+-------------------+
+|            1268155 |       42571 | Breville|Sage Appliances - Creator | ACTIVE | ACTIVE                  | 2025-09-24 23:15:06 | ʘ                       | 2025-09-24 23:15:06 | ʘ                 |
+|            1268155 |       24293 | LELIT                              | ACTIVE | ACTIVE                  | 2024-05-06 06:37:13 | ʘ                       | 2024-05-06 06:37:13 | ʘ                 |
+|            1268155 |       21020 | Baratza                            | ACTIVE | ACTIVE                  | 2023-08-20 14:27:42 | 2023-09-26 02:00:00     | 2023-09-26 02:00:44 | ʘ                 |
+|            1268155 |        9952 | PolyScience                        | ACTIVE | ACTIVE                  | 2019-05-22 23:14:10 | 2019-05-22 23:14:12     | 2019-05-22 23:14:29 | ʘ                 |
+|            1268155 |        8631 | Breville|Sage Appliances           | ACTIVE | ACTIVE                  | 2018-09-13 22:50:15 | 2018-10-10 23:09:32     | 2018-10-10 23:10:00 | ʘ                 |
+|            1268155 |       10494 | Breville Remanufactured            | SETUP  | ACTIVE                  | ʘ                   | ʘ                       | ʘ                   | ʘ                 |
+|            1268155 |       10495 | Chefsteps                          | SETUP  | ACTIVE                  | ʘ                   | ʘ                       | ʘ                   | ʘ                 |
++--------------------+-------------+------------------------------------+--------+-------------------------+---------------------+-------------------------+---------------------+-------------------+
 
-SELECT
-  id   AS campaign_id,
-  name,
-  state,
-  activation_date,
-  deactivation_date
-FROM ircm_campaign
-WHERE iram_advertiser_id = 1268155
-ORDER BY activation_date DESC;
+
+
 
 SELECT *
 FROM irac_test_action
 WHERE program_id = 8631
 AND oid = '52414193';
 
++----+---------------+------------+---------------+------------------------+---------------+-----+----------+-----------+------------+-----------------+--------------+--------------+-----------------+--------------+--------------+-----------------+-----------------+----------+----------+----------------+-------------+------------+---------+--------------+---------------+-----+-----+-----+
+| id | advertiser_id | program_id | event_type_id | ircm_template_terms_id | ircm_terms_id | oid | batch_id | shared_id | promo_code | adv_tot_revenue | adv_tot_cost | adv_currency | pub_tot_revenue | pub_tot_cost | pub_currency | conversion_date | conversion_json | ref_date | ref_json | other_ref_json | latency_sec | error_code | outcome | locking_date | clearing_date | doe | dlu | ulu |
++----+---------------+------------+---------------+------------------------+---------------+-----+----------+-----------+------------+-----------------+--------------+--------------+-----------------+--------------+--------------+-----------------+-----------------+----------+----------+----------------+-------------+------------+---------+--------------+---------------+-----+-----+-----+
++----+---------------+------------+---------------+------------------------+---------------+-----+----------+-----------+------------+-----------------+--------------+--------------+-----------------+--------------+--------------+-----------------+-----------------+----------+----------+----------------+-------------+------------+---------+--------------+---------------+-----+-----+-----+
+
 SELECT action_id, oid, campaign_id, ircm_terms_id, payout_trace, sku, ircm_category_list_id, doe
 FROM irac_action2
 WHERE oid = '52414193'
 AND campaign_id = 8631
 ORDER BY doe;
++-----------+-----+-------------+---------------+--------------+-----+-----------------------+-----+
+| action_id | oid | campaign_id | ircm_terms_id | payout_trace | sku | ircm_category_list_id | doe |
++-----------+-----+-------------+---------------+--------------+-----+-----------------------+-----+
++-----------+-----+-------------+---------------+--------------+-----+-----------------------+-----+
 
-SELECT *
-FROM ir_api_log
-WHERE iram_account_id = 1268155
-  AND oid = '52414193'
-  AND doe >= '2025-12-18 00:00:00'
-  AND doe <  '2025-12-20 00:00:00'
-LIMIT 100;
+
