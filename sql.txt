@@ -49,47 +49,66 @@ ORDER BY st.start_date DESC;
 
 
 
-select *
-from ircm_signedcontract
-where ircm_campaign_id = 5048
-  and iram_publisher_id = 2533699;
-
--- result in query(11).csv
-
-
-
-  SELECT
-  sc.iram_publisher_id,
-  sc.ircm_campaign_id,
-  iot.credit_group
-from ircm_signedcontract sc
-LEFT JOIN ircm_ioterms iot on iot.id = sc.ircm_ioterms_id
-WHERE sc.iram_publisher_id = '2533699'
-  AND ircm_campaign_id = '5048'
-  AND sc.date_contract_end is null;
- +-------------------+------------------+--------------+
-| iram_publisher_id | ircm_campaign_id | credit_group |
-+-------------------+------------------+--------------+
-|           2533699 |             5048 | ʘ            |
-+-------------------+------------------+--------------+
+SELECT
+  cap.account_user_id,
+  ce.username,
+  cr.id   AS role_id,
+  cr.name AS role_name,
+  cr.permissionType,
+  cr.description
+FROM core_authorization_principal cap
+JOIN core_role cr
+  ON cr.id = cap.core_role_id
+JOIN core_estaleauser ce
+  ON ce.id = cap.account_user_id
+WHERE cap.userType_id = 0
+  AND cap.irAccount_id = 344628
+  AND cap.account_user_id IN (374965, 6763885)
+ORDER BY cap.account_user_id, cr.name;
 
 
+SELECT
+  cap.account_user_id,
+  ce.username,
+  cr.name AS role_name,
+  cp.name AS permission_name
+FROM core_authorization_principal cap
+JOIN core_role cr
+  ON cr.id = cap.core_role_id
+JOIN core_role_permission crp
+  ON crp.core_role_id = cr.id
+JOIN core_permission cp
+  ON cp.id = crp.core_permission_id
+JOIN core_estaleauser ce
+  ON ce.id = cap.account_user_id
+WHERE cap.userType_id = 0
+  AND cap.irAccount_id = 344628
+  AND cap.account_user_id IN (374965, 6763885)
+  AND cp.name IN (
+    'PERMISSION_NEGOTIATE_AGREEMENTS',
+    'PERMISSION_NEGOTIATE_AGREEMENTS_CREATOR'
+  )
+ORDER BY cap.account_user_id, role_name, permission_name;
 
-select *
-from ircm_onlineactionterms
-where ircm_ioterms_id in (
-  select distinct ircm_ioterms_id
-  from ircm_signedcontract
-  where ircm_campaign_id = 5048
-    and iram_publisher_id = 2533699
-    and date_contract_end is null
-);
--- result in query(12).csv
 
-select *
-from ircm_pendingcontract pc
-inner join ircm_campaign ic on ic.id = pc.ircm_campaign_id
-where pc.iram_publisher_id = 2533699
-  and pc.ircm_campaign_id = 5048;
-  and pc.ircm_campaign_id = 5048;
--- result in query(13).csv
+
+
+SELECT
+  id,
+  program_id,
+  publisher_account_id,
+  ircm_insertionorder_id,
+  ircm_ioterms_id,
+  date_contract_start,
+  date_contract_end,
+  initiation_source,
+  username_brand_signer,
+  username_publisher_signer,
+  version,
+  doe,
+  dlu
+FROM platform_io_contract_upcoming
+WHERE program_id = 5048
+  AND publisher_account_id = 2533699
+ORDER BY date_contract_start DESC;
+
