@@ -49,55 +49,15 @@ ORDER BY st.start_date DESC;
 
 
 SELECT
-  u.account_user_id,
+  u.id                  AS usership_id,
+  u.account_user_id     AS account_user_id,
+  u.authorizationPrincipal_id,
+  u.state               AS usership_state,
   ce.username,
   ce.email,
-  cr.id   AS role_id,
-  cr.name AS role_name,
-  cr.permissionType,
-  cr.description
+  ce.lastlogin_date
 FROM iram_usership u
 JOIN core_estaleauser ce
   ON ce.id = u.account_user_id
-JOIN core_ap_role car
-  ON car.core_ap_id = u.authorizationPrincipal_id
-JOIN core_role cr
-  ON cr.id = car.core_role_id
-WHERE u.irAccount_Id = 344628
-  AND u.account_user_id IN (374965, 6763885)
-ORDER BY u.account_user_id, cr.name;
-+-----------------+----------+-------+---------+-----------+----------------+-------------+
-| account_user_id | username | email | role_id | role_name | permissionType | description |
-+-----------------+----------+-------+---------+-----------+----------------+-------------+
-+-----------------+----------+-------+---------+-----------+----------------+-------------+
-
-
-
-SELECT
-  u.account_user_id,
-  ce.username,
-  cr.name AS role_name,
-  cp.code AS permission_code,
-  cp.name AS permission_name
-FROM iram_usership u
-JOIN core_estaleauser ce
-  ON ce.id = u.account_user_id
-JOIN core_ap_role car
-  ON car.core_ap_id = u.authorizationPrincipal_id
-JOIN core_role cr
-  ON cr.id = car.core_role_id
-JOIN core_role_permission crp
-  ON crp.core_role_id = cr.id
-JOIN core_permission cp
-  ON cp.id = crp.core_permission_id
-WHERE u.irAccount_Id = 344628
-  AND u.account_user_id IN (374965, 6763885)
-  AND cp.code IN (
-    'PERMISSION_NEGOTIATE_AGREEMENTS',
-    'PERMISSION_NEGOTIATE_AGREEMENTS_CREATOR'
-  )
-ORDER BY u.account_user_id, role_name, permission_code;
-+-----------------+----------+-----------+-----------------+-----------------+
-| account_user_id | username | role_name | permission_code | permission_name |
-+-----------------+----------+-----------+-----------------+-----------------+
-+-----------------+----------+-----------+-----------------+-----------------+
+WHERE u.irAccount_id = 344628
+  AND ce.username IN ('MAMorton522', 'mohdamansaiyed');
