@@ -1,117 +1,62 @@
 SELECT
-    ins.name AS template_term_name
-  , st.name AS scheduled_term_name
-  , st.start_date
-  , st.end_Date
-  , atr1.name AS tracker_name_1
-  , JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker')) AS payout_tracker_1
-  , atr2.name AS tracker_name_2
-  , JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[1].actionTracker')) AS payout_tracker_2
-  , atr3.name AS tracker_name_3
-  , JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[2].actionTracker')) AS payout_tracker_3
-  , atr4.name AS tracker_name_4
-  , JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[3].actionTracker')) AS payout_tracker_4
-  , st.archived
-  , st.doe
-  , st.uoe
-  , st.dlu
-  , st.ulu
-FROM ircm_scheduled_terms st
-INNER JOIN ircm_insertionorder ins
-  ON ins.id = st.ircm_insertionorder_id
-
-LEFT JOIN ircm_actiontracker atr1
-  ON atr1.ircm_campaign_id = st.ircm_campaign_id
- AND atr1.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[0].actionTracker'))
-
-LEFT JOIN ircm_actiontracker atr2
-  ON atr2.ircm_campaign_id = st.ircm_campaign_id
- AND atr2.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[1].actionTracker'))
-
-LEFT JOIN ircm_actiontracker atr3
-  ON atr3.ircm_campaign_id = st.ircm_campaign_id
- AND atr3.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[2].actionTracker'))
-
-LEFT JOIN ircm_actiontracker atr4
-  ON atr4.ircm_campaign_id = st.ircm_campaign_id
- AND atr4.id = JSON_UNQUOTE(JSON_EXTRACT(CAST(st.payout_json AS JSON), '$.actionTrackers[3].actionTracker'))
-
-WHERE st.ircm_campaign_id = 5048
--- AND st.start_date >= NOW()     -- uncomment for upcoming-only
-ORDER BY st.start_date DESC;
-+--------------------+---------------------+------------+----------+----------------+------------------+----------------+------------------+----------------+------------------+----------------+------------------+----------+-----+-----+-----+-----+
-| template_term_name | scheduled_term_name | start_date | end_Date | tracker_name_1 | payout_tracker_1 | tracker_name_2 | payout_tracker_2 | tracker_name_3 | payout_tracker_3 | tracker_name_4 | payout_tracker_4 | archived | doe | uoe | dlu | ulu |
-+--------------------+---------------------+------------+----------+----------------+------------------+----------------+------------------+----------------+------------------+----------------+------------------+----------+-----+-----+-----+-----+
-+--------------------+---------------------+------------+----------+----------------+------------------+----------------+------------------+----------------+------------------+----------------+------------------+----------+-----+-----+-----+-----+
+  C.iram_advertiser_id,
+  M.ircm_campaign_id,
+  C.name AS campaign_name,
+  M.id   AS tracker_id,
+  M.name AS tracker_name,
+  M.trackerType,
+  M.method,
+  M.state,
+  M.activation_date,
+  M.deactivation_date
+FROM ircm_actiontracker AS M
+LEFT JOIN ircm_campaign AS C
+  ON M.ircm_campaign_id = C.id
+WHERE C.iram_advertiser_id = 1268155
+  AND M.state = 'ACTIVE'
+ORDER BY M.ircm_campaign_id, M.id;
 
 
-
-
+select
+  iram_advertiser_id,
+  id as campaign_id,
+  name,
+  state,
+  platform_approval_state,
+  setup_complete_date,
+  request_activation_date,
+  activation_date,
+  deactivation_date
+from ircm_campaign
+where iram_advertiser_id = 1268155
+order by activation_date desc
+limit 1000;
 
 SELECT
-  u.id                  AS usership_id,
-  u.account_user_id     AS account_user_id,
-  u.authorizationPrincipal_id,
-  u.state               AS usership_state,
-  ce.username,
-  ce.email,
-  ce.lastlogin_date
-FROM iram_usership u
-JOIN core_estaleauser ce
-  ON ce.id = u.account_user_id
-WHERE u.irAccount_id = 344628
-  AND ce.username IN ('MAMorton522', 'mohdamansaiyed');
+  id   AS campaign_id,
+  name,
+  state,
+  activation_date,
+  deactivation_date
+FROM ircm_campaign
+WHERE iram_advertiser_id = 1268155
+ORDER BY activation_date DESC;
 
-  +-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
-| usership_id | account_user_id | authorizationPrincipal_id | usership_state | username       | email                          | lastlogin_date      |
-+-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
-|      374965 |          354589 |                    719566 | ACTIVE         | MAMorton522    | maryann.morton@capitalone.com  | 2025-12-16 04:24:57 |
-|     6763885 |         7103093 |                  13856993 | ACTIVE         | mohdamansaiyed | mohdaman.saiyed@capitalone.com | 2025-12-09 19:13:11 |
-+-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
+SELECT *
+FROM irac_test_action
+WHERE program_id = 8631
+AND oid = '52414193';
 
+SELECT action_id, oid, campaign_id, ircm_terms_id, payout_trace, sku, ircm_category_list_id, doe
+FROM irac_action2
+WHERE oid = '52414193'
+AND campaign_id = 8631
+ORDER BY doe;
 
-select *
-from core_role
-where id in (
-  select core_role_id
-  from core_ap_role
-  where core_ap_id = (
-    select authorizationPrincipal_id
-    from iram_usership
-    where account_user_id = 354589
-      and irAccount_id = 344628
-  )
-);
-+----+-----------------+------------------------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-| id | iram_account_id | permissionType               | name                   | description            | userType_id | doe                 | dlu                 | uoe | ulu | archived | version |
-+----+-----------------+------------------------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-| 18 |               1 | ACCESS_RIGHT                 | Campaign Management    | Campaign Management    |           4 | 2009-07-20 17:22:50 | 2009-07-20 17:22:50 | ʘ   | ʘ   | false    |       ʘ |
-| 20 |               1 | ACCESS_RIGHT                 | Technical              | Technical              |           4 | 2009-07-20 17:22:55 | 2009-07-20 17:22:55 | ʘ   | ʘ   | false    |       ʘ |
-|  2 |               1 | SYSTEM                       | Advertiser System Role | Advertiser System Role |           4 | 2009-07-20 17:22:11 | 2009-07-20 17:22:11 | ʘ   | ʘ   | false    |       0 |
-| 19 |               1 | ACCESS_RIGHT                 | Finance                | Finance                |           4 | 2009-07-20 17:22:53 | 2009-07-20 17:22:53 | ʘ   | ʘ   | false    |       ʘ |
-| 17 |               1 | ACCESS_RIGHT                 | Account Administration | Account Administration |           4 | 2009-07-20 17:22:48 | 2009-07-20 17:22:48 | ʘ   | ʘ   | false    |       ʘ |
-| 21 |               1 | ACCESS_RIGHT                 | Creative Management    | Creative Management    |           4 | 2009-07-20 17:22:57 | 2009-07-20 17:22:57 | ʘ   | ʘ   | false    |       ʘ |
-| 47 |               1 | PARTNER_MANAGER_ACCESS_RIGHT | Custom                 | Custom                 |           4 | 2017-11-10 00:41:22 | 2017-11-10 00:41:22 | ʘ   | ʘ   | false    |       0 |
-+----+-----------------+------------------------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-
-
-select *
-from core_role
-where id in (
-  select core_role_id
-  from core_ap_role
-  where core_ap_id = (
-    select authorizationPrincipal_id
-    from iram_usership
-    where account_user_id = 7103093
-      and irAccount_id = 344628
-  )
-);
-
-+----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-| id | iram_account_id | permissionType | name                   | description            | userType_id | doe                 | dlu                 | uoe | ulu | archived | version |
-+----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-|  2 |               1 | SYSTEM         | Advertiser System Role | Advertiser System Role |           4 | 2009-07-20 17:22:11 | 2009-07-20 17:22:11 | ʘ   | ʘ   | false    |       0 |
-+----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
-
-
+SELECT *
+FROM ir_api_log
+WHERE iram_account_id = 1268155
+  AND oid = '52414193'
+  AND doe >= '2025-12-18 00:00:00'
+  AND doe <  '2025-12-20 00:00:00'
+LIMIT 100;
