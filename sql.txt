@@ -78,21 +78,40 @@ where id in (
   where core_ap_id = (
     select authorizationPrincipal_id
     from iram_usership
-    where account_user_id in (354589, 7103093)
+    where account_user_id = 354589
+      and irAccount_id = 344628
+  )
+);
++----+-----------------+------------------------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+| id | iram_account_id | permissionType               | name                   | description            | userType_id | doe                 | dlu                 | uoe | ulu | archived | version |
++----+-----------------+------------------------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+| 18 |               1 | ACCESS_RIGHT                 | Campaign Management    | Campaign Management    |           4 | 2009-07-20 17:22:50 | 2009-07-20 17:22:50 | ʘ   | ʘ   | false    |       ʘ |
+| 20 |               1 | ACCESS_RIGHT                 | Technical              | Technical              |           4 | 2009-07-20 17:22:55 | 2009-07-20 17:22:55 | ʘ   | ʘ   | false    |       ʘ |
+|  2 |               1 | SYSTEM                       | Advertiser System Role | Advertiser System Role |           4 | 2009-07-20 17:22:11 | 2009-07-20 17:22:11 | ʘ   | ʘ   | false    |       0 |
+| 19 |               1 | ACCESS_RIGHT                 | Finance                | Finance                |           4 | 2009-07-20 17:22:53 | 2009-07-20 17:22:53 | ʘ   | ʘ   | false    |       ʘ |
+| 17 |               1 | ACCESS_RIGHT                 | Account Administration | Account Administration |           4 | 2009-07-20 17:22:48 | 2009-07-20 17:22:48 | ʘ   | ʘ   | false    |       ʘ |
+| 21 |               1 | ACCESS_RIGHT                 | Creative Management    | Creative Management    |           4 | 2009-07-20 17:22:57 | 2009-07-20 17:22:57 | ʘ   | ʘ   | false    |       ʘ |
+| 47 |               1 | PARTNER_MANAGER_ACCESS_RIGHT | Custom                 | Custom                 |           4 | 2017-11-10 00:41:22 | 2017-11-10 00:41:22 | ʘ   | ʘ   | false    |       0 |
++----+-----------------+------------------------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+
+
+select *
+from core_role
+where id in (
+  select core_role_id
+  from core_ap_role
+  where core_ap_id = (
+    select authorizationPrincipal_id
+    from iram_usership
+    where account_user_id = 7103093
       and irAccount_id = 344628
   )
 );
 
++----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+| id | iram_account_id | permissionType | name                   | description            | userType_id | doe                 | dlu                 | uoe | ulu | archived | version |
++----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
+|  2 |               1 | SYSTEM         | Advertiser System Role | Advertiser System Role |           4 | 2009-07-20 17:22:11 | 2009-07-20 17:22:11 | ʘ   | ʘ   | false    |       0 |
++----+-----------------+----------------+------------------------+------------------------+-------------+---------------------+---------------------+-----+-----+----------+---------+
 
-select
-  cr.id as role_id,
-  cr.name as role_name,
-  cp.code as permission_code,
-  cp.name as permission_name
-from core_role cr
-join core_role_permission crp
-  on crp.core_role_id = cr.id
-join core_permission cp
-  on cp.id = crp.core_permission_id
-where cr.id in (<ROLE_ID_1>, <ROLE_ID_2>, <ROLE_ID_3>)
-  and cp.code = 'PERMISSION_NEGOTIATE_AGREEMENTS';
+
