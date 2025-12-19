@@ -48,67 +48,47 @@ ORDER BY st.start_date DESC;
 
 
 
-
 SELECT
-  cap.account_user_id,
+  u.account_user_id,
   ce.username,
+  ce.email,
   cr.id   AS role_id,
   cr.name AS role_name,
   cr.permissionType,
   cr.description
-FROM core_authorization_principal cap
-JOIN core_role cr
-  ON cr.id = cap.core_role_id
+FROM iram_usership u
 JOIN core_estaleauser ce
-  ON ce.id = cap.account_user_id
-WHERE cap.userType_id = 0
-  AND cap.irAccount_id = 344628
-  AND cap.account_user_id IN (374965, 6763885)
-ORDER BY cap.account_user_id, cr.name;
+  ON ce.id = u.account_user_id
+JOIN core_ap_role car
+  ON car.core_ap_id = u.authorizationPrincipal_id
+JOIN core_role cr
+  ON cr.id = car.core_role_id
+WHERE u.irAccount_Id = 344628
+  AND u.account_user_id IN (374965, 6763885)
+ORDER BY u.account_user_id, cr.name;
 
 
 SELECT
-  cap.account_user_id,
+  u.account_user_id,
   ce.username,
   cr.name AS role_name,
+  cp.code AS permission_code,
   cp.name AS permission_name
-FROM core_authorization_principal cap
+FROM iram_usership u
+JOIN core_estaleauser ce
+  ON ce.id = u.account_user_id
+JOIN core_ap_role car
+  ON car.core_ap_id = u.authorizationPrincipal_id
 JOIN core_role cr
-  ON cr.id = cap.core_role_id
+  ON cr.id = car.core_role_id
 JOIN core_role_permission crp
   ON crp.core_role_id = cr.id
 JOIN core_permission cp
   ON cp.id = crp.core_permission_id
-JOIN core_estaleauser ce
-  ON ce.id = cap.account_user_id
-WHERE cap.userType_id = 0
-  AND cap.irAccount_id = 344628
-  AND cap.account_user_id IN (374965, 6763885)
-  AND cp.name IN (
+WHERE u.irAccount_Id = 344628
+  AND u.account_user_id IN (374965, 6763885)
+  AND cp.code IN (
     'PERMISSION_NEGOTIATE_AGREEMENTS',
     'PERMISSION_NEGOTIATE_AGREEMENTS_CREATOR'
   )
-ORDER BY cap.account_user_id, role_name, permission_name;
-
-
-
-
-SELECT
-  id,
-  program_id,
-  publisher_account_id,
-  ircm_insertionorder_id,
-  ircm_ioterms_id,
-  date_contract_start,
-  date_contract_end,
-  initiation_source,
-  username_brand_signer,
-  username_publisher_signer,
-  version,
-  doe,
-  dlu
-FROM platform_io_contract_upcoming
-WHERE program_id = 5048
-  AND publisher_account_id = 2533699
-ORDER BY date_contract_start DESC;
-
+ORDER BY u.account_user_id, role_name, permission_code;
