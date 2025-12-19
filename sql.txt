@@ -49,45 +49,39 @@ ORDER BY st.start_date DESC;
 
 
 
+select *
+from ircm_signedcontract
+where ircm_campaign_id = 5048
+  and iram_publisher_id = 2533699;
 
 
-SELECT
-  cf.event_datetime,
-  cf.click_id,
-  cf.profile_id,
-  cf.campaign_id,
-  cf.publisher_id,
-  cf.landing_page_url,
-  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS inbound_link,
-  JSON_EXTRACT_STRING(cf.json, 'gwlurl')      AS gwlurl,
-  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
-  JSON_EXTRACT_STRING(cf.json, 'ruleName')     AS rule_name
-FROM click_fact cf
-WHERE cf.campaign_id = 42030
-  AND cf.publisher_id = 38990
-  AND cf.event_datetime >= NOW() - INTERVAL 30 DAY
-  AND JSON_EXTRACT_STRING(cf.json, 'inboundLink') LIKE '%/3276883/42030%'
-ORDER BY cf.event_datetime DESC
-LIMIT 200;
-+---------------------+-----------------------------------------+--------------------------------------+-------------+--------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+--------+---------------+-----------+
-| event_datetime      | click_id                                | profile_id                           | campaign_id | publisher_id | landing_page_url                                                                                                                                                    | inbound_link                                                | gwlurl | blocking_rule | rule_name |
-+---------------------+-----------------------------------------+--------------------------------------+-------------+--------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+--------+---------------+-----------+
-| 2025-12-18 23:51:01 | 0nDXU32iAxycUn-Ryb0P:0MgUkpQOs3n8TPb1A0 | 059be206-25dc-11f0-85be-91f30bba0a14 |       42030 |        38990 | https://miiskin.com?im_ref=0nDXU32iAxycUn-Ryb0P%3A0MgUkpQOs3n8TPb1A0&sharedid=&irpid=38990&irgwc=1&afsrc=1&utm_source=imp&utm_medium=aff-mediapartner&utm_campaign= | https://miiskin.pxf.io/c/38990/3276883/42030?trafsrc=Impact | ʘ      | ʘ             | ʘ         |
-| 2025-12-18 23:50:46 | 0nDXU32iAxycUn-Ryb0P:0MgUkpQOs1G8TPb1A0 | 059be206-25dc-11f0-85be-91f30bba0a14 |       42030 |        38990 | https://miiskin.com?im_ref=0nDXU32iAxycUn-Ryb0P%3A0MgUkpQOs1G8TPb1A0&sharedid=&irpid=38990&irgwc=1&afsrc=1&utm_source=imp&utm_medium=aff-mediapartner&utm_campaign= | https://miiskin.pxf.io/c/38990/3276883/42030?trafsrc=Impact | ʘ      | ʘ             | ʘ         |
-| 2025-12-18 22:21:05 | 2SpXf0R-PxycWEVSyNXYVya-UkpQOT13ryj82w0 | 23e1ed80-9fae-11f0-a60d-f1eded0d7dfe |       42030 |        38990 | https://miiskin.com?im_ref=2SpXf0R-PxycWEVSyNXYVya-UkpQOT13ryj82w0&sharedid=&irpid=38990&irgwc=1&afsrc=1&utm_source=imp&utm_medium=aff-mediapartner&utm_campaign=   | https://miiskin.pxf.io/c/38990/3276883/42030?trafsrc=Impact | ʘ      | ʘ             | ʘ         |
-| 2025-12-18 19:30:36 | 2SpXf0R-PxycWEVSyNXYVya-UkpQJr1eryj83Q0 | 23e1ed80-9fae-11f0-a60d-f1eded0d7dfe |       42030 |        38990 | https://miiskin.com?im_ref=2SpXf0R-PxycWEVSyNXYVya-UkpQJr1eryj83Q0&sharedid=&irpid=38990&irgwc=1&afsrc=1&utm_source=imp&utm_medium=aff-mediapartner&utm_campaign=   | https://miiskin.pxf.io/c/38990/3276883/42030?trafsrc=Impact | ʘ      | ʘ             | ʘ         |
-| 2025-12-13 02:05:01 | 2SpXf0R-PxycWEVSyNXYVya-UkpQTnQfryj8wM0 | 23e1ed80-9fae-11f0-a60d-f1eded0d7dfe |       42030 |        38990 | https://miiskin.com?im_ref=2SpXf0R-PxycWEVSyNXYVya-UkpQTnQfryj8wM0&sharedid=&irpid=38990&irgwc=1&afsrc=1&utm_source=imp&utm_medium=aff-mediapartner&utm_campaign=   | https://miiskin.pxf.io/c/38990/3276883/42030?trafsrc=Impact | ʘ      | ʘ             | ʘ         |
-+---------------------+-----------------------------------------+--------------------------------------+-------------+--------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+--------+---------------+-----------+
 
 
-SELECT *
-FROM iram_publishergroup
-WHERE ircm_campaign_id = 42030
-ORDER BY dlu DESC
-LIMIT 200;
-+--------+------------------+-----------------------+---------------------+---------------------+---------------+---------------+------------------------+----------+---------+
-|     id | ircm_campaign_id | group_name            | doe                 | dlu                 | uoe           | ulu           | core_estaleanetwork_id | archived | version |
-+--------+------------------+-----------------------+---------------------+---------------------+---------------+---------------+------------------------+----------+---------+
-| 125572 |            42030 | Accepted by Impact AI | 2025-09-18 12:17:01 | 2025-09-18 12:17:01 | danielmiiskin | danielmiiskin |                      1 | false    |       ʘ |
-| 125573 |            42030 | Rejected by Impact AI | 2025-09-18 12:17:01 | 2025-09-18 12:17:01 | danielmiiskin | danielmiiskin |                      1 | false    |       ʘ |
-+--------+------------------+-----------------------+---------------------+---------------------+---------------+---------------+------------------------+----------+---------+
+  SELECT
+  sc.iram_publisher_id,
+  sc.ircm_campaign_id,
+  iot.credit_group
+from ircm_signedcontract sc
+LEFT JOIN ircm_ioterms iot on iot.id = sc.ircm_ioterms_id
+WHERE sc.iram_publisher_id = '2533699'
+  AND ircm_campaign_id = '5048'
+  AND sc.date_contract_end is null;
+
+
+
+select *
+from ircm_onlineactionterms
+where ircm_ioterms_id in (
+  select distinct ircm_ioterms_id
+  from ircm_signedcontract
+  where ircm_campaign_id = 5048
+    and iram_publisher_id = 2533699
+    and date_contract_end is null
+);
+
+select *
+from ircm_pendingcontract pc
+inner join ircm_campaign ic on ic.id = pc.ircm_campaign_id
+where pc.iram_publisher_id = 2533699
+  and pc.ircm_campaign_id = 5048;
+
