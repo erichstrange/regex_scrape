@@ -70,3 +70,8 @@ ORDER BY CREATEDATE DESC;
 SELECT * ircm_campaign_id,global_url_params,permitted_deeplink_domains,base_site_domain
 from ircm_technicalintegration
 where ircm_campaign_id = 42030
++------------------+-----------------------------------------------------------------------+----------------------------+------------------+
+| ircm_campaign_id | global_url_params                                                     | permitted_deeplink_domains | base_site_domain |
++------------------+-----------------------------------------------------------------------+----------------------------+------------------+
+|            42030 | utm_source=imp&utm_medium=aff-{irmptype}&utm_campaign={irmpgroupname} | miiskin.com,*.miiskin.com  | miiskin.com      |
++------------------+-----------------------------------------------------------------------+----------------------------+------------------+
