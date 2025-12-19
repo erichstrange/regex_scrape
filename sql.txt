@@ -61,3 +61,10 @@ JOIN core_estaleauser ce
   ON ce.id = u.account_user_id
 WHERE u.irAccount_id = 344628
   AND ce.username IN ('MAMorton522', 'mohdamansaiyed');
+
+  +-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
+| usership_id | account_user_id | authorizationPrincipal_id | usership_state | username       | email                          | lastlogin_date      |
++-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
+|      374965 |          354589 |                    719566 | ACTIVE         | MAMorton522    | maryann.morton@capitalone.com  | 2025-12-16 04:24:57 |
+|     6763885 |         7103093 |                  13856993 | ACTIVE         | mohdamansaiyed | mohdaman.saiyed@capitalone.com | 2025-12-09 19:13:11 |
++-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
