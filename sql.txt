@@ -66,6 +66,11 @@ JOIN core_role cr
 WHERE u.irAccount_Id = 344628
   AND u.account_user_id IN (374965, 6763885)
 ORDER BY u.account_user_id, cr.name;
++-----------------+----------+-------+---------+-----------+----------------+-------------+
+| account_user_id | username | email | role_id | role_name | permissionType | description |
++-----------------+----------+-------+---------+-----------+----------------+-------------+
++-----------------+----------+-------+---------+-----------+----------------+-------------+
+
 
 
 SELECT
@@ -92,3 +97,7 @@ WHERE u.irAccount_Id = 344628
     'PERMISSION_NEGOTIATE_AGREEMENTS_CREATOR'
   )
 ORDER BY u.account_user_id, role_name, permission_code;
++-----------------+----------+-----------+-----------------+-----------------+
+| account_user_id | username | role_name | permission_code | permission_name |
++-----------------+----------+-----------+-----------------+-----------------+
++-----------------+----------+-----------+-----------------+-----------------+
