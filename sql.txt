@@ -68,3 +68,31 @@ WHERE u.irAccount_id = 344628
 |      374965 |          354589 |                    719566 | ACTIVE         | MAMorton522    | maryann.morton@capitalone.com  | 2025-12-16 04:24:57 |
 |     6763885 |         7103093 |                  13856993 | ACTIVE         | mohdamansaiyed | mohdaman.saiyed@capitalone.com | 2025-12-09 19:13:11 |
 +-------------+-----------------+---------------------------+----------------+----------------+--------------------------------+---------------------+
+
+
+select *
+from core_role
+where id in (
+  select core_role_id
+  from core_ap_role
+  where core_ap_id = (
+    select authorizationPrincipal_id
+    from iram_usership
+    where account_user_id in (354589, 7103093)
+      and irAccount_id = 344628
+  )
+);
+
+
+select
+  cr.id as role_id,
+  cr.name as role_name,
+  cp.code as permission_code,
+  cp.name as permission_name
+from core_role cr
+join core_role_permission crp
+  on crp.core_role_id = cr.id
+join core_permission cp
+  on cp.id = crp.core_permission_id
+where cr.id in (<ROLE_ID_1>, <ROLE_ID_2>, <ROLE_ID_3>)
+  and cp.code = 'PERMISSION_NEGOTIATE_AGREEMENTS';
