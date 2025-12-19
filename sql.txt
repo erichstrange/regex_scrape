@@ -52,26 +52,27 @@ ORDER BY st.start_date DESC;
 
 
 SELECT
-  ID,
-  CREATEDATE,
-  USERNAME,
-  EVENT,
-  OBJECTTYPE,
-  OBJECTID,
-  CLIENTID,
-  ATTRIBUTE,
-  OLDVALUE,
-  NEWVALUE
-FROM r_ds_ods.m_audit_log_entry
-WHERE OBJECTTYPE LIKE '%TechnicalIntegration%'
-ORDER BY CREATEDATE DESC;
+  cf.event_datetime,
+  cf.click_id,
+  cf.profile_id,
+  cf.campaign_id,
+  cf.publisher_id,
+  cf.landing_page_url,
+  JSON_EXTRACT_STRING(cf.json, 'inboundLink') AS inbound_link,
+  JSON_EXTRACT_STRING(cf.json, 'gwlurl')      AS gwlurl,
+  JSON_EXTRACT_STRING(cf.json, 'blockingRule') AS blocking_rule,
+  JSON_EXTRACT_STRING(cf.json, 'ruleName')     AS rule_name
+FROM click_fact cf
+WHERE cf.campaign_id = 42030
+  AND cf.publisher_id = 38990
+  AND cf.event_datetime >= NOW() - INTERVAL 30 DAY
+  AND JSON_EXTRACT_STRING(cf.json, 'inboundLink') LIKE '%/3276883/42030%'
+ORDER BY cf.event_datetime DESC
+LIMIT 200;
 
 
-SELECT * ircm_campaign_id,global_url_params,permitted_deeplink_domains,base_site_domain
-from ircm_technicalintegration
-where ircm_campaign_id = 42030
-+------------------+-----------------------------------------------------------------------+----------------------------+------------------+
-| ircm_campaign_id | global_url_params                                                     | permitted_deeplink_domains | base_site_domain |
-+------------------+-----------------------------------------------------------------------+----------------------------+------------------+
-|            42030 | utm_source=imp&utm_medium=aff-{irmptype}&utm_campaign={irmpgroupname} | miiskin.com,*.miiskin.com  | miiskin.com      |
-+------------------+-----------------------------------------------------------------------+----------------------------+------------------+
+SELECT *
+FROM iram_publishergroup
+WHERE ircm_campaign_id = 42030
+ORDER BY dlu DESC
+LIMIT 200;
